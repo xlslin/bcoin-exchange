@@ -35,7 +35,7 @@ public class BIP44IndexETHService implements BIP44IndexService {
         secretKey.setAddress(credentials.getAddress());
         secretKey.setFilePath(filePath);
 
-        return null;
+        return secretKey;
     }
 
     @Override

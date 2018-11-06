@@ -44,7 +44,7 @@ public class BIP44Controller {
     @RequestMapping(value="addressIndex", method= RequestMethod.POST)
     public BIP44AddressIndexRsp addressIndex(BIP44AddressIndexReq req) {
 
-        return null;
+        return bip44Service.addressIndex(req);
     }
 
 }

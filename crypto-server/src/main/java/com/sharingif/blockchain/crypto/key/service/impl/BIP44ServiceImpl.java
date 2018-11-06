@@ -6,6 +6,7 @@ import com.sharingif.blockchain.crypto.api.key.entity.BIP44ChangeReq;
 import com.sharingif.blockchain.crypto.api.key.entity.BIP44ChangeRsp;
 import com.sharingif.blockchain.crypto.key.service.BIP44Service;
 import com.sharingif.blockchain.crypto.key.service.ExtendedKeyService;
+import com.sharingif.blockchain.crypto.key.service.SecretKeyService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -22,10 +23,15 @@ import javax.annotation.Resource;
 public class BIP44ServiceImpl implements BIP44Service {
 
     private ExtendedKeyService extendedKeyService;
+    private SecretKeyService secretKeyService;
 
     @Resource
     public void setExtendedKeyService(ExtendedKeyService extendedKeyService) {
         this.extendedKeyService = extendedKeyService;
+    }
+    @Resource
+    public void setSecretKeyService(SecretKeyService secretKeyService) {
+        this.secretKeyService = secretKeyService;
     }
 
     @Override
@@ -35,7 +41,7 @@ public class BIP44ServiceImpl implements BIP44Service {
 
     @Override
     public BIP44AddressIndexRsp addressIndex(BIP44AddressIndexReq req) {
-        return null;
+        return secretKeyService.addressIndex(req);
     }
 
 }

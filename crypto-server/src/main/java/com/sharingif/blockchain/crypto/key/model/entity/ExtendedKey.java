@@ -6,7 +6,7 @@ import com.sharingif.cube.components.sequence.Sequence;
 
 import java.util.Date;
 
-public class ExtendedKey implements java.io.Serializable , IObjectDateOperationHistory {
+public class ExtendedKey implements java.io.Serializable, IObjectDateOperationHistory {
 	
 	//columns START
     /**

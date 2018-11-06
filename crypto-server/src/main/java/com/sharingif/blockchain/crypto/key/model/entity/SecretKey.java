@@ -1,14 +1,18 @@
 package com.sharingif.blockchain.crypto.key.model.entity;
 
 
+import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+import com.sharingif.cube.components.sequence.Sequence;
+
 import java.util.Date;
 
-public class SecretKey implements java.io.Serializable {
+public class SecretKey implements java.io.Serializable, IObjectDateOperationHistory {
 	
 	//columns START
     /**
      * id			db_column: ID 
-     */	
+     */
+	@Sequence(ref="uuidSequenceGenerator")
 	private java.lang.String id;
     /**
      * 扩展密钥id			db_column: EXTENDED_KEY_ID 

@@ -1,10 +1,8 @@
 package com.sharingif.blockchain.crypto.app.components;
 
 import com.sharingif.blockchain.crypto.app.constants.ErrorConstants;
-import com.sharingif.blockchain.crypto.key.model.entity.KeyPath;
 import com.sharingif.cube.core.exception.validation.ValidationCubeException;
 import com.sharingif.cube.core.util.Charset;
-import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.security.binary.Base64Coder;
 import com.sharingif.cube.security.confidentiality.encrypt.aes.AESECBEncryptor;
 import com.sharingif.cube.security.confidentiality.encrypt.digest.SHA256Encryptor;
@@ -103,7 +101,9 @@ public class Keystore {
     }
 
     public String persistenceSecretKey(String extendedKeyDirectory,int currentIndexNumber, String password, ECKeyPair ecKeyPair) {
-        String directoryStr = new StringBuilder(extendedKeyDirectory)
+        String directoryStr = new StringBuilder(keyRootPath)
+                .append("/")
+                .append(extendedKeyDirectory)
                 .append("/")
                 .append(currentIndexNumber)
                 .append("/")

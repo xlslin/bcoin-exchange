@@ -1,6 +1,5 @@
 package com.sharingif.blockchain.crypto.key.model.entity;
 
-import com.sharingif.blockchain.crypto.api.key.entity.BIP44AddressIndexReq;
 import com.sharingif.blockchain.crypto.api.key.entity.BIP44ChangeReq;
 import com.sharingif.blockchain.crypto.api.key.entity.BIP44GenerateReq;
 
@@ -30,48 +29,59 @@ public class KeyPath {
                         .append(addressIndex)
                         .toString()
         );
+
+        setAllPath(
+                getCoinType()
+                ,getAccount()
+                ,getChange()
+                ,getAddressIndex()
+        );
     }
 
     public KeyPath(BIP44ChangeReq req) {
-        BIP44GenerateReq bip44GenerateReq = new BIP44GenerateReq();
-        bip44GenerateReq.setMnemonicId(req.getMnemonicId());
-        bip44GenerateReq.setCoinType(req.getCoinType());
-        bip44GenerateReq.setAccount(req.getAccount());
-        bip44GenerateReq.setChange(req.getChange());
-
-        setAllPath(bip44GenerateReq);
+        setAllPath(
+                req.getCoinType()
+                ,req.getAccount()
+                ,req.getChange()
+                ,null
+        );
     }
 
     public KeyPath(BIP44GenerateReq req) {
-        setAllPath(req);
+        setAllPath(
+                req.getCoinType()
+                ,req.getAccount()
+                ,req.getChange()
+                ,req.getAddressIndex()
+        );
     }
 
-    protected void setAllPath(BIP44GenerateReq req) {
+    protected void setAllPath(Integer coinType, Integer account, Integer change, Integer addressIndex) {
         StringBuilder stringBuilder = new StringBuilder("m/44'");
         StringBuilder bitcoinjPathStringBuilder = new StringBuilder("M/44H");
-        if(req.getCoinType() != null) {
+        if(coinType != null) {
             parentPath = stringBuilder.toString();
             bitcoinjParentPath = bitcoinjPathStringBuilder.toString();
-            stringBuilder.append("/").append(req.getCoinType()).append("'");
-            bitcoinjPathStringBuilder.append("/").append(req.getCoinType()).append("H");
+            stringBuilder.append("/").append(coinType).append("'");
+            bitcoinjPathStringBuilder.append("/").append(coinType).append("H");
         }
-        if(req.getAccount() != null) {
+        if(account != null) {
             parentPath = stringBuilder.toString();
             bitcoinjParentPath = bitcoinjPathStringBuilder.toString();
-            stringBuilder.append("/").append(req.getAccount()).append("'");
-            bitcoinjPathStringBuilder.append("/").append(req.getAccount()).append("H");
+            stringBuilder.append("/").append(account).append("'");
+            bitcoinjPathStringBuilder.append("/").append(account).append("H");
         }
-        if(req.getChange() != null) {
+        if(change != null) {
             parentPath = stringBuilder.toString();
             bitcoinjParentPath = bitcoinjPathStringBuilder.toString();
-            stringBuilder.append("/").append(req.getChange());
-            bitcoinjPathStringBuilder.append("/").append(req.getChange());
+            stringBuilder.append("/").append(change);
+            bitcoinjPathStringBuilder.append("/").append(change);
         }
-        if(req.getAddressIndex() != null) {
+        if(addressIndex != null) {
             parentPath = stringBuilder.toString();
             bitcoinjParentPath = bitcoinjPathStringBuilder.toString();
-            stringBuilder.append("/").append(req.getAddressIndex());
-            bitcoinjPathStringBuilder.append("/").append(req.getAddressIndex());
+            stringBuilder.append("/").append(addressIndex);
+            bitcoinjPathStringBuilder.append("/").append(addressIndex);
         }
 
         path = stringBuilder.toString();
@@ -110,5 +120,11 @@ public class KeyPath {
         String[] pathArray = this.path.split("/");
 
         return new Integer(pathArray[4]);
+    }
+
+    public Integer getAddressIndex() {
+        String[] pathArray = this.path.split("/");
+
+        return new Integer(pathArray[5]);
     }
 }
