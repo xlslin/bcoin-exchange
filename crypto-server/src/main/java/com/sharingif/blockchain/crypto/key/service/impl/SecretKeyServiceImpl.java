@@ -11,7 +11,6 @@ import com.sharingif.blockchain.crypto.key.model.entity.ExtendedKey;
 import com.sharingif.blockchain.crypto.key.model.entity.KeyPath;
 import com.sharingif.blockchain.crypto.key.service.BIP44IndexService;
 import com.sharingif.blockchain.crypto.key.service.ExtendedKeyService;
-import jnr.ffi.annotations.In;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
