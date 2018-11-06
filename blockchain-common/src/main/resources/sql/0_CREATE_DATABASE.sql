@@ -1,5 +1,5 @@
 CREATE DATABASE blockchain CHARACTER SET UTF8 COLLATE UTF8_GENERAL_CI;
 
-CREATE USER 'blockchain'@'%' IDENTIFIED BY '123Uyei';
+CREATE USER 'blockchain'@'%' IDENTIFIED BY 'zmSi(3ksdyz';
 
 GRANT ALL PRIVILEGES ON blockchain.* TO 'blockchain'@'%';
