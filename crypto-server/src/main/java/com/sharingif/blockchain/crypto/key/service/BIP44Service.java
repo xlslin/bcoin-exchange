@@ -1,6 +1,9 @@
 package com.sharingif.blockchain.crypto.key.service;
 
-import com.sharingif.blockchain.crypto.api.key.entity.*;
+import com.sharingif.blockchain.crypto.api.key.entity.BIP44AddressIndexReq;
+import com.sharingif.blockchain.crypto.api.key.entity.BIP44AddressIndexRsp;
+import com.sharingif.blockchain.crypto.api.key.entity.BIP44ChangeReq;
+import com.sharingif.blockchain.crypto.api.key.entity.BIP44ChangeRsp;
 
 /**
  * KeyService

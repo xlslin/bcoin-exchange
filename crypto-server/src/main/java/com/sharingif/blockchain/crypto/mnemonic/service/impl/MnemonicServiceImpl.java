@@ -10,7 +10,6 @@ import com.sharingif.blockchain.crypto.mnemonic.service.MnemonicService;
 import com.sharingif.cube.core.exception.validation.ValidationCubeException;
 import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.core.util.UUIDUtils;
-import com.sharingif.cube.security.confidentiality.encrypt.digest.SHA256Encryptor;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
