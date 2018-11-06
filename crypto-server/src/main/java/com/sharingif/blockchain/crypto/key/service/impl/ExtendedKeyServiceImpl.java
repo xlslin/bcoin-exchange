@@ -8,7 +8,7 @@ import com.sharingif.blockchain.crypto.app.constants.ErrorConstants;
 import com.sharingif.blockchain.crypto.btc.service.BtcService;
 import com.sharingif.blockchain.crypto.key.dao.ExtendedKeyDAO;
 import com.sharingif.blockchain.crypto.key.model.entity.ExtendedKey;
-import com.sharingif.blockchain.crypto.key.model.entity.KeyPath;
+import com.sharingif.blockchain.crypto.key.model.entity.Bip44KeyPath;
 import com.sharingif.blockchain.crypto.key.service.ExtendedKeyService;
 import com.sharingif.blockchain.crypto.mnemonic.model.entity.Mnemonic;
 import com.sharingif.blockchain.crypto.mnemonic.service.MnemonicService;
@@ -61,7 +61,7 @@ public class ExtendedKeyServiceImpl extends BaseServiceImpl<ExtendedKey, java.la
 	public BIP44ChangeRsp change(BIP44ChangeReq req) {
 
 		// BIP44路径
-		KeyPath keyPath = new KeyPath(req);
+		Bip44KeyPath keyPath = new Bip44KeyPath(req);
 
 		Mnemonic mnemonicObject = mnemonicService.getMnemonic(req.getMnemonicId(), req.getMnemonicPassword());
 		String mnemonic = mnemonicObject.getMnemonic();

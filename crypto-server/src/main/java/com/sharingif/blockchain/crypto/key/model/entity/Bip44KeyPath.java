@@ -11,18 +11,18 @@ import com.sharingif.blockchain.crypto.api.key.entity.BIP44GenerateReq;
  * @since v1.0
  * 2018/7/3 下午2:32
  */
-public class KeyPath {
+public class Bip44KeyPath {
 
     private String parentPath;
     private String path;
     private String bitcoinjParentPath;
     private String bitcoinjPath;
 
-    public KeyPath(String path) {
+    public Bip44KeyPath(String path) {
         this.path = path;
     }
 
-    public KeyPath(String extendedKeyPath, int addressIndex) {
+    public Bip44KeyPath(String extendedKeyPath, int addressIndex) {
         this(
                 new StringBuilder(extendedKeyPath)
                         .append("/")
@@ -38,7 +38,7 @@ public class KeyPath {
         );
     }
 
-    public KeyPath(BIP44ChangeReq req) {
+    public Bip44KeyPath(BIP44ChangeReq req) {
         setAllPath(
                 req.getCoinType()
                 ,req.getAccount()
@@ -47,7 +47,7 @@ public class KeyPath {
         );
     }
 
-    public KeyPath(BIP44GenerateReq req) {
+    public Bip44KeyPath(BIP44GenerateReq req) {
         setAllPath(
                 req.getCoinType()
                 ,req.getAccount()

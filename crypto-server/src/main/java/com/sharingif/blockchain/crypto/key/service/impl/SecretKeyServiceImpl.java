@@ -8,7 +8,7 @@ import com.sharingif.blockchain.crypto.api.key.entity.BIP44AddressIndexRsp;
 import com.sharingif.blockchain.crypto.app.components.Keystore;
 import com.sharingif.blockchain.crypto.btc.service.BtcService;
 import com.sharingif.blockchain.crypto.key.model.entity.ExtendedKey;
-import com.sharingif.blockchain.crypto.key.model.entity.KeyPath;
+import com.sharingif.blockchain.crypto.key.model.entity.Bip44KeyPath;
 import com.sharingif.blockchain.crypto.key.service.BIP44IndexService;
 import com.sharingif.blockchain.crypto.key.service.ExtendedKeyService;
 import org.bitcoinj.core.NetworkParameters;
@@ -71,7 +71,7 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, java.lang.S
 		ExtendedKey extendedKey = extendedKeyService.incrementCurrentIndexNumber(req.getChangeExtendedKeyId());
 
 		// BIP44路径
-		KeyPath keyPath = new KeyPath(extendedKey.getExtendedKeyPath(), extendedKey.getCurrentIndexNumber());
+		Bip44KeyPath keyPath = new Bip44KeyPath(extendedKey.getExtendedKeyPath(), extendedKey.getCurrentIndexNumber());
 
 		NetworkParameters networkParameters = btcService.getNetworkParameters(keyPath.getCoinType());
 
