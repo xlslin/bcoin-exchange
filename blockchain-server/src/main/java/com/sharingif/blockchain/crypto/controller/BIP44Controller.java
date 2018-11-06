@@ -1,9 +1,9 @@
 package com.sharingif.blockchain.crypto.controller;
 
-import com.sharingif.blockchain.account.api.crypto.entity.BIP44AddressIndexReq;
-import com.sharingif.blockchain.account.api.crypto.entity.BIP44AddressIndexRsp;
-import com.sharingif.blockchain.account.api.crypto.entity.BIP44ChangeReq;
-import com.sharingif.blockchain.account.api.crypto.entity.BIP44ChangeRsp;
+import com.sharingif.blockchain.api.crypto.entity.BIP44AddressIndexReq;
+import com.sharingif.blockchain.api.crypto.entity.BIP44AddressIndexRsp;
+import com.sharingif.blockchain.api.crypto.entity.BIP44ChangeReq;
+import com.sharingif.blockchain.api.crypto.entity.BIP44ChangeRsp;
 import com.sharingif.blockchain.crypto.service.BIP44Service;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
