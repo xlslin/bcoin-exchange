@@ -2,6 +2,7 @@ package com.sharingif.blockchain.crypto.mnemonic.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+import com.sharingif.cube.components.sequence.Sequence;
 
 import java.util.Date;
 
@@ -11,7 +12,8 @@ public class Mnemonic implements java.io.Serializable, IObjectDateOperationHisto
 	//columns START
     /**
      * id			db_column: ID 
-     */	
+     */
+	@Sequence(ref="uuidSequenceGenerator")
 	private String id;
     /**
      * 文件路径			db_column: FILE_PATH 

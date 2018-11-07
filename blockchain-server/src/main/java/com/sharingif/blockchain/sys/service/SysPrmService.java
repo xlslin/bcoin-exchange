@@ -9,11 +9,11 @@ import com.sharingif.cube.support.service.base.IBaseService;
 public interface SysPrmService extends IBaseService<SysPrm, java.lang.String> {
 
     /**
-     * 查询当前生成地址ExtendedKey
+     * 根据币种查询当前生成地址ExtendedKey
      * @param coinType
      * @return
      */
-    String getCurrentChangeExtendedKey(int coinType);
+    String getCurrentChangeExtendedKeyByCoinType(String coinType);
 
     /**
      * 设置当前生成地址ExtendedKey

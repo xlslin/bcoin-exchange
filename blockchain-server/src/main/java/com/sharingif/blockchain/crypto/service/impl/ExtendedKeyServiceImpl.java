@@ -5,7 +5,7 @@ import com.sharingif.blockchain.api.crypto.entity.BIP44ChangeRsp;
 import com.sharingif.blockchain.crypto.api.key.service.BIP44ApiService;
 import com.sharingif.blockchain.crypto.dao.ExtendedKeyDAO;
 import com.sharingif.blockchain.crypto.model.entity.ExtendedKey;
-import com.sharingif.blockchain.crypto.model.entity.KeyPath;
+import com.sharingif.blockchain.crypto.model.entity.Bip44KeyPath;
 import com.sharingif.blockchain.crypto.model.entity.Mnemonic;
 import com.sharingif.blockchain.crypto.service.ExtendedKeyService;
 import com.sharingif.blockchain.crypto.service.MnemonicService;
@@ -72,7 +72,7 @@ public class ExtendedKeyServiceImpl extends BaseServiceImpl<ExtendedKey, String>
         com.sharingif.blockchain.crypto.api.key.entity.BIP44ChangeRsp apiRsp = bip44ApiService.change(apiReq);
 
         // BIP44路径
-        KeyPath keyPath = new KeyPath(apiReq.getCoinType(), req.getAccount(), req.getChange(), null);
+        Bip44KeyPath keyPath = new Bip44KeyPath(apiReq.getCoinType(), req.getAccount(), req.getChange(), null);
 
         // 保存助记词信息
         ExtendedKey extendedKey = new ExtendedKey();

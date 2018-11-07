@@ -89,8 +89,8 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, java.lang.S
 		secretKeyDAO.insert(secretKey);
 
 		BIP44AddressIndexRsp rsp = new BIP44AddressIndexRsp();
-		rsp.setId(secretKey.getId());
 		rsp.setAddress(secretKey.getAddress());
+		rsp.setKeyPath(secretKey.getKeyPath());
 
 		return rsp;
 	}

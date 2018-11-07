@@ -2,7 +2,6 @@ package com.sharingif.blockchain.crypto.key.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
-import com.sharingif.cube.components.sequence.Sequence;
 
 import java.util.Date;
 
@@ -10,18 +9,13 @@ public class SecretKey implements java.io.Serializable, IObjectDateOperationHist
 	
 	//columns START
     /**
-     * id			db_column: ID 
-     */
-	@Sequence(ref="uuidSequenceGenerator")
-	private java.lang.String id;
+     * 地址			db_column: ADDRESS 
+     */	
+	private java.lang.String address;
     /**
      * 扩展密钥id			db_column: EXTENDED_KEY_ID 
      */	
 	private java.lang.String extendedKeyId;
-    /**
-     * 地址			db_column: ADDRESS 
-     */	
-	private java.lang.String address;
     /**
      * key路径			db_column: KEY_PATH 
      */	
@@ -40,23 +34,17 @@ public class SecretKey implements java.io.Serializable, IObjectDateOperationHist
 	private Date modifyTime;
 	//columns END
 
-	public void setId(java.lang.String id) {
-		this.id = id;
+	public void setAddress(java.lang.String address) {
+		this.address = address;
 	}
-	public java.lang.String getId() {
-		return this.id;
+	public java.lang.String getAddress() {
+		return this.address;
 	}
 	public void setExtendedKeyId(java.lang.String extendedKeyId) {
 		this.extendedKeyId = extendedKeyId;
 	}
 	public java.lang.String getExtendedKeyId() {
 		return this.extendedKeyId;
-	}
-	public void setAddress(java.lang.String address) {
-		this.address = address;
-	}
-	public java.lang.String getAddress() {
-		return this.address;
 	}
 	public void setKeyPath(java.lang.String keyPath) {
 		this.keyPath = keyPath;
@@ -85,9 +73,8 @@ public class SecretKey implements java.io.Serializable, IObjectDateOperationHist
 
 	public String toString() {
 		return new StringBuilder("SecretKey [")
-			.append("Id=").append(getId()).append(", ")
+			.append("Address=").append(getAddress()).append(", ")
 					.append("ExtendedKeyId=").append(getExtendedKeyId()).append(", ")
-					.append("Address=").append(getAddress()).append(", ")
 					.append("KeyPath=").append(getKeyPath()).append(", ")
 					.append("FilePath=").append(getFilePath()).append(", ")
 					.append("CreateTime=").append(getCreateTime()).append(", ")

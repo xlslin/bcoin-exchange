@@ -1,9 +1,11 @@
 package com.sharingif.blockchain.crypto.model.entity;
 
 
+import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+
 import java.util.Date;
 
-public class Mnemonic implements java.io.Serializable {
+public class Mnemonic implements java.io.Serializable, IObjectDateOperationHistory {
 	
 	//columns START
     /**

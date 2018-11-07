@@ -9,15 +9,15 @@ package com.sharingif.blockchain.crypto.model.entity;
  * @since v1.0
  * 2018/7/3 下午2:32
  */
-public class KeyPath {
+public class Bip44KeyPath {
 
     private String path;
 
-    public KeyPath(String path) {
+    public Bip44KeyPath(String path) {
         this.path = path;
     }
 
-    public KeyPath(Integer coinType, Integer account, Integer change, Integer addressIndex) {
+    public Bip44KeyPath(Integer coinType, Integer account, Integer change, Integer addressIndex) {
         StringBuilder stringBuilder = new StringBuilder("m/44'");
         if(coinType != null) {
             stringBuilder.append("/").append(coinType).append("'");

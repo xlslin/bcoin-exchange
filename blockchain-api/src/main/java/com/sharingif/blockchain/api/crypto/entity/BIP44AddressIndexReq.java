@@ -17,7 +17,11 @@ public class BIP44AddressIndexReq {
     /**
      * 币种
      */
-    private int coinType;
+    private String coinType;
+    /**
+     * 是否接受通知
+     */
+    private boolean watch;
 
     public String getChangeExtendedKeyId() {
         return changeExtendedKeyId;
@@ -27,19 +31,28 @@ public class BIP44AddressIndexReq {
         this.changeExtendedKeyId = changeExtendedKeyId;
     }
 
-    public int getCoinType() {
+    public String getCoinType() {
         return coinType;
     }
 
-    public void setCoinType(int coinType) {
+    public void setCoinType(String coinType) {
         this.coinType = coinType;
+    }
+
+    public boolean isWatch() {
+        return watch;
+    }
+
+    public void setWatch(boolean watch) {
+        this.watch = watch;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("BIP44AddressIndexReq{");
         sb.append("changeExtendedKeyId='").append(changeExtendedKeyId).append('\'');
-        sb.append(", coinType=").append(coinType);
+        sb.append(", coinType='").append(coinType).append('\'');
+        sb.append(", watch=").append(watch);
         sb.append('}');
         return sb.toString();
     }

@@ -11,21 +11,13 @@ package com.sharingif.blockchain.crypto.api.key.entity;
 public class BIP44AddressIndexRsp {
 
     /**
-     * id
-     */
-    private String id;
-    /**
      * 地址
      */
     private String address;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+    /**
+     * key路径
+     */
+    private String keyPath;
 
     public String getAddress() {
         return address;
@@ -35,11 +27,19 @@ public class BIP44AddressIndexRsp {
         this.address = address;
     }
 
+    public String getKeyPath() {
+        return keyPath;
+    }
+
+    public void setKeyPath(String keyPath) {
+        this.keyPath = keyPath;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("BIP44AddressIndexRsp{");
-        sb.append("id='").append(id).append('\'');
-        sb.append(", address='").append(address).append('\'');
+        sb.append("address='").append(address).append('\'');
+        sb.append(", keyPath='").append(keyPath).append('\'');
         sb.append('}');
         return sb.toString();
     }

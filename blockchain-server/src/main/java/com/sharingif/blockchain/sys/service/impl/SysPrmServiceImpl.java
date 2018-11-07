@@ -1,9 +1,11 @@
 package com.sharingif.blockchain.sys.service.impl;
 
 
+import com.sharingif.blockchain.account.model.entity.BitCoin;
+import com.sharingif.blockchain.account.service.BitCoinService;
 import com.sharingif.blockchain.api.sys.entity.CurrentChangeExtendedKeyReq;
 import com.sharingif.blockchain.crypto.model.entity.ExtendedKey;
-import com.sharingif.blockchain.crypto.model.entity.KeyPath;
+import com.sharingif.blockchain.crypto.model.entity.Bip44KeyPath;
 import com.sharingif.blockchain.crypto.service.ExtendedKeyService;
 import com.sharingif.blockchain.sys.dao.SysPrmDAO;
 import com.sharingif.blockchain.sys.model.entity.SysPrm;
@@ -19,6 +21,7 @@ public class SysPrmServiceImpl extends BaseServiceImpl<SysPrm, java.lang.String>
 	private SysPrmDAO sysPrmDAO;
 
 	private ExtendedKeyService extendedKeyService;
+	private BitCoinService bitCoinService;
 
 	public SysPrmDAO getSysPrmDAO() {
 		return sysPrmDAO;
@@ -33,12 +36,17 @@ public class SysPrmServiceImpl extends BaseServiceImpl<SysPrm, java.lang.String>
 	public void setExtendedKeyService(ExtendedKeyService extendedKeyService) {
 		this.extendedKeyService = extendedKeyService;
 	}
-
+	@Resource
+	public void setBitCoinService(BitCoinService bitCoinService) {
+		this.bitCoinService = bitCoinService;
+	}
 
 	@Override
-	public String getCurrentChangeExtendedKey(int coinType) {
+	public String getCurrentChangeExtendedKeyByCoinType(String coinType) {
+		BitCoin bitCoin = bitCoinService.getBitCoinByCoinType(coinType);
+
 		SysPrm sysPrm = new SysPrm();
-		sysPrm.setPrmName(SysPrm.CURRENT_CHANGE_EXTENDED_KEY_PREFIX+coinType);
+		sysPrm.setPrmName(SysPrm.CURRENT_CHANGE_EXTENDED_KEY_PREFIX+bitCoin.getBlockType());
 		sysPrm.setPrmStatus(SysPrm.PRM_STATUS_VALID);
 
 		sysPrm = sysPrmDAO.query(sysPrm);
@@ -50,9 +58,11 @@ public class SysPrmServiceImpl extends BaseServiceImpl<SysPrm, java.lang.String>
 	public void setCurrentChangeExtendedKey(CurrentChangeExtendedKeyReq req) {
 		ExtendedKey extendedKey = extendedKeyService.getById(req.getChangeExtendedKeyId());
 
-		KeyPath keyPath = new KeyPath(extendedKey.getExtendedKeyPath());
+		Bip44KeyPath keyPath = new Bip44KeyPath(extendedKey.getExtendedKeyPath());
 
-		String prmName = SysPrm.CURRENT_CHANGE_EXTENDED_KEY_PREFIX+keyPath.getCoinType();
+		String blockType = bitCoinService.getBlockTypeByBip44CoinType(String.valueOf(keyPath.getCoinType()));
+
+		String prmName = SysPrm.CURRENT_CHANGE_EXTENDED_KEY_PREFIX+blockType;
 
 		SysPrm querySysPrm = new SysPrm();
 		querySysPrm.setPrmName(prmName);
