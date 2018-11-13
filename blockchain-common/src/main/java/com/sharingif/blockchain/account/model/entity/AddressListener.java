@@ -1,13 +1,13 @@
 package com.sharingif.blockchain.account.model.entity;
 
 
-import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
-
-import java.util.Date;
-
-public class AddressListener implements java.io.Serializable, IObjectDateOperationHistory {
+public class AddressListener implements java.io.Serializable {
 	
 	//columns START
+    /**
+     * 区块类型(Ether、Bitcoin)			db_column: BLOCK_TYPE 
+     */	
+	private java.lang.String blockType;
     /**
      * 地址			db_column: ADDRESS 
      */	
@@ -22,6 +22,12 @@ public class AddressListener implements java.io.Serializable, IObjectDateOperati
 	private Date modifyTime;
 	//columns END
 
+	public void setBlockType(java.lang.String blockType) {
+		this.blockType = blockType;
+	}
+	public java.lang.String getBlockType() {
+		return this.blockType;
+	}
 	public void setAddress(java.lang.String address) {
 		this.address = address;
 	}
@@ -43,7 +49,8 @@ public class AddressListener implements java.io.Serializable, IObjectDateOperati
 
 	public String toString() {
 		return new StringBuilder("AddressListener [")
-			.append("Address=").append(getAddress()).append(", ")
+			.append("BlockType=").append(getBlockType()).append(", ")
+					.append("Address=").append(getAddress()).append(", ")
 					.append("CreateTime=").append(getCreateTime()).append(", ")
 					.append("ModifyTime=").append(getModifyTime())
 		.append("]").toString();
