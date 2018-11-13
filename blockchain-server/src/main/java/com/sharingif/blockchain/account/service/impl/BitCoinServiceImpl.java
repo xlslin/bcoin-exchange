@@ -57,8 +57,4 @@ public class BitCoinServiceImpl extends BaseServiceImpl<BitCoin, java.lang.Strin
 		return bitCoinList.get(0).getBlockType();
 	}
 
-	@Override
-	public BitCoin getBitCoinByAddress(String address) {
-		return null;
-	}
 }

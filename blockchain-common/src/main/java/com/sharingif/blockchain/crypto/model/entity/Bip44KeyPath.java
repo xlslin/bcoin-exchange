@@ -40,22 +40,22 @@ public class Bip44KeyPath {
         return path;
     }
 
-    public Integer getCoinType() {
+    public String getCoinType() {
         String[] pathArray = this.path.split("/");
 
-        return new Integer(pathArray[2].replace("'",""));
+        return pathArray[2].replace("'","");
     }
 
-    public Integer getAccount() {
+    public String getAccount() {
         String[] pathArray = this.path.split("/");
 
-        return new Integer(pathArray[3].replace("'",""));
+        return pathArray[3].replace("'","");
     }
 
-    public Integer getChange() {
+    public String getChange() {
         String[] pathArray = this.path.split("/");
 
-        return new Integer(pathArray[4]);
+        return pathArray[4];
     }
 
 }

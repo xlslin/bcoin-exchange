@@ -2,10 +2,12 @@ package com.sharingif.blockchain.crypto.service.impl;
 
 import com.sharingif.blockchain.account.service.AccountService;
 import com.sharingif.blockchain.account.service.AddressListenerService;
+import com.sharingif.blockchain.account.service.BitCoinService;
 import com.sharingif.blockchain.api.crypto.entity.BIP44AddressIndexReq;
 import com.sharingif.blockchain.api.crypto.entity.BIP44AddressIndexRsp;
 import com.sharingif.blockchain.crypto.api.key.service.BIP44ApiService;
 import com.sharingif.blockchain.crypto.dao.SecretKeyDAO;
+import com.sharingif.blockchain.crypto.model.entity.Bip44KeyPath;
 import com.sharingif.blockchain.crypto.model.entity.ExtendedKey;
 import com.sharingif.blockchain.crypto.model.entity.SecretKey;
 import com.sharingif.blockchain.crypto.service.ExtendedKeyService;
@@ -37,6 +39,7 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
     private BIP44ApiService bip44ApiService;
     private AccountService accountService;
     private AddressListenerService addressListenerService;
+    private BitCoinService bitCoinService;
 
     @Resource
     public void setSecretKeyDAO(SecretKeyDAO secretKeyDAO) {
@@ -67,6 +70,10 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
     @Resource
     public void setAddressListenerService(AddressListenerService addressListenerService) {
         this.addressListenerService = addressListenerService;
+    }
+    @Resource
+    public void setBitCoinService(BitCoinService bitCoinService) {
+        this.bitCoinService = bitCoinService;
     }
 
     @Override
@@ -111,6 +118,15 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
         }
 
         return rsp;
+    }
+
+    @Override
+    public String getBlockType(String address) {
+        SecretKey secretKey = secretKeyDAO.queryById(address);
+        String keyPath = secretKey.getKeyPath();
+        Bip44KeyPath bip44KeyPath = new Bip44KeyPath(keyPath);
+
+        return bitCoinService.getBlockTypeByBip44CoinType(bip44KeyPath.getCoinType());
     }
 
 }

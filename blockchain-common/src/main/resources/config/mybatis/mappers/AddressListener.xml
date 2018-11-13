@@ -9,11 +9,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<!-- 用于select查询公用抽取的列 -->
 	<sql id="addressListenerColumns">
-    	<if test="null!=blockType">
-    		and BLOCK_TYPE = #{blockType}
-    	</if>
     	<if test="null!=address">
     		and ADDRESS = #{address}
+    	</if>
+    	<if test="null!=blockType">
+    		and BLOCK_TYPE = #{blockType}
     	</if>
     	<if test="null!=createTime">
     		and CREATE_TIME = #{createTime}
@@ -24,11 +24,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</sql>
 	
 	<sql id="addressListenerSetColumns">
-		    <if test="null!=blockType">
-		    BLOCK_TYPE = #{blockType},
-		    </if>
 		    <if test="null!=address">
 		    ADDRESS = #{address},
+		    </if>
+		    <if test="null!=blockType">
+		    BLOCK_TYPE = #{blockType},
 		    </if>
 		    <if test="null!=createTime">
 		    CREATE_TIME = #{createTime},
@@ -39,8 +39,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</sql>
 
 	<resultMap id="addressListenerResultMap" type="com.sharingif.blockchain.account.model.entity.AddressListener">
-        <result property="blockType" column="BLOCK_TYPE"/>
         <result property="address" column="ADDRESS"/>
+        <result property="blockType" column="BLOCK_TYPE"/>
         <result property="createTime" column="CREATE_TIME"/>
         <result property="modifyTime" column="MODIFY_TIME"/>
 	</resultMap>
@@ -48,13 +48,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
 	<insert id="insert">
         INSERT INTO ADDRESS_LISTENER (
-        	BLOCK_TYPE
-        	,ADDRESS
+        	ADDRESS
+        	,BLOCK_TYPE
         	,CREATE_TIME
         	,MODIFY_TIME
         ) VALUES (
-        	#{blockType}
-        	,#{address}
+        	#{address}
+        	,#{blockType}
         	,#{createTime}
         	,#{modifyTime}
         )
@@ -87,8 +87,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
     <select id="queryById" resultMap="addressListenerResultMap">
 		SELECT
-			BLOCK_TYPE
-			,ADDRESS
+			ADDRESS
+			,BLOCK_TYPE
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -99,8 +99,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<select id="queryList" resultMap="addressListenerResultMap">
 		SELECT
-			BLOCK_TYPE
-			,ADDRESS
+			ADDRESS
+			,BLOCK_TYPE
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -114,8 +114,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<select id="queryAll" resultMap="addressListenerResultMap">
 		SELECT
-			BLOCK_TYPE
-			,ADDRESS
+			ADDRESS
+			,BLOCK_TYPE
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -136,8 +136,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="addressListenerResultMap">
 		SELECT
-			BLOCK_TYPE
-			,ADDRESS
+			ADDRESS
+			,BLOCK_TYPE
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM

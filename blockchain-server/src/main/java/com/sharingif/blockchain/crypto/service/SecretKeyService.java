@@ -23,4 +23,11 @@ public interface SecretKeyService extends IBaseService<SecretKey, String> {
      */
     BIP44AddressIndexRsp addressIndex(BIP44AddressIndexReq req);
 
+    /**
+     * 根据地址区块类型
+     * @param address
+     * @return
+     */
+    String getBlockType(String address);
+
 }
