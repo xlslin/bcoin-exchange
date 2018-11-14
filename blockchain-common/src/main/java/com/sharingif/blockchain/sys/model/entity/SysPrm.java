@@ -1,6 +1,8 @@
 package com.sharingif.blockchain.sys.model.entity;
 
 
+import com.sharingif.cube.components.sequence.Sequence;
+
 import java.util.Date;
 
 public class SysPrm implements java.io.Serializable {
@@ -22,7 +24,8 @@ public class SysPrm implements java.io.Serializable {
 	//columns START
     /**
      * id			db_column: ID 
-     */	
+     */
+	@Sequence(ref="uuidSequenceGenerator")
 	private java.lang.String id;
     /**
      * 参数名称			db_column: PRM_NAME 

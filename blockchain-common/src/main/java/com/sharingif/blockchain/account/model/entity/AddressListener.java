@@ -1,9 +1,11 @@
 package com.sharingif.blockchain.account.model.entity;
 
 
+import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+
 import java.util.Date;
 
-public class AddressListener implements java.io.Serializable {
+public class AddressListener implements java.io.Serializable, IObjectDateOperationHistory {
 	
 	//columns START
     /**

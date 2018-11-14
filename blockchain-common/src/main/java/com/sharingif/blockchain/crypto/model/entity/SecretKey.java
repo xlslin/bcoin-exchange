@@ -2,12 +2,18 @@ package com.sharingif.blockchain.crypto.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+import com.sharingif.cube.components.sequence.Sequence;
 
 import java.util.Date;
 
 public class SecretKey implements java.io.Serializable, IObjectDateOperationHistory {
 	
 	//columns START
+    /**
+     * id			db_column: ID 
+     */
+	@Sequence(ref="uuidSequenceGenerator")
+	private java.lang.String id;
     /**
      * 地址			db_column: ADDRESS 
      */	
@@ -34,6 +40,12 @@ public class SecretKey implements java.io.Serializable, IObjectDateOperationHist
 	private Date modifyTime;
 	//columns END
 
+	public void setId(java.lang.String id) {
+		this.id = id;
+	}
+	public java.lang.String getId() {
+		return this.id;
+	}
 	public void setAddress(java.lang.String address) {
 		this.address = address;
 	}
@@ -73,7 +85,8 @@ public class SecretKey implements java.io.Serializable, IObjectDateOperationHist
 
 	public String toString() {
 		return new StringBuilder("SecretKey [")
-			.append("Address=").append(getAddress()).append(", ")
+			.append("Id=").append(getId()).append(", ")
+					.append("Address=").append(getAddress()).append(", ")
 					.append("ExtendedKeyId=").append(getExtendedKeyId()).append(", ")
 					.append("KeyPath=").append(getKeyPath()).append(", ")
 					.append("Password=").append(getPassword()).append(", ")

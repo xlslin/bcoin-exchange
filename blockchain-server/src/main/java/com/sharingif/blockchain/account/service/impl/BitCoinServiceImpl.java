@@ -52,9 +52,19 @@ public class BitCoinServiceImpl extends BaseServiceImpl<BitCoin, java.lang.Strin
 		BitCoin bitCoin = new BitCoin();
 		bitCoin.setBip44CoinType(bip44CoinType);
 
-		List<BitCoin> bitCoinList = bitCoinDAO.queryList(bitCoin);
+		bitCoin = bitCoinDAO.query(bitCoin);
 
-		return bitCoinList.get(0).getBlockType();
+		return bitCoin.getBlockType();
+	}
+
+	@Override
+	public String getCoinTypeByBip44CoinType(String bip44CoinType) {
+		BitCoin bitCoin = new BitCoin();
+		bitCoin.setBip44CoinType(bip44CoinType);
+
+		bitCoin = bitCoinDAO.query(bitCoin);
+
+		return bitCoin.getCoinType();
 	}
 
 }

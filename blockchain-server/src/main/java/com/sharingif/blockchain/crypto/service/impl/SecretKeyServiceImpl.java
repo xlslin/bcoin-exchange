@@ -107,10 +107,18 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
 
         // 返回值
         BIP44AddressIndexRsp rsp = new BIP44AddressIndexRsp();
+        rsp.setId(secretKey.getId());
         rsp.setAddress(secretKey.getAddress());
 
+
+        String coinType = req.getCoinType();
+        if(StringUtils.isTrimEmpty(coinType)) {
+            Bip44KeyPath bip44KeyPath = new Bip44KeyPath(secretKey.getKeyPath());
+            coinType = bitCoinService.getCoinTypeByBip44CoinType(bip44KeyPath.getCoinType());
+        }
+
         // 生成账户
-        accountService.initAccount(req.getCoinType(), secretKey.getAddress());
+        accountService.initAccount(coinType, secretKey.getAddress());
 
         // 注册地址监听
         if(req.isWatch()) {
@@ -122,7 +130,10 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
 
     @Override
     public String getBlockType(String address) {
-        SecretKey secretKey = secretKeyDAO.queryById(address);
+        SecretKey secretKey = new SecretKey();
+        secretKey.setAddress(address);
+
+        secretKey = secretKeyDAO.query(secretKey);
         String keyPath = secretKey.getKeyPath();
         Bip44KeyPath bip44KeyPath = new Bip44KeyPath(keyPath);
 

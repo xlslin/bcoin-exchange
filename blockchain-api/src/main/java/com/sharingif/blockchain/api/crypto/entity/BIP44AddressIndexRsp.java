@@ -11,9 +11,21 @@ package com.sharingif.blockchain.api.crypto.entity;
 public class BIP44AddressIndexRsp {
 
     /**
+     * id
+     */
+    private String id;
+    /**
      * 地址
      */
     private String address;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getAddress() {
         return address;
@@ -26,7 +38,8 @@ public class BIP44AddressIndexRsp {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("BIP44AddressIndexRsp{");
-        sb.append("address='").append(address).append('\'');
+        sb.append("id='").append(id).append('\'');
+        sb.append(", address='").append(address).append('\'');
         sb.append('}');
         return sb.toString();
     }

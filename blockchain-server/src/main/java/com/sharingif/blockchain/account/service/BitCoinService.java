@@ -28,4 +28,11 @@ public interface BitCoinService extends IBaseService<BitCoin, java.lang.String> 
      */
     String getBlockTypeByBip44CoinType(String bip44CoinType);
 
+    /**
+     * 根据IP44币种获取币种类型
+     * @param bip44CoinType
+     * @return
+     */
+    String getCoinTypeByBip44CoinType(String bip44CoinType);
+
 }
