@@ -1,6 +1,5 @@
 package com.sharingif.blockchain.crypto.service.impl;
 
-import com.sharingif.blockchain.account.service.AccountService;
 import com.sharingif.blockchain.account.service.AddressListenerService;
 import com.sharingif.blockchain.account.service.BitCoinService;
 import com.sharingif.blockchain.api.crypto.entity.BIP44AddressIndexReq;
@@ -37,7 +36,6 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
     private ExtendedKeyService extendedKeyService;
     private TextEncryptor passwordTextEncryptor;
     private BIP44ApiService bip44ApiService;
-    private AccountService accountService;
     private AddressListenerService addressListenerService;
     private BitCoinService bitCoinService;
 
@@ -62,10 +60,6 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
     @Resource
     public void setBip44ApiService(BIP44ApiService bip44ApiService) {
         this.bip44ApiService = bip44ApiService;
-    }
-    @Resource
-    public void setAccountService(AccountService accountService) {
-        this.accountService = accountService;
     }
     @Resource
     public void setAddressListenerService(AddressListenerService addressListenerService) {
@@ -116,9 +110,6 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
             Bip44KeyPath bip44KeyPath = new Bip44KeyPath(secretKey.getKeyPath());
             coinType = bitCoinService.getCoinTypeByBip44CoinType(bip44KeyPath.getCoinType());
         }
-
-        // 生成账户
-        accountService.initAccount(coinType, secretKey.getAddress());
 
         // 注册地址监听
         if(req.isWatch()) {
