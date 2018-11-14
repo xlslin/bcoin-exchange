@@ -28,4 +28,21 @@ import java.util.List;
 @Configuration
 public class RemoteContextAutoconfigure {
 
+    @Bean(name = "remoteServicesApplicationContext")
+    public RemoteServicesApplicationContext createRemoteServicesApplicationContext(
+            BindingInitializer bindingInitializer
+            ,RemoteServices cryptoServerRemoteServices
+    ) {
+
+
+        List<RemoteServices> remoteServicesList = new ArrayList<RemoteServices>();
+        remoteServicesList.add(cryptoServerRemoteServices);
+
+        RemoteServicesApplicationContext remoteServicesApplicationContext = new RemoteServicesApplicationContext();
+        remoteServicesApplicationContext.setBindingInitializer(bindingInitializer);
+        remoteServicesApplicationContext.setRemoteServices(remoteServicesList);
+
+        return remoteServicesApplicationContext;
+    }
+
 }

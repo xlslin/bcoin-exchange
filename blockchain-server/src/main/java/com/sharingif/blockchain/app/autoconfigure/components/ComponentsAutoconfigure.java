@@ -21,4 +21,13 @@ public class ComponentsAutoconfigure {
         return encryptor;
     }
 
+    @Bean("passwordTextEncryptor")
+    public TextEncryptor createPasswordTextEncryptor(@Value("${password.key}") String key) {
+        Base64Coder base64Coder = new Base64Coder();
+        byte[] keysByte = base64Coder.decode(key);
+        AESECBEncryptor encryptor = new AESECBEncryptor(keysByte, base64Coder);
+
+        return encryptor;
+    }
+
 }
