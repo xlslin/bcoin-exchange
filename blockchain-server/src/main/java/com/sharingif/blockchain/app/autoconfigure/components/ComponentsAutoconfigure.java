@@ -13,8 +13,7 @@ import java.io.UnsupportedEncodingException;
 public class ComponentsAutoconfigure {
 
     @Bean("propertyTextEncryptor")
-    public TextEncryptor createPropertyTextEncryptor(@Value("${property.key}") String key) throws UnsupportedEncodingException {
-        Base64Coder base64Coder = new Base64Coder();
+    public TextEncryptor createPropertyTextEncryptor(@Value("${property.key}") String key, Base64Coder base64Coder) throws UnsupportedEncodingException {
         byte[] keysByte = base64Coder.decode(key);
         AESECBEncryptor encryptor = new AESECBEncryptor(keysByte, base64Coder);
 
@@ -22,8 +21,7 @@ public class ComponentsAutoconfigure {
     }
 
     @Bean("passwordTextEncryptor")
-    public TextEncryptor createPasswordTextEncryptor(@Value("${password.key}") String key) {
-        Base64Coder base64Coder = new Base64Coder();
+    public TextEncryptor createPasswordTextEncryptor(@Value("${password.key}") String key, Base64Coder base64Coder) {
         byte[] keysByte = base64Coder.decode(key);
         AESECBEncryptor encryptor = new AESECBEncryptor(keysByte, base64Coder);
 
