@@ -104,13 +104,6 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
         rsp.setId(secretKey.getId());
         rsp.setAddress(secretKey.getAddress());
 
-
-        String coinType = req.getCoinType();
-        if(StringUtils.isTrimEmpty(coinType)) {
-            Bip44KeyPath bip44KeyPath = new Bip44KeyPath(secretKey.getKeyPath());
-            coinType = bitCoinService.getCoinTypeByBip44CoinType(bip44KeyPath.getCoinType());
-        }
-
         // 注册地址监听
         if(req.isWatch()) {
             addressListenerService.add(secretKey.getAddress());
