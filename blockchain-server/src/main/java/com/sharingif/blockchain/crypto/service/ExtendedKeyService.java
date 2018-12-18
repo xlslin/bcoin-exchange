@@ -22,4 +22,11 @@ public interface ExtendedKeyService extends IBaseService<ExtendedKey, String> {
      */
     BIP44ChangeRsp change(BIP44ChangeReq req);
 
+    /**
+     * 根据币种查询ExtendedKey
+     * @param coinType
+     * @return
+     */
+    ExtendedKey getExtendedKey(String coinType);
+
 }

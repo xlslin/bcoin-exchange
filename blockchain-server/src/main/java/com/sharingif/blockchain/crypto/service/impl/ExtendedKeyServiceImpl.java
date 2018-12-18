@@ -1,5 +1,7 @@
 package com.sharingif.blockchain.crypto.service.impl;
 
+import com.sharingif.blockchain.account.model.entity.BitCoin;
+import com.sharingif.blockchain.account.service.BitCoinService;
 import com.sharingif.blockchain.api.crypto.entity.BIP44ChangeReq;
 import com.sharingif.blockchain.api.crypto.entity.BIP44ChangeRsp;
 import com.sharingif.blockchain.crypto.api.key.service.BIP44ApiService;
@@ -31,6 +33,7 @@ public class ExtendedKeyServiceImpl extends BaseServiceImpl<ExtendedKey, String>
     private MnemonicService mnemonicService;
     private TextEncryptor passwordTextEncryptor;
     private BIP44ApiService bip44ApiService;
+    private BitCoinService bitCoinService;
 
     public ExtendedKeyDAO getExtendedKeyDAO() {
         return extendedKeyDAO;
@@ -53,6 +56,10 @@ public class ExtendedKeyServiceImpl extends BaseServiceImpl<ExtendedKey, String>
     @Resource
     public void setBip44ApiService(BIP44ApiService bip44ApiService) {
         this.bip44ApiService = bip44ApiService;
+    }
+    @Resource
+    public void setBitCoinService(BitCoinService bitCoinService) {
+        this.bitCoinService = bitCoinService;
     }
 
     @Override
@@ -87,5 +94,23 @@ public class ExtendedKeyServiceImpl extends BaseServiceImpl<ExtendedKey, String>
         rsp.setId(extendedKey.getId());
 
         return rsp;
+    }
+
+    @Override
+    public ExtendedKey getExtendedKey(String coinType) {
+        BitCoin bitCoin = bitCoinService.getBitCoinByCoinType(coinType);
+
+        ExtendedKey queryExtendedKey = new ExtendedKey();
+        queryExtendedKey.setExtendedKeyPath(
+                new StringBuilder(Bip44KeyPath.BIP44)
+                        .append("/")
+                        .append(bitCoin.getBip44CoinType())
+                        .append("'/0")
+                        .toString()
+        );
+
+        ExtendedKey extendedKey = extendedKeyDAO.query(queryExtendedKey);
+
+        return extendedKey;
     }
 }

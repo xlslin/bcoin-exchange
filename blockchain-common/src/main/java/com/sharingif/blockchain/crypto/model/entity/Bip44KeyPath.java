@@ -11,6 +11,8 @@ package com.sharingif.blockchain.crypto.model.entity;
  */
 public class Bip44KeyPath {
 
+    public static final String BIP44 = "m/44'";
+
     private String path;
 
     public Bip44KeyPath(String path) {
@@ -18,7 +20,7 @@ public class Bip44KeyPath {
     }
 
     public Bip44KeyPath(Integer coinType, Integer account, Integer change, Integer addressIndex) {
-        StringBuilder stringBuilder = new StringBuilder("m/44'");
+        StringBuilder stringBuilder = new StringBuilder(BIP44);
         if(coinType != null) {
             stringBuilder.append("/").append(coinType).append("'");
         }

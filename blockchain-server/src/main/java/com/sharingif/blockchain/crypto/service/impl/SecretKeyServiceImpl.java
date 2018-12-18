@@ -11,7 +11,6 @@ import com.sharingif.blockchain.crypto.model.entity.ExtendedKey;
 import com.sharingif.blockchain.crypto.model.entity.SecretKey;
 import com.sharingif.blockchain.crypto.service.ExtendedKeyService;
 import com.sharingif.blockchain.crypto.service.SecretKeyService;
-import com.sharingif.blockchain.sys.service.SysPrmService;
 import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.security.confidentiality.encrypt.TextEncryptor;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
@@ -32,7 +31,6 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
 
     private SecretKeyDAO secretKeyDAO;
 
-    private SysPrmService sysPrmService;
     private ExtendedKeyService extendedKeyService;
     private TextEncryptor passwordTextEncryptor;
     private BIP44ApiService bip44ApiService;
@@ -45,10 +43,6 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
         this.secretKeyDAO = secretKeyDAO;
     }
 
-    @Resource
-    public void setSysPrmService(SysPrmService sysPrmService) {
-        this.sysPrmService = sysPrmService;
-    }
     @Resource
     public void setExtendedKeyService(ExtendedKeyService extendedKeyService) {
         this.extendedKeyService = extendedKeyService;
@@ -72,14 +66,15 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
 
     @Override
     public BIP44AddressIndexRsp addressIndex(BIP44AddressIndexReq req) {
-        // 获取配置ExtendedKeyId，如果请求中没有就取数据库中配置的默认值
+        // 获取ExtendedKey信息
+        ExtendedKey extendedKey = null;
         String changeExtendedKeyId = req.getChangeExtendedKeyId();
         if(StringUtils.isTrimEmpty(changeExtendedKeyId)) {
-            changeExtendedKeyId = sysPrmService.getCurrentChangeExtendedKeyByCoinType(req.getCoinType());
+            extendedKey = extendedKeyService.getExtendedKey(req.getCoinType());
+        } else {
+            extendedKey = extendedKeyService.getById(changeExtendedKeyId);
         }
 
-        // 获取change ExtendedKey信息
-        ExtendedKey extendedKey = extendedKeyService.getById(changeExtendedKeyId);
         String encrypt = extendedKey.getPassword();
         String extendedKeyPassword = passwordTextEncryptor.decrypt(encrypt);
 
