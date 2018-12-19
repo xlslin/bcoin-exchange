@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.context.annotation.EnableLoadTimeWeaving;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.stereotype.Component;
@@ -45,7 +46,8 @@ public class Bootstrap {
                 }).run(args);
     }
 
-    @EnableTransactionManagement(mode = AdviceMode.ASPECTJ)
+    @EnableTransactionManagement(mode=AdviceMode.ASPECTJ)
+    @EnableLoadTimeWeaving(aspectjWeaving= EnableLoadTimeWeaving.AspectJWeaving.ENABLED)
     @EnableAutoConfiguration
     @ComponentScan(
             basePackages = "com.sharingif.blockchain.ether.*.dao,com.sharingif.blockchain.ether.*.service,com.sharingif.blockchain.ether.*.scheduled,com.sharingif.blockchain.ether.app.autoconfigure,com.sharingif.cube.spring.boot"
