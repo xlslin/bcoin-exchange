@@ -1,6 +1,8 @@
 package com.sharingif.blockchain.ether.block.model.entity;
 
 
+import com.sharingif.cube.components.sequence.Sequence;
+
 import java.math.BigInteger;
 import java.util.Date;
 
@@ -30,7 +32,8 @@ public class BlockChain implements java.io.Serializable {
 	//columns START
     /**
      * id			db_column: ID 
-     */	
+     */
+	@Sequence(ref="uuidSequenceGenerator")
 	private java.lang.String id;
     /**
      * 区块号			db_column: BLOCK_NUMBER 

@@ -33,6 +33,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		blockChain.setBlockNumber(blockNumber);
 		blockChain.setVerifyBlockNumber(blockNumber);
 		blockChain.setHash(blockHash);
+		blockChain.setStatus(BlockChain.STATUS_INITIALIZE);
 
 		blockChainDAO.insert(blockChain);
 	}

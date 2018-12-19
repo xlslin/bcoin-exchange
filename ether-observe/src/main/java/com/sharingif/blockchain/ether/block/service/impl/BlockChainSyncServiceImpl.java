@@ -1,8 +1,6 @@
 package com.sharingif.blockchain.ether.block.service.impl;
 
 
-import javax.annotation.Resource;
-
 import com.sharingif.blockchain.ether.block.dao.BlockChainSyncDAO;
 import com.sharingif.blockchain.ether.block.model.entity.BlockChainSync;
 import com.sharingif.blockchain.ether.block.service.BlockChainService;
@@ -14,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.web3j.protocol.core.methods.response.EthBlock;
 
+import javax.annotation.Resource;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -37,10 +36,16 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 	public void setEthereumBlockService(EthereumBlockService ethereumBlockService) {
 		this.ethereumBlockService = ethereumBlockService;
 	}
+	@Resource
+	public void setBlockChainService(BlockChainService blockChainService) {
+		this.blockChainService = blockChainService;
+	}
 
-	@Override
+	/**
+	 * 添加区块信息
+	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void addBlockChainInfo(BigInteger blockNumber) {
+	protected void addBlockChainInfo(BigInteger blockNumber) {
 		BlockChainSync blockChainSync = new BlockChainSync();
 		blockChainSync.setCurrentSyncBlockNumber(blockNumber);
 		blockChainSyncDAO.insert(blockChainSync);
@@ -50,9 +55,11 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 		blockChainService.initializeBlockChain(blockNumber, block.getHash());
 	}
 
-	@Override
+	/**
+	 * 修改区块信息
+	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void updateBlockChainInfo(BigInteger blockNumber) {
+	protected void updateBlockChainInfo(BigInteger blockNumber) {
 		List<BlockChainSync> blockChainSyncList = blockChainSyncDAO.queryAll();
 		BlockChainSync queryBlockChainSync = blockChainSyncList.get(0);
 
