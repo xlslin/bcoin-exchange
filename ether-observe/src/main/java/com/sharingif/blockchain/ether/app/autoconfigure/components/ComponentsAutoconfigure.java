@@ -1,17 +1,140 @@
 package com.sharingif.blockchain.ether.app.autoconfigure.components;
 
+import com.sharingif.cube.batch.core.JobService;
+import com.sharingif.cube.batch.core.handler.SimpleDispatcherHandler;
+import com.sharingif.cube.batch.core.handler.adapter.JobRequestHandlerMethodArgumentResolver;
+import com.sharingif.cube.batch.core.request.JobRequestContextResolver;
+import com.sharingif.cube.batch.core.view.JobViewResolver;
+import com.sharingif.cube.communication.view.MultiViewResolver;
+import com.sharingif.cube.communication.view.ViewResolver;
+import com.sharingif.cube.components.handler.chain.RequestLocalContextHolderChain;
+import com.sharingif.cube.core.handler.adapter.HandlerAdapter;
+import com.sharingif.cube.core.handler.adapter.HandlerMethodArgumentResolver;
+import com.sharingif.cube.core.handler.adapter.HandlerMethodHandlerAdapter;
+import com.sharingif.cube.core.handler.adapter.MultiHandlerMethodAdapter;
+import com.sharingif.cube.core.handler.bind.support.BindingInitializer;
+import com.sharingif.cube.core.handler.chain.*;
+import com.sharingif.cube.core.handler.mapping.HandlerMapping;
+import com.sharingif.cube.core.handler.mapping.MultiHandlerMapping;
+import com.sharingif.cube.core.handler.mapping.RequestMappingHandlerMapping;
 import com.sharingif.cube.security.binary.Base64Coder;
 import com.sharingif.cube.security.confidentiality.encrypt.TextEncryptor;
 import com.sharingif.cube.security.confidentiality.encrypt.aes.AESECBEncryptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 public class ComponentsAutoconfigure {
 
+    @Bean("taskScheduler")
+    public TaskScheduler createTaskScheduler() {
+        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+        threadPoolTaskScheduler.setPoolSize(200);
+        threadPoolTaskScheduler.setThreadNamePrefix("taskScheduler-");
+        return threadPoolTaskScheduler;
+    }
+
+    @Bean("multiHandlerMethodChain")
+    public MultiHandlerMethodChain createRequestHandlerMethodChains(
+            RequestLocalContextHolderChain requestLocalContextHolderChain
+            , MDCChain mdcChain
+            , MonitorPerformanceChain transactionMonitorPerformanceChain
+    ) {
+        List<HandlerMethodChain> requestHandlerMethodChains = new ArrayList<HandlerMethodChain>();
+        requestHandlerMethodChains.add(requestLocalContextHolderChain);
+        requestHandlerMethodChains.add(mdcChain);
+        requestHandlerMethodChains.add(transactionMonitorPerformanceChain);
+
+        MultiHandlerMethodChain multiHandlerMethodChain = new MultiHandlerMethodChain();
+        multiHandlerMethodChain.setChains(requestHandlerMethodChains);
+
+        return multiHandlerMethodChain;
+    }
+
+    @Bean("multiHandlerMapping")
+    public MultiHandlerMapping createMultiHandlerMapping(RequestMappingHandlerMapping vertXRequestMappingHandlerMapping) {
+        List<HandlerMapping> handlerMappings = new ArrayList<HandlerMapping>();
+        handlerMappings.add(vertXRequestMappingHandlerMapping);
+        MultiHandlerMapping multiHandlerMapping = new MultiHandlerMapping();
+        multiHandlerMapping.setHandlerMappings(handlerMappings);
+
+        return multiHandlerMapping;
+    }
+
+    @Bean("multiHandlerMethodAdapter")
+    public MultiHandlerMethodAdapter createMultiHandlerMethodAdapter(
+            BindingInitializer bindingInitializer
+            , MonitorPerformanceChain controllerMonitorPerformanceChain
+            , AnnotationHandlerMethodChain annotationHandlerMethodChain
+    ) {
+        List<HandlerMethodChain> chains = new ArrayList<HandlerMethodChain>();
+        chains.add(controllerMonitorPerformanceChain);
+        chains.add(annotationHandlerMethodChain);
+
+        MultiHandlerMethodChain controllerChains = new MultiHandlerMethodChain();
+        controllerChains.setChains(chains);
+
+        List<HandlerMethodArgumentResolver> argumentResolvers = new ArrayList<HandlerMethodArgumentResolver>();
+        argumentResolvers.add(new JobRequestHandlerMethodArgumentResolver());
+
+        HandlerMethodHandlerAdapter handlerMethodHandlerAdapter = new HandlerMethodHandlerAdapter();
+        handlerMethodHandlerAdapter.setHandlerMethodChain(controllerChains);
+        handlerMethodHandlerAdapter.setArgumentResolvers(argumentResolvers);
+        handlerMethodHandlerAdapter.setBindingInitializer(bindingInitializer);
+
+        List<HandlerAdapter> handlerAdapters = new ArrayList<HandlerAdapter>();
+        handlerAdapters.add(handlerMethodHandlerAdapter);
+        MultiHandlerMethodAdapter multiHandlerMethodAdapter = new MultiHandlerMethodAdapter();
+        multiHandlerMethodAdapter.setHandlerAdapters(handlerAdapters);
+
+        return multiHandlerMethodAdapter;
+    }
+
+    @Bean("multiViewResolver")
+    public MultiViewResolver createMultiViewResolver(JobService jobService) {
+        List<ViewResolver> viewResolvers = new ArrayList<ViewResolver>();
+        viewResolvers.add(new JobViewResolver(jobService));
+        MultiViewResolver multiViewResolver = new MultiViewResolver();
+        multiViewResolver.setViewResolvers(viewResolvers);
+
+        return multiViewResolver;
+    }
+
+    @Bean("simpleDispatcherHandler")
+    public SimpleDispatcherHandler createSimpleDispatcherHandler(
+            MultiHandlerMethodChain multiHandlerMethodChain
+            , MultiHandlerMapping multiHandlerMapping
+            , MultiHandlerMethodAdapter multiHandlerMethodAdapter
+            , MultiViewResolver multiViewResolver
+    ) {
+
+
+
+        SimpleDispatcherHandler simpleDispatcherHandler = new SimpleDispatcherHandler();
+        simpleDispatcherHandler.setHandlerMethodChain(multiHandlerMethodChain);
+        simpleDispatcherHandler.setRequestContextResolver(new JobRequestContextResolver());
+        simpleDispatcherHandler.setMultiHandlerMapping(multiHandlerMapping);
+        simpleDispatcherHandler.setMultiHandlerMethodAdapter(multiHandlerMethodAdapter);
+        simpleDispatcherHandler.setMultiViewResolver(multiViewResolver);
+        return simpleDispatcherHandler;
+    }
+
+    @Bean("workThreadPoolTaskExecutor")
+    public ThreadPoolTaskExecutor createThreadPoolTaskExecutor(@Value("${work.max.pool.size}") int poolSize) {
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+
+        threadPoolTaskExecutor.setMaxPoolSize(poolSize);
+
+        return threadPoolTaskExecutor;
+    }
 
     @Bean("propertyTextEncryptor")
     public TextEncryptor createPropertyTextEncryptor(@Value("${property.key}") String key, Base64Coder base64Coder) throws UnsupportedEncodingException {

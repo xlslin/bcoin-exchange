@@ -47,7 +47,7 @@ public class Bootstrap {
     @EnableTransactionManagement
     @EnableAutoConfiguration
     @ComponentScan(
-            basePackages = "com.sharingif.blockchain.ether.*.dao,com.sharingif.blockchain.ether.*.service,com.sharingif.blockchain.ether.app.autoconfigure,com.sharingif.cube.spring.boot"
+            basePackages = "com.sharingif.blockchain.ether.*.dao,com.sharingif.blockchain.ether.*.service,com.sharingif.blockchain.ether.*.scheduled,com.sharingif.blockchain.ether.app.autoconfigure,com.sharingif.cube.spring.boot"
             ,nameGenerator = ExtendedAnnotationBeanNameGenerator.class
             ,useDefaultFilters= false
             ,includeFilters={

@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="batchJob">
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="batchJobColumns">
+    	<if test="null!=id">
+    		and ID = #{id}
+    	</if>
+    	<if test="null!=parentJobId">
+    		and PARENT_JOB_ID = #{parentJobId}
+    	</if>
+    	<if test="null!=lookupPath">
+    		and LOOKUP_PATH = #{lookupPath}
+    	</if>
+    	<if test="null!=planExecuteTime">
+    		and PLAN_EXECUTE_TIME = #{planExecuteTime}
+    	</if>
+    	<if test="null!=actualExecuteTime">
+    		and ACTUAL_EXECUTE_TIME = #{actualExecuteTime}
+    	</if>
+    	<if test="null!=executeCount">
+    		and EXECUTE_COUNT = #{executeCount}
+    	</if>
+    	<if test="null!=dataId">
+    		and DATA_ID = #{dataId}
+    	</if>
+    	<if test="null!=createTime">
+    		and CREATE_TIME = #{createTime}
+    	</if>
+    	<if test="null!=status">
+    		and STATUS = #{status}
+    	</if>
+    	<if test="null!=errorMessageCode">
+    		and ERROR_MESSAGE_CODE = #{errorMessageCode}
+    	</if>
+    	<if test="null!=errorLocalizedMessage">
+    		and ERROR_LOCALIZED_MESSAGE = #{errorLocalizedMessage}
+    	</if>
+    	<if test="null!=errorCause">
+    		and ERROR_CAUSE = #{errorCause}
+    	</if>
+	</sql>
+	
+	<sql id="batchJobSetColumns">
+		    <if test="null!=id">
+		    ID = #{id},
+		    </if>
+		    <if test="null!=parentJobId">
+		    PARENT_JOB_ID = #{parentJobId},
+		    </if>
+		    <if test="null!=lookupPath">
+		    LOOKUP_PATH = #{lookupPath},
+		    </if>
+		    <if test="null!=planExecuteTime">
+		    PLAN_EXECUTE_TIME = #{planExecuteTime},
+		    </if>
+		    <if test="null!=actualExecuteTime">
+		    ACTUAL_EXECUTE_TIME = #{actualExecuteTime},
+		    </if>
+		    <if test="null!=executeCount">
+		    EXECUTE_COUNT = #{executeCount},
+		    </if>
+		    <if test="null!=dataId">
+		    DATA_ID = #{dataId},
+		    </if>
+		    <if test="null!=createTime">
+		    CREATE_TIME = #{createTime},
+		    </if>
+		    <if test="null!=status">
+		    STATUS = #{status},
+		    </if>
+		    <if test="null!=errorMessageCode">
+		    ERROR_MESSAGE_CODE = #{errorMessageCode},
+		    </if>
+		    <if test="null!=errorLocalizedMessage">
+		    ERROR_LOCALIZED_MESSAGE = #{errorLocalizedMessage},
+		    </if>
+		    <if test="null!=errorCause">
+		    ERROR_CAUSE = #{errorCause},
+		    </if>
+	</sql>
+
+	<resultMap id="batchJobResultMap" type="com.sharingif.blockchain.ether.job.entity.BatchJob">
+        <result property="id" column="ID"/>
+        <result property="parentJobId" column="PARENT_JOB_ID"/>
+        <result property="lookupPath" column="LOOKUP_PATH"/>
+        <result property="planExecuteTime" column="PLAN_EXECUTE_TIME"/>
+        <result property="actualExecuteTime" column="ACTUAL_EXECUTE_TIME"/>
+        <result property="executeCount" column="EXECUTE_COUNT"/>
+        <result property="dataId" column="DATA_ID"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="status" column="STATUS"/>
+        <result property="errorMessageCode" column="ERROR_MESSAGE_CODE"/>
+        <result property="errorLocalizedMessage" column="ERROR_LOCALIZED_MESSAGE"/>
+        <result property="errorCause" column="ERROR_CAUSE"/>
+	</resultMap>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert">
+        INSERT INTO BATCH_JOB (
+        	ID
+        	,PARENT_JOB_ID
+        	,LOOKUP_PATH
+        	,PLAN_EXECUTE_TIME
+        	,ACTUAL_EXECUTE_TIME
+        	,EXECUTE_COUNT
+        	,DATA_ID
+        	,CREATE_TIME
+        	,STATUS
+        	,ERROR_MESSAGE_CODE
+        	,ERROR_LOCALIZED_MESSAGE
+        	,ERROR_CAUSE
+        ) VALUES (
+        	#{id}
+        	,#{parentJobId}
+        	,#{lookupPath}
+        	,#{planExecuteTime}
+        	,#{actualExecuteTime}
+        	,#{executeCount}
+        	,#{dataId}
+        	,#{createTime}
+        	,#{status}
+        	,#{errorMessageCode}
+        	,#{errorLocalizedMessage}
+        	,#{errorCause}
+        )
+	</insert>
+	
+	<delete id="deleteById">
+	    DELETE FROM
+	    	BATCH_JOB 
+	    WHERE
+	    ID = #{id} 
+    </delete>
+    
+    <delete id="deleteByCondition">
+	    DELETE FROM
+	    	BATCH_JOB 
+	    WHERE
+	    	1=1
+		    <include refid="batchJobColumns" />
+    </delete>
+    
+	<update id="updateById">
+	    UPDATE
+	    	BATCH_JOB 
+        <set>
+	        <include refid="batchJobSetColumns" />
+		</set>
+	    WHERE
+	    ID = #{id} 
+	</update>
+	
+    <select id="queryById" resultMap="batchJobResultMap">
+		SELECT
+			ID
+			,PARENT_JOB_ID
+			,LOOKUP_PATH
+			,PLAN_EXECUTE_TIME
+			,ACTUAL_EXECUTE_TIME
+			,EXECUTE_COUNT
+			,DATA_ID
+			,CREATE_TIME
+			,STATUS
+			,ERROR_MESSAGE_CODE
+			,ERROR_LOCALIZED_MESSAGE
+			,ERROR_CAUSE
+		FROM
+			BATCH_JOB 
+		WHERE 
+			ID = #{id} 
+	</select>
+	
+	<select id="queryList" resultMap="batchJobResultMap">
+		SELECT
+			ID
+			,PARENT_JOB_ID
+			,LOOKUP_PATH
+			,PLAN_EXECUTE_TIME
+			,ACTUAL_EXECUTE_TIME
+			,EXECUTE_COUNT
+			,DATA_ID
+			,CREATE_TIME
+			,STATUS
+			,ERROR_MESSAGE_CODE
+			,ERROR_LOCALIZED_MESSAGE
+			,ERROR_CAUSE
+		FROM
+			BATCH_JOB
+		WHERE
+			1=1
+			<include refid="batchJobColumns" />
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryAll" resultMap="batchJobResultMap">
+		SELECT
+			ID
+			,PARENT_JOB_ID
+			,LOOKUP_PATH
+			,PLAN_EXECUTE_TIME
+			,ACTUAL_EXECUTE_TIME
+			,EXECUTE_COUNT
+			,DATA_ID
+			,CREATE_TIME
+			,STATUS
+			,ERROR_MESSAGE_CODE
+			,ERROR_LOCALIZED_MESSAGE
+			,ERROR_CAUSE
+		FROM
+			BATCH_JOB 
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryPaginationListCount" resultType="Integer">
+			SELECT
+				COUNT(0)
+			FROM
+				BATCH_JOB
+			WHERE
+				1=1
+		<include refid="batchJobColumns" />
+	</select>
+
+	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="batchJobResultMap">
+		SELECT
+			ID
+			,PARENT_JOB_ID
+			,LOOKUP_PATH
+			,PLAN_EXECUTE_TIME
+			,ACTUAL_EXECUTE_TIME
+			,EXECUTE_COUNT
+			,CREATE_TIME
+			,STATUS
+			,ERROR_MESSAGE_CODE
+			,ERROR_LOCALIZED_MESSAGE
+			,ERROR_CAUSE
+		FROM
+			BATCH_JOB
+		WHERE
+			1=1
+			AND STATUS = #{status}
+
+		ORDER BY
+			ID
+	</select>
+
+	<update id="updateStatusByStatus">
+		<![CDATA[
+	    UPDATE
+	    	BATCH_JOB
+	    SET
+	        STATUS = #{updateStatus}
+	    WHERE
+			STATUS = #{currentStatus}
+	]]>
+	</update>
+
+</mapper>
+
