@@ -4,6 +4,7 @@ import com.sharingif.cube.context.annotation.ExtendedAnnotationBeanNameGenerator
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
@@ -44,7 +45,7 @@ public class Bootstrap {
                 }).run(args);
     }
 
-    @EnableTransactionManagement
+    @EnableTransactionManagement(mode = AdviceMode.ASPECTJ)
     @EnableAutoConfiguration
     @ComponentScan(
             basePackages = "com.sharingif.blockchain.ether.*.dao,com.sharingif.blockchain.ether.*.service,com.sharingif.blockchain.ether.*.scheduled,com.sharingif.blockchain.ether.app.autoconfigure,com.sharingif.cube.spring.boot"

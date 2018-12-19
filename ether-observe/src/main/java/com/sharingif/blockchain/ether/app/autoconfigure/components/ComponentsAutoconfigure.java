@@ -26,6 +26,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.http.HttpService;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -59,10 +61,18 @@ public class ComponentsAutoconfigure {
         return multiHandlerMethodChain;
     }
 
+    @Bean("requestMappingHandlerMapping")
+    public RequestMappingHandlerMapping createRequestMappingHandlerMapping() {
+        RequestMappingHandlerMapping handlerMapping = new RequestMappingHandlerMapping();
+        handlerMapping.setUseSuffixPatternMatch(false);
+
+        return handlerMapping;
+    }
+
     @Bean("multiHandlerMapping")
-    public MultiHandlerMapping createMultiHandlerMapping(RequestMappingHandlerMapping vertXRequestMappingHandlerMapping) {
+    public MultiHandlerMapping createMultiHandlerMapping(RequestMappingHandlerMapping requestMappingHandlerMapping) {
         List<HandlerMapping> handlerMappings = new ArrayList<HandlerMapping>();
-        handlerMappings.add(vertXRequestMappingHandlerMapping);
+        handlerMappings.add(requestMappingHandlerMapping);
         MultiHandlerMapping multiHandlerMapping = new MultiHandlerMapping();
         multiHandlerMapping.setHandlerMappings(handlerMappings);
 
@@ -142,6 +152,11 @@ public class ComponentsAutoconfigure {
         AESECBEncryptor encryptor = new AESECBEncryptor(keysByte, base64Coder);
 
         return encryptor;
+    }
+
+    @Bean("web3j")
+    public Web3j createWeb3j(@Value("${eth.web3j.address}")String ethWeb3jAddress) {
+        return Web3j.build(new HttpService(ethWeb3jAddress));
     }
 
 }
