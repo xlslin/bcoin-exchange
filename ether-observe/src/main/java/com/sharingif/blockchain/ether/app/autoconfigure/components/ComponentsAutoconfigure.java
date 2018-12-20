@@ -1,8 +1,10 @@
 package com.sharingif.blockchain.ether.app.autoconfigure.components;
 
+import com.sharingif.cube.batch.core.JobConfig;
 import com.sharingif.cube.batch.core.JobService;
 import com.sharingif.cube.batch.core.handler.SimpleDispatcherHandler;
 import com.sharingif.cube.batch.core.handler.adapter.JobRequestHandlerMethodArgumentResolver;
+import com.sharingif.cube.batch.core.handler.chain.JobViewHandlerMethodChain;
 import com.sharingif.cube.batch.core.request.JobRequestContextResolver;
 import com.sharingif.cube.batch.core.view.JobViewResolver;
 import com.sharingif.cube.communication.view.MultiViewResolver;
@@ -20,6 +22,7 @@ import com.sharingif.cube.core.handler.mapping.RequestMappingHandlerMapping;
 import com.sharingif.cube.security.binary.Base64Coder;
 import com.sharingif.cube.security.confidentiality.encrypt.TextEncryptor;
 import com.sharingif.cube.security.confidentiality.encrypt.aes.AESECBEncryptor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +35,7 @@ import org.web3j.protocol.http.HttpService;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Configuration
 public class ComponentsAutoconfigure {
@@ -84,9 +88,15 @@ public class ComponentsAutoconfigure {
             BindingInitializer bindingInitializer
             , MonitorPerformanceChain controllerMonitorPerformanceChain
             , AnnotationHandlerMethodChain annotationHandlerMethodChain
+            , @Qualifier("allJobConfig") Map<String, JobConfig> allJobConfig
     ) {
+
+        JobViewHandlerMethodChain jobViewHandlerMethodChain = new JobViewHandlerMethodChain();
+        jobViewHandlerMethodChain.setAllJobConfig(allJobConfig);
+
         List<HandlerMethodChain> chains = new ArrayList<HandlerMethodChain>();
         chains.add(controllerMonitorPerformanceChain);
+        chains.add(jobViewHandlerMethodChain);
         chains.add(annotationHandlerMethodChain);
 
         MultiHandlerMethodChain controllerChains = new MultiHandlerMethodChain();

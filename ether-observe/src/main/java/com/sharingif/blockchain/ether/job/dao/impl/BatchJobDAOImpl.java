@@ -2,7 +2,7 @@ package com.sharingif.blockchain.ether.job.dao.impl;
 
 import com.sharingif.blockchain.ether.app.dao.impl.BaseDAOImpl;
 import com.sharingif.blockchain.ether.job.dao.BatchJobDAO;
-import com.sharingif.blockchain.ether.job.entity.BatchJob;
+import com.sharingif.blockchain.ether.job.model.entity.BatchJob;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;

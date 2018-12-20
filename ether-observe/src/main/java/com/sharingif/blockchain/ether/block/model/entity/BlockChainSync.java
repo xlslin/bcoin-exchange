@@ -1,12 +1,13 @@
 package com.sharingif.blockchain.ether.block.model.entity;
 
 
+import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
 import com.sharingif.cube.components.sequence.Sequence;
 
 import java.math.BigInteger;
 import java.util.Date;
 
-public class BlockChainSync implements java.io.Serializable {
+public class BlockChainSync implements java.io.Serializable, IObjectDateOperationHistory {
 	
 	//columns START
     /**

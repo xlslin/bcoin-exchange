@@ -1,6 +1,6 @@
 package com.sharingif.blockchain.ether.job.service.impl;
 
-import com.sharingif.blockchain.ether.job.entity.BatchJob;
+import com.sharingif.blockchain.ether.job.model.entity.BatchJob;
 import com.sharingif.blockchain.ether.job.service.BatchJobService;
 import com.sharingif.cube.batch.core.JobModel;
 import com.sharingif.cube.batch.core.JobService;
@@ -18,6 +18,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -85,17 +86,33 @@ public class JobServiceImpl implements JobService, InitializingBean {
 
     @Override
     public void add(String jobId, JobModel jobModel) {
+        BatchJob batchJob = new BatchJob();
+        batchJob.setLookupPath(jobModel.getLookupPath());
+        batchJob.setPlanExecuteTime(jobModel.getPlanExecuteTime());
+        batchJob.setExecuteCount(0);
+        batchJob.setDataId(jobModel.getDataId());
+        batchJob.setStatus(BatchJob.STATUS_IN_QUEUE);
 
+        batchJobService.add(batchJob);
     }
 
     @Override
     public void add(String jobId, List<JobModel> jobModelList) {
-
+        for(JobModel jobModel : jobModelList) {
+            add(jobId, jobModel);
+        }
     }
 
     @Override
     public void success(String jobId) {
+        BatchJob queryBatchJob = batchJobService.getById(jobId);
 
+        BatchJob updateBatchJob = new BatchJob();
+        updateBatchJob.setActualExecuteTime(new Date());
+        updateBatchJob.setStatus(BatchJob.STATUS_SOLVED);
+        updateBatchJob.setExecuteCount(queryBatchJob.getExecuteCount()+1);
+
+        batchJobService.updateById(updateBatchJob);
     }
 
     @Override

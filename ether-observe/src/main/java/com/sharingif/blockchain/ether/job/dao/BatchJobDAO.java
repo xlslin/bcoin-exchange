@@ -2,7 +2,7 @@ package com.sharingif.blockchain.ether.job.dao;
 
 
 import com.sharingif.blockchain.ether.app.dao.BaseDAO;
-import com.sharingif.blockchain.ether.job.entity.BatchJob;
+import com.sharingif.blockchain.ether.job.model.entity.BatchJob;
 
 /**
  * BatchJobDAO

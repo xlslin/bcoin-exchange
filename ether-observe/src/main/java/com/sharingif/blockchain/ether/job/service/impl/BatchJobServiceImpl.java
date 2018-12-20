@@ -1,10 +1,11 @@
 package com.sharingif.blockchain.ether.job.service.impl;
 
 import com.sharingif.blockchain.ether.job.dao.BatchJobDAO;
-import com.sharingif.blockchain.ether.job.entity.BatchJob;
+import com.sharingif.blockchain.ether.job.model.entity.BatchJob;
 import com.sharingif.blockchain.ether.job.service.BatchJobService;
 import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
 import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
+import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,12 +20,13 @@ import java.util.List;
  * 2017/11/29 下午5:57
  */
 @Service
-public class BatchJobServiceImpl implements BatchJobService {
+public class BatchJobServiceImpl extends BaseServiceImpl<BatchJob, String> implements BatchJobService {
 
     private BatchJobDAO batchJobDAO;
 
     @Resource
     public void setBatchJobDAO(BatchJobDAO batchJobDAO) {
+        super.setBaseDAO(batchJobDAO);
         this.batchJobDAO = batchJobDAO;
     }
 

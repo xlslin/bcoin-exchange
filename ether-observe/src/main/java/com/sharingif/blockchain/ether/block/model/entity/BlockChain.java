@@ -1,12 +1,14 @@
 package com.sharingif.blockchain.ether.block.model.entity;
 
 
+import com.sharingif.cube.batch.core.IDataId;
+import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
 import com.sharingif.cube.components.sequence.Sequence;
 
 import java.math.BigInteger;
 import java.util.Date;
 
-public class BlockChain implements java.io.Serializable {
+public class BlockChain implements java.io.Serializable, IObjectDateOperationHistory, IDataId {
 
 	/**
 	 * 状态(CSH:初始化)
@@ -28,7 +30,7 @@ public class BlockChain implements java.io.Serializable {
 	 * 状态(YZSB:验证失败)
 	 */
 	public static final String STATUS_VERIFY_FAILED = "YZSB";
-	
+
 	//columns START
     /**
      * id			db_column: ID 
@@ -60,6 +62,11 @@ public class BlockChain implements java.io.Serializable {
      */	
 	private Date modifyTime;
 	//columns END
+
+	@Override
+	public String getDateId() {
+		return getId();
+	}
 
 	public void setId(java.lang.String id) {
 		this.id = id;
@@ -115,6 +122,6 @@ public class BlockChain implements java.io.Serializable {
 					.append("ModifyTime=").append(getModifyTime())
 		.append("]").toString();
 	}
-	
+
 }
 

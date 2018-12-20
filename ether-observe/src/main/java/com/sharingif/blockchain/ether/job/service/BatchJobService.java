@@ -1,7 +1,8 @@
 package com.sharingif.blockchain.ether.job.service;
 
 
-import com.sharingif.blockchain.ether.job.entity.BatchJob;
+import com.sharingif.blockchain.ether.job.model.entity.BatchJob;
+import com.sharingif.cube.support.service.base.IBaseService;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * @since v1.0
  * 2017/11/29 下午5:57
  */
-public interface BatchJobService {
+public interface BatchJobService extends IBaseService<BatchJob, String> {
 
     /**
      * 查询待处理Job
