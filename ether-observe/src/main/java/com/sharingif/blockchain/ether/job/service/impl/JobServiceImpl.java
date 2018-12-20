@@ -91,7 +91,7 @@ public class JobServiceImpl implements JobService, InitializingBean {
         batchJob.setPlanExecuteTime(jobModel.getPlanExecuteTime());
         batchJob.setExecuteCount(0);
         batchJob.setDataId(jobModel.getDataId());
-        batchJob.setStatus(BatchJob.STATUS_IN_QUEUE);
+        batchJob.setStatus(BatchJob.STATUS_PENDING);
 
         batchJobService.add(batchJob);
     }
@@ -123,7 +123,7 @@ public class JobServiceImpl implements JobService, InitializingBean {
     @Override
     public synchronized void putQueue() {
 
-        if(queue.size()>=queueSize) {
+        if(queue.size() >= queueSize) {
             return;
         }
 

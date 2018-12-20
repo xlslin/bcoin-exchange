@@ -21,6 +21,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=hash">
     		and HASH = #{hash}
     	</if>
+    	<if test="null!=blockCreateTime">
+    		and BLOCK_CREATE_TIME = #{blockCreateTime}
+    	</if>
     	<if test="null!=status">
     		and STATUS = #{status}
     	</if>
@@ -45,6 +48,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=hash">
 		    HASH = #{hash},
 		    </if>
+		    <if test="null!=blockCreateTime">
+		    BLOCK_CREATE_TIME = #{blockCreateTime},
+		    </if>
 		    <if test="null!=status">
 		    STATUS = #{status},
 		    </if>
@@ -61,6 +67,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         <result property="blockNumber" column="BLOCK_NUMBER"/>
         <result property="verifyBlockNumber" column="VERIFY_BLOCK_NUMBER"/>
         <result property="hash" column="HASH"/>
+        <result property="blockCreateTime" column="BLOCK_CREATE_TIME"/>
         <result property="status" column="STATUS"/>
         <result property="createTime" column="CREATE_TIME"/>
         <result property="modifyTime" column="MODIFY_TIME"/>
@@ -73,6 +80,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,BLOCK_NUMBER
         	,VERIFY_BLOCK_NUMBER
         	,HASH
+        	,BLOCK_CREATE_TIME
         	,STATUS
         	,CREATE_TIME
         	,MODIFY_TIME
@@ -81,6 +89,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,#{blockNumber}
         	,#{verifyBlockNumber}
         	,#{hash}
+        	,#{blockCreateTime}
         	,#{status}
         	,#{createTime}
         	,#{modifyTime}
@@ -118,6 +127,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,BLOCK_NUMBER
 			,VERIFY_BLOCK_NUMBER
 			,HASH
+			,BLOCK_CREATE_TIME
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME
@@ -133,6 +143,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,BLOCK_NUMBER
 			,VERIFY_BLOCK_NUMBER
 			,HASH
+			,BLOCK_CREATE_TIME
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME
@@ -151,6 +162,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,BLOCK_NUMBER
 			,VERIFY_BLOCK_NUMBER
 			,HASH
+			,BLOCK_CREATE_TIME
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME
@@ -176,6 +188,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,BLOCK_NUMBER
 			,VERIFY_BLOCK_NUMBER
 			,HASH
+			,BLOCK_CREATE_TIME
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME

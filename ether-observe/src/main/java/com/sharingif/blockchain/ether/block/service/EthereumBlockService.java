@@ -23,6 +23,18 @@ public interface EthereumBlockService {
      * @return
      */
     Web3j getWeb3j();
+    /**
+     * 返回erc20合约服务
+     * @return
+     */
+    Erc20ContractService getErc20ContractService();
+
+    /**
+     * 是否是合约地址
+     * @param address
+     * @return
+     */
+    boolean isContractAddress(String address);
 
     /**
      * 获得最新区块号
@@ -43,7 +55,7 @@ public interface EthereumBlockService {
      * @param transactionHash
      * @return
      */
-    TransactionReceipt getTransactionReceipt(String transactionHash) throws IOException;
+    TransactionReceipt getTransactionReceipt(String transactionHash);
 
     /**
      * 查询eth余额

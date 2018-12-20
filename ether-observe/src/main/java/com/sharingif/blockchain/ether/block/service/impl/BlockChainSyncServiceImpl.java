@@ -52,7 +52,7 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 
 		EthBlock.Block block = ethereumBlockService.getBlock(blockNumber, false);
 
-		blockChainService.initializeBlockChain(blockNumber, block.getHash());
+		blockChainService.initializeBlockChain(blockNumber, block.getHash(), block.getTimestamp());
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 
 		EthBlock.Block block = ethereumBlockService.getBlock(blockNumber, false);
 
-		blockChainService.initializeBlockChain(blockNumber, block.getHash());
+		blockChainService.initializeBlockChain(blockNumber, block.getHash(), block.getTimestamp());
 	}
 
 	@Override

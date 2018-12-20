@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="deposit">
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="depositColumns">
+    	<if test="null!=id">
+    		and ID = #{id}
+    	</if>
+    	<if test="null!=transactionId">
+    		and TRANSACTION_ID = #{transactionId}
+    	</if>
+    	<if test="null!=coinType">
+    		and COIN_TYPE = #{coinType}
+    	</if>
+    	<if test="null!=txFrom">
+    		and TX_FROM = #{txFrom}
+    	</if>
+    	<if test="null!=txTo">
+    		and TX_TO = #{txTo}
+    	</if>
+    	<if test="null!=amount">
+    		and AMOUNT = #{amount}
+    	</if>
+    	<if test="null!=txHash">
+    		and TX_HASH = #{txHash}
+    	</if>
+    	<if test="null!=status">
+    		and STATUS = #{status}
+    	</if>
+    	<if test="null!=createTime">
+    		and CREATE_TIME = #{createTime}
+    	</if>
+    	<if test="null!=modifyTime">
+    		and MODIFY_TIME = #{modifyTime}
+    	</if>
+	</sql>
+	
+	<sql id="depositSetColumns">
+		    <if test="null!=id">
+		    ID = #{id},
+		    </if>
+		    <if test="null!=transactionId">
+		    TRANSACTION_ID = #{transactionId},
+		    </if>
+		    <if test="null!=coinType">
+		    COIN_TYPE = #{coinType},
+		    </if>
+		    <if test="null!=txFrom">
+		    TX_FROM = #{txFrom},
+		    </if>
+		    <if test="null!=txTo">
+		    TX_TO = #{txTo},
+		    </if>
+		    <if test="null!=amount">
+		    AMOUNT = #{amount},
+		    </if>
+		    <if test="null!=txHash">
+		    TX_HASH = #{txHash},
+		    </if>
+		    <if test="null!=status">
+		    STATUS = #{status},
+		    </if>
+		    <if test="null!=createTime">
+		    CREATE_TIME = #{createTime},
+		    </if>
+		    <if test="null!=modifyTime">
+		    MODIFY_TIME = #{modifyTime},
+		    </if>
+	</sql>
+
+	<resultMap id="depositResultMap" type="com.sharingif.blockchain.ether.deposit.model.entity.Deposit">
+        <result property="id" column="ID"/>
+        <result property="transactionId" column="TRANSACTION_ID"/>
+        <result property="coinType" column="COIN_TYPE"/>
+        <result property="txFrom" column="TX_FROM"/>
+        <result property="txTo" column="TX_TO"/>
+        <result property="amount" column="AMOUNT"/>
+        <result property="txHash" column="TX_HASH"/>
+        <result property="status" column="STATUS"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+	</resultMap>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert">
+        INSERT INTO DEPOSIT (
+        	ID
+        	,TRANSACTION_ID
+        	,COIN_TYPE
+        	,TX_FROM
+        	,TX_TO
+        	,AMOUNT
+        	,TX_HASH
+        	,STATUS
+        	,CREATE_TIME
+        	,MODIFY_TIME
+        ) VALUES (
+        	#{id}
+        	,#{transactionId}
+        	,#{coinType}
+        	,#{txFrom}
+        	,#{txTo}
+        	,#{amount}
+        	,#{txHash}
+        	,#{status}
+        	,#{createTime}
+        	,#{modifyTime}
+        )
+	</insert>
+	
+	<delete id="deleteById">
+	    DELETE FROM
+	    	DEPOSIT 
+	    WHERE
+	    ID = #{id} 
+    </delete>
+    
+    <delete id="deleteByCondition">
+	    DELETE FROM
+	    	DEPOSIT 
+	    WHERE
+	    	1=1
+		    <include refid="depositColumns" />
+    </delete>
+    
+	<update id="updateById">
+	    UPDATE
+	    	DEPOSIT 
+        <set>
+	        <include refid="depositSetColumns" />
+		</set>
+	    WHERE
+	    ID = #{id} 
+	</update>
+	
+    <select id="queryById" resultMap="depositResultMap">
+		SELECT
+			ID
+			,TRANSACTION_ID
+			,COIN_TYPE
+			,TX_FROM
+			,TX_TO
+			,AMOUNT
+			,TX_HASH
+			,STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			DEPOSIT 
+		WHERE 
+			ID = #{id} 
+	</select>
+	
+	<select id="queryList" resultMap="depositResultMap">
+		SELECT
+			ID
+			,TRANSACTION_ID
+			,COIN_TYPE
+			,TX_FROM
+			,TX_TO
+			,AMOUNT
+			,TX_HASH
+			,STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			DEPOSIT
+		WHERE
+			1=1
+			<include refid="depositColumns" />
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryAll" resultMap="depositResultMap">
+		SELECT
+			ID
+			,TRANSACTION_ID
+			,COIN_TYPE
+			,TX_FROM
+			,TX_TO
+			,AMOUNT
+			,TX_HASH
+			,STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			DEPOSIT 
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryPaginationListCount" resultType="Integer">
+		SELECT
+			COUNT(0)
+		FROM
+			DEPOSIT 
+		WHERE
+			1=1 
+			<include refid="depositColumns" />
+	</select>
+	
+	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="depositResultMap">
+		SELECT
+			ID
+			,TRANSACTION_ID
+			,COIN_TYPE
+			,TX_FROM
+			,TX_TO
+			,AMOUNT
+			,TX_HASH
+			,STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			DEPOSIT
+		WHERE
+			1=1
+			<include refid="depositColumns" />
+		ORDER BY
+			ID
+	</select>
+	
+</mapper>
+

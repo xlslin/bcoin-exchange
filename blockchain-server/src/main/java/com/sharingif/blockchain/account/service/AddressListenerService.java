@@ -2,6 +2,8 @@ package com.sharingif.blockchain.account.service;
 
 
 import com.sharingif.blockchain.account.model.entity.AddressListener;
+import com.sharingif.blockchain.api.account.entity.AddressListenerIsWatchReq;
+import com.sharingif.blockchain.api.account.entity.AddressListenerIsWatchRsp;
 import com.sharingif.cube.support.service.base.IBaseService;
 
 
@@ -12,5 +14,12 @@ public interface AddressListenerService extends IBaseService<AddressListener, ja
      * @param address
      */
     void add(String address);
+
+    /**
+     * 判断地址是否是监听地址
+     * @param req
+     * @return
+     */
+    AddressListenerIsWatchRsp isWatch(AddressListenerIsWatchReq req);
 
 }

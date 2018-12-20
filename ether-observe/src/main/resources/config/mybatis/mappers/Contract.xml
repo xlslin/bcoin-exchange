@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="contract">
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="contractColumns">
+    	<if test="null!=contractAddress">
+    		and CONTRACT_ADDRESS = #{contractAddress}
+    	</if>
+    	<if test="null!=name">
+    		and NAME = #{name}
+    	</if>
+    	<if test="null!=symbol">
+    		and SYMBOL = #{symbol}
+    	</if>
+    	<if test="null!=decimals">
+    		and DECIMALS = #{decimals}
+    	</if>
+    	<if test="null!=totalsupply">
+    		and TOTALSUPPLY = #{totalsupply}
+    	</if>
+    	<if test="null!=createTime">
+    		and CREATE_TIME = #{createTime}
+    	</if>
+    	<if test="null!=modifyTime">
+    		and MODIFY_TIME = #{modifyTime}
+    	</if>
+	</sql>
+	
+	<sql id="contractSetColumns">
+		    <if test="null!=contractAddress">
+		    CONTRACT_ADDRESS = #{contractAddress},
+		    </if>
+		    <if test="null!=name">
+		    NAME = #{name},
+		    </if>
+		    <if test="null!=symbol">
+		    SYMBOL = #{symbol},
+		    </if>
+		    <if test="null!=decimals">
+		    DECIMALS = #{decimals},
+		    </if>
+		    <if test="null!=totalsupply">
+		    TOTALSUPPLY = #{totalsupply},
+		    </if>
+		    <if test="null!=createTime">
+		    CREATE_TIME = #{createTime},
+		    </if>
+		    <if test="null!=modifyTime">
+		    MODIFY_TIME = #{modifyTime},
+		    </if>
+	</sql>
+
+	<resultMap id="contractResultMap" type="com.sharingif.blockchain.ether.block.model.entity.Contract">
+        <result property="contractAddress" column="CONTRACT_ADDRESS"/>
+        <result property="name" column="NAME"/>
+        <result property="symbol" column="SYMBOL"/>
+        <result property="decimals" column="DECIMALS"/>
+        <result property="totalsupply" column="TOTALSUPPLY"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+	</resultMap>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert">
+        INSERT INTO CONTRACT (
+        	CONTRACT_ADDRESS
+        	,NAME
+        	,SYMBOL
+        	,DECIMALS
+        	,TOTALSUPPLY
+        	,CREATE_TIME
+        	,MODIFY_TIME
+        ) VALUES (
+        	#{contractAddress}
+        	,#{name}
+        	,#{symbol}
+        	,#{decimals}
+        	,#{totalsupply}
+        	,#{createTime}
+        	,#{modifyTime}
+        )
+	</insert>
+	
+	<delete id="deleteById">
+	    DELETE FROM
+	    	CONTRACT 
+	    WHERE
+	    CONTRACT_ADDRESS = #{id} 
+    </delete>
+    
+    <delete id="deleteByCondition">
+	    DELETE FROM
+	    	CONTRACT 
+	    WHERE
+	    	1=1
+		    <include refid="contractColumns" />
+    </delete>
+    
+	<update id="updateById">
+	    UPDATE
+	    	CONTRACT 
+        <set>
+	        <include refid="contractSetColumns" />
+		</set>
+	    WHERE
+	    CONTRACT_ADDRESS = #{contractAddress} 
+	</update>
+	
+    <select id="queryById" resultMap="contractResultMap">
+		SELECT
+			CONTRACT_ADDRESS
+			,NAME
+			,SYMBOL
+			,DECIMALS
+			,TOTALSUPPLY
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			CONTRACT 
+		WHERE 
+			CONTRACT_ADDRESS = #{id} 
+	</select>
+	
+	<select id="queryList" resultMap="contractResultMap">
+		SELECT
+			CONTRACT_ADDRESS
+			,NAME
+			,SYMBOL
+			,DECIMALS
+			,TOTALSUPPLY
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			CONTRACT
+		WHERE
+			1=1
+			<include refid="contractColumns" />
+		ORDER BY
+			CONTRACT_ADDRESS
+	</select>
+	
+	<select id="queryAll" resultMap="contractResultMap">
+		SELECT
+			CONTRACT_ADDRESS
+			,NAME
+			,SYMBOL
+			,DECIMALS
+			,TOTALSUPPLY
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			CONTRACT 
+		ORDER BY
+			CONTRACT_ADDRESS
+	</select>
+	
+	<select id="queryPaginationListCount" resultType="Integer">
+		SELECT
+			COUNT(0)
+		FROM
+			CONTRACT 
+		WHERE
+			1=1 
+			<include refid="contractColumns" />
+	</select>
+	
+	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="contractResultMap">
+		SELECT
+			CONTRACT_ADDRESS
+			,NAME
+			,SYMBOL
+			,DECIMALS
+			,TOTALSUPPLY
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			CONTRACT
+		WHERE
+			1=1
+			<include refid="contractColumns" />
+		ORDER BY
+			CONTRACT_ADDRESS
+	</select>
+	
+</mapper>
+

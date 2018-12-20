@@ -1,5 +1,6 @@
 package com.sharingif.blockchain.ether.block.service.impl;
 
+import com.sharingif.blockchain.ether.block.service.Erc20ContractService;
 import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
 import com.sharingif.cube.core.exception.CubeRuntimeException;
 import org.slf4j.Logger;
@@ -28,10 +29,38 @@ public class EthereumBlockServiceImpl implements EthereumBlockService {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private Web3j web3j;
+    private Erc20ContractService erc20ContractService;
 
+    @Resource
+    public void setWeb3j(Web3j web3j) {
+        this.web3j = web3j;
+    }
     @Override
     public Web3j getWeb3j() {
         return web3j;
+    }
+    @Resource
+    public void setErc20ContractService(Erc20ContractService erc20ContractService) {
+        this.erc20ContractService = erc20ContractService;
+    }
+    @Override
+    public Erc20ContractService getErc20ContractService() {
+        return erc20ContractService;
+    }
+
+    @Override
+    public boolean isContractAddress(String address) {
+        try {
+            String code = web3j.ethGetCode(address, DefaultBlockParameterName.LATEST).send().getCode();
+            if("0x".equals(code)) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch (IOException e) {
+            logger.error("is contract address error", e);
+            throw new CubeRuntimeException(e);
+        }
     }
 
     @Override
@@ -62,11 +91,6 @@ public class EthereumBlockServiceImpl implements EthereumBlockService {
             logger.error("get transaction receipt error", e);
             throw new CubeRuntimeException(e);
         }
-    }
-
-    @Resource
-    public void setWeb3j(Web3j web3j) {
-        this.web3j = web3j;
     }
 
     @Override

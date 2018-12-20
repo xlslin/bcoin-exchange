@@ -30,7 +30,7 @@ public class BlockChain implements java.io.Serializable, IObjectDateOperationHis
 	 * 状态(YZSB:验证失败)
 	 */
 	public static final String STATUS_VERIFY_FAILED = "YZSB";
-
+	
 	//columns START
     /**
      * id			db_column: ID 
@@ -49,6 +49,10 @@ public class BlockChain implements java.io.Serializable, IObjectDateOperationHis
      * 区块hash			db_column: HASH 
      */	
 	private java.lang.String hash;
+    /**
+     * 块创建时间			db_column: BLOCK_CREATE_TIME 
+     */	
+	private Date blockCreateTime;
     /**
      * 状态(CSH:初始化、SJTBZ:数据同步中、WYZ:未验证、YZCG:验证成功、YZSB:验证失败)			db_column: STATUS 
      */	
@@ -92,6 +96,12 @@ public class BlockChain implements java.io.Serializable, IObjectDateOperationHis
 	public java.lang.String getHash() {
 		return this.hash;
 	}
+	public void setBlockCreateTime(Date blockCreateTime) {
+		this.blockCreateTime = blockCreateTime;
+	}
+	public Date getBlockCreateTime() {
+		return this.blockCreateTime;
+	}
 	public void setStatus(java.lang.String status) {
 		this.status = status;
 	}
@@ -117,11 +127,12 @@ public class BlockChain implements java.io.Serializable, IObjectDateOperationHis
 					.append("BlockNumber=").append(getBlockNumber()).append(", ")
 					.append("VerifyBlockNumber=").append(getVerifyBlockNumber()).append(", ")
 					.append("Hash=").append(getHash()).append(", ")
+					.append("BlockCreateTime=").append(getBlockCreateTime()).append(", ")
 					.append("Status=").append(getStatus()).append(", ")
 					.append("CreateTime=").append(getCreateTime()).append(", ")
 					.append("ModifyTime=").append(getModifyTime())
 		.append("]").toString();
 	}
-
+	
 }
 
