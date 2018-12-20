@@ -8,7 +8,6 @@ import com.sharingif.blockchain.ether.app.autoconfigure.constants.CoinType;
 import com.sharingif.blockchain.ether.block.dao.TransactionDAO;
 import com.sharingif.blockchain.ether.block.model.entity.Contract;
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
-import com.sharingif.blockchain.ether.block.service.BlockChainService;
 import com.sharingif.blockchain.ether.block.service.ContractService;
 import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
 import com.sharingif.blockchain.ether.block.service.TransactionService;
@@ -21,10 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.Type;
 import org.web3j.abi.datatypes.generated.Uint256;
-import org.web3j.protocol.core.DefaultBlockParameterNumber;
+import org.web3j.protocol.core.methods.response.EthBlock;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import rx.functions.Action0;
-import rx.functions.Action1;
 
 import javax.annotation.Resource;
 import java.math.BigInteger;
@@ -40,7 +37,6 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	private EthereumBlockService ethereumBlockService;
 	private ContractService contractService;
 	private AddressListenerApiService addressListenerApiService;
-	private BlockChainService blockChainService;
 
 
 	public TransactionDAO getTransactionDAO() {
@@ -76,10 +72,6 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	@Resource
 	public void setAddressListenerApiService(AddressListenerApiService addressListenerApiService) {
 		this.addressListenerApiService = addressListenerApiService;
-	}
-	@Resource
-	public void setBlockChainService(BlockChainService blockChainService) {
-		this.blockChainService = blockChainService;
 	}
 
 	public void addUntreatedTransaction(Transaction transaction) {
@@ -168,6 +160,12 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		transaction.setContractAddress(transaction.getTxTo());
 		transaction.setTxTo(null);
 
+		Contract contract = contractService.getContractAndAdd(transaction.getContractAddress());
+		if(!contract.isErc20Contract()) {
+			logger.error("is not erc20 contract, transaction:{}",transaction);
+			return;
+		}
+
 		List<Type> transferResponseList = ethereumBlockService.getErc20ContractService().getTransfer(transaction.getTxInput());
 		if(transferResponseList == null || transferResponseList.isEmpty()) {
 			logger.error("transfer response list is null, transaction:{}", transaction);
@@ -180,11 +178,6 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		transaction.setTxTo(address.getValue());
 		transaction.setTxValue(amount.getValue());
 
-		Contract contract = contractService.getContractAndAdd(transaction.getContractAddress());
-		if(!contract.isErc20Contract()) {
-			logger.error("is not erc20 contract, transaction:{}",transaction);
-			return;
-		}
 		transaction.setCoinType(contract.getSymbol());
 
 		persistenceTransaction(transaction);
@@ -222,23 +215,14 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	}
 
 	@Override
-	public void syncData(String blockChainId, BigInteger blockNumber, String hash, Date blockCreateTime) {
-		ethereumBlockService.getWeb3j().replayTransactionsObservable(new DefaultBlockParameterNumber(blockNumber), new DefaultBlockParameterNumber(blockNumber))
-				.doOnError(new Action1<Throwable>() {
-					@Override
-					public void call(Throwable throwable) {
-						logger.error("ethTransactionsObservable doOnError, blockNumber:{}", blockNumber, throwable);
-					}
-				})
-				.doOnCompleted(new Action0() {
-					@Override
-					public void call() {
-						logger.info("ethTransactionsObservable finish, blockNumber:{}", blockNumber);
-						blockChainService.updateStatusToUnverified(blockChainId);
-					}
-				}).subscribe(tx -> {
-			handlerTransaction(tx, hash, blockCreateTime);
-		});
+	public void syncData(BigInteger blockNumber, String hash, Date blockCreateTime) {
+		List<EthBlock.TransactionResult> transactionResultList = ethereumBlockService.getBlock(blockNumber, false).getTransactions();
+
+		for(EthBlock.TransactionResult<String> transactionResult : transactionResultList) {
+			String txHash = transactionResult.get();
+			org.web3j.protocol.core.methods.response.Transaction transaction = ethereumBlockService.getTransactionByHash(txHash);
+			handlerTransaction(transaction, hash, blockCreateTime);
+		}
 	}
 
 }

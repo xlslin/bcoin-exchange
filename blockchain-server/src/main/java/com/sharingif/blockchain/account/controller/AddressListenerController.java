@@ -2,6 +2,7 @@ package com.sharingif.blockchain.account.controller;
 
 
 import com.sharingif.blockchain.account.service.AddressListenerService;
+import com.sharingif.blockchain.api.account.entity.AddressListenerAddReq;
 import com.sharingif.blockchain.api.account.entity.AddressListenerIsWatchReq;
 import com.sharingif.blockchain.api.account.entity.AddressListenerIsWatchRsp;
 import com.sharingif.blockchain.api.account.entity.BitCoinAddReq;
@@ -24,6 +25,15 @@ public class AddressListenerController {
 	@Resource
 	public void setAddressListenerService(AddressListenerService addressListenerService) {
 		this.addressListenerService = addressListenerService;
+	}
+
+	/**
+	 * 添加地址监听
+	 * @return
+	 */
+	@RequestMapping(value="add", method= RequestMethod.POST)
+	public void add(AddressListenerAddReq req) {
+		addressListenerService.add(req);
 	}
 
 	/**

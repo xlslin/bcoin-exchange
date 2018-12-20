@@ -21,7 +21,7 @@ public class BlockChainSyncScheduled {
     }
 
     @Scheduled(fixedRate = 1000*1)
-    public void putQueue() {
+    public void sync() {
         JobRequest jobRequest = new JobRequest();
         jobRequest.setLookupPath("/blockChainSync/sync");
 

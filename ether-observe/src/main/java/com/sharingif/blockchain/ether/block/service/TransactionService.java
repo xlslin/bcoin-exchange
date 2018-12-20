@@ -26,11 +26,10 @@ public interface TransactionService extends IBaseService<Transaction, java.lang.
 
     /**
      * 区块同步
-     * @param blockChainId
      * @param blockNumber
      * @param hash
      * @param blockCreateTime
      */
-    void syncData(String blockChainId, BigInteger blockNumber, String hash, Date blockCreateTime);
+    void syncData(BigInteger blockNumber, String hash, Date blockCreateTime);
 	
 }

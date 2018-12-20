@@ -108,6 +108,7 @@ public class JobServiceImpl implements JobService, InitializingBean {
         BatchJob queryBatchJob = batchJobService.getById(jobId);
 
         BatchJob updateBatchJob = new BatchJob();
+        updateBatchJob.setId(queryBatchJob.getId());
         updateBatchJob.setActualExecuteTime(new Date());
         updateBatchJob.setStatus(BatchJob.STATUS_SOLVED);
         updateBatchJob.setExecuteCount(queryBatchJob.getExecuteCount()+1);
@@ -117,7 +118,18 @@ public class JobServiceImpl implements JobService, InitializingBean {
 
     @Override
     public void failure(String jobId, String message, String localizedMessage, String cause) {
+        BatchJob queryBatchJob = batchJobService.getById(jobId);
 
+        BatchJob updateBatchJob = new BatchJob();
+        updateBatchJob.setId(queryBatchJob.getId());
+        updateBatchJob.setActualExecuteTime(new Date());
+        updateBatchJob.setStatus(BatchJob.STATUS_FAILED);
+        updateBatchJob.setExecuteCount(queryBatchJob.getExecuteCount()+1);
+        updateBatchJob.setErrorCause(message);
+        updateBatchJob.setErrorLocalizedMessage(localizedMessage);
+        updateBatchJob.setErrorCause(cause);
+
+        batchJobService.updateById(updateBatchJob);
     }
 
     @Override
@@ -154,36 +166,36 @@ public class JobServiceImpl implements JobService, InitializingBean {
 
     @Override
     public synchronized void consume() {
-
-        JobRequest inQueueJobRequest = queue.peek();
-        if(null == inQueueJobRequest){
-            return;
-        }
-
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
-
-        try {
-            // 修改job状态
-            batchJobService.updateStatusToHandling(inQueueJobRequest.getId());
-
-            // 从队列中删除job
-            queue.remove(inQueueJobRequest);
-
-            dataSourceTransactionManager.commit(status);
-        } catch (Exception e) {
-            logger.error("consume error", e);
-            dataSourceTransactionManager.rollback(status);
-        }
-
-        threadPoolTaskExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                simpleDispatcherHandler.doDispatch(inQueueJobRequest);
+        while (true) {
+            JobRequest inQueueJobRequest = queue.peek();
+            if(null == inQueueJobRequest){
+                return;
             }
-        });
 
+            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+            TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
+
+            try {
+                // 修改job状态
+                batchJobService.updateStatusToHandling(inQueueJobRequest.getId());
+
+                // 从队列中删除job
+                queue.remove(inQueueJobRequest);
+
+                dataSourceTransactionManager.commit(status);
+            } catch (Exception e) {
+                logger.error("consume error", e);
+                dataSourceTransactionManager.rollback(status);
+            }
+
+            threadPoolTaskExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    simpleDispatcherHandler.doDispatch(inQueueJobRequest);
+                }
+            });
+        }
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.sharingif.blockchain.account.service.impl;
 
 import javax.annotation.Resource;
 
+import com.sharingif.blockchain.api.account.entity.AddressListenerAddReq;
 import com.sharingif.blockchain.api.account.entity.AddressListenerIsWatchReq;
 import com.sharingif.blockchain.api.account.entity.AddressListenerIsWatchRsp;
 import com.sharingif.blockchain.crypto.service.SecretKeyService;
@@ -38,11 +39,7 @@ public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener,
 		this.secretKeyService = secretKeyService;
 	}
 
-	@Override
-	public void add(String address) {
-
-		String blockType = secretKeyService.getBlockType(address);
-
+	protected void add(String blockType, String address) {
 		AddressListener addressListener = new AddressListener();
 		addressListener.setBlockType(blockType);
 		addressListener.setAddress(address);
@@ -50,6 +47,18 @@ public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener,
 		addressListenerDAO.insert(addressListener);
 
 		addAddressMap(address, blockType);
+	}
+
+	@Override
+	public void add(String address) {
+		String blockType = secretKeyService.getBlockType(address);
+
+		add(blockType, address);
+	}
+
+	@Override
+	public void add(AddressListenerAddReq req) {
+		add(req.getBlockType(), req.getAddress());
 	}
 
 	@Override

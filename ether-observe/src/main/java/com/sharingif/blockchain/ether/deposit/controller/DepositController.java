@@ -1,14 +1,11 @@
 package com.sharingif.blockchain.ether.deposit.controller;
 
 
-import java.util.Map;
+import com.sharingif.blockchain.ether.deposit.service.DepositService;
+import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
+import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.sharingif.blockchain.ether.deposit.service.DepositService;
 
 
 @Controller

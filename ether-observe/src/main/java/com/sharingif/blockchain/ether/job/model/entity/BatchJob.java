@@ -93,6 +93,7 @@ public class BatchJob implements java.io.Serializable, IObjectDateOperationHisto
 		jobRequest.setLookupPath(getLookupPath());
 		jobRequest.setPlanExecuteTime(getPlanExecuteTime());
 		jobRequest.setExecuteCount(getExecuteCount());
+		jobRequest.setDataId(getDataId());
 		jobRequest.setCreatetime(getCreateTime());
 
 		return jobRequest;

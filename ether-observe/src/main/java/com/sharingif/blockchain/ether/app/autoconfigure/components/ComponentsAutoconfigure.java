@@ -48,6 +48,16 @@ public class ComponentsAutoconfigure {
         return threadPoolTaskScheduler;
     }
 
+    @Bean("workThreadPoolTaskExecutor")
+    public ThreadPoolTaskExecutor createThreadPoolTaskExecutor(@Value("${work.max.pool.size}") int poolSize) {
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+
+        threadPoolTaskExecutor.setCorePoolSize(poolSize);
+        threadPoolTaskExecutor.setMaxPoolSize(poolSize);
+
+        return threadPoolTaskExecutor;
+    }
+
     @Bean("multiHandlerMethodChain")
     public MultiHandlerMethodChain createRequestHandlerMethodChains(
             RequestLocalContextHolderChain requestLocalContextHolderChain
@@ -145,15 +155,6 @@ public class ComponentsAutoconfigure {
         simpleDispatcherHandler.setMultiHandlerMethodAdapter(multiHandlerMethodAdapter);
         simpleDispatcherHandler.setMultiViewResolver(multiViewResolver);
         return simpleDispatcherHandler;
-    }
-
-    @Bean("workThreadPoolTaskExecutor")
-    public ThreadPoolTaskExecutor createThreadPoolTaskExecutor(@Value("${work.max.pool.size}") int poolSize) {
-        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-
-        threadPoolTaskExecutor.setMaxPoolSize(poolSize);
-
-        return threadPoolTaskExecutor;
     }
 
     @Bean("propertyTextEncryptor")

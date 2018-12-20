@@ -98,6 +98,13 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 
 		BigInteger blockNumber = blockChain.getBlockNumber();
 
+		transactionService.syncData(
+				blockNumber
+				,blockChain.getHash()
+				,blockChain.getBlockCreateTime()
+		);
+
+		updateStatusToUnverified(blockChainId);
 	}
 
 
