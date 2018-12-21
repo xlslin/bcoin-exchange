@@ -12,8 +12,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=id">
     		and ID = #{id}
     	</if>
-    	<if test="null!=blockChain">
-    		and BLOCK_CHAIN = #{blockChain}
+    	<if test="null!=blockChainId">
+    		and BLOCK_CHAIN_ID = #{blockChainId}
     	</if>
     	<if test="null!=blockNumber">
     		and BLOCK_NUMBER = #{blockNumber}
@@ -39,8 +39,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=id">
 		    ID = #{id},
 		    </if>
-		    <if test="null!=blockChain">
-		    BLOCK_CHAIN = #{blockChain},
+		    <if test="null!=blockChainId">
+		    BLOCK_CHAIN_ID = #{blockChainId},
 		    </if>
 		    <if test="null!=blockNumber">
 		    BLOCK_NUMBER = #{blockNumber},
@@ -64,7 +64,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<resultMap id="transactionTempResultMap" type="com.sharingif.blockchain.ether.block.model.entity.TransactionTemp">
         <result property="id" column="ID"/>
-        <result property="blockChain" column="BLOCK_CHAIN"/>
+        <result property="blockChainId" column="BLOCK_CHAIN_ID"/>
         <result property="blockNumber" column="BLOCK_NUMBER"/>
         <result property="blockHash" column="BLOCK_HASH"/>
         <result property="txHash" column="TX_HASH"/>
@@ -77,7 +77,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<insert id="insert">
         INSERT INTO TRANSACTION_TEMP (
         	ID
-        	,BLOCK_CHAIN
+        	,BLOCK_CHAIN_ID
         	,BLOCK_NUMBER
         	,BLOCK_HASH
         	,TX_HASH
@@ -86,7 +86,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,MODIFY_TIME
         ) VALUES (
         	#{id}
-        	,#{blockChain}
+        	,#{blockChainId}
         	,#{blockNumber}
         	,#{blockHash}
         	,#{txHash}
@@ -124,7 +124,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="queryById" resultMap="transactionTempResultMap">
 		SELECT
 			ID
-			,BLOCK_CHAIN
+			,BLOCK_CHAIN_ID
 			,BLOCK_NUMBER
 			,BLOCK_HASH
 			,TX_HASH
@@ -140,7 +140,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryList" resultMap="transactionTempResultMap">
 		SELECT
 			ID
-			,BLOCK_CHAIN
+			,BLOCK_CHAIN_ID
 			,BLOCK_NUMBER
 			,BLOCK_HASH
 			,TX_HASH
@@ -159,7 +159,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryAll" resultMap="transactionTempResultMap">
 		SELECT
 			ID
-			,BLOCK_CHAIN
+			,BLOCK_CHAIN_ID
 			,BLOCK_NUMBER
 			,BLOCK_HASH
 			,TX_HASH
@@ -185,7 +185,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="transactionTempResultMap">
 		SELECT
 			ID
-			,BLOCK_CHAIN
+			,BLOCK_CHAIN_ID
 			,BLOCK_NUMBER
 			,BLOCK_HASH
 			,TX_HASH

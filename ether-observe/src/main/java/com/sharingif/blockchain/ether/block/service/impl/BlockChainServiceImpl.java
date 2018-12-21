@@ -164,7 +164,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		List<EthBlock.TransactionResult> transactionResultList = block.getTransactions();
 		for(EthBlock.TransactionResult<String> transactionResult : transactionResultList) {
 			String txHash = transactionResult.get();
-			transactionService.getTransactionTempService().addUnprocessedStatus(blockChain.getBlockNumber(), blockChain.getHash(), txHash);
+			transactionService.getTransactionTempService().addUnprocessedStatus(blockChain.getId(), blockChain.getBlockNumber(), blockChain.getHash(), txHash);
 		}
 		updateStatusToReadyDataSync(blockChain.getId());
 

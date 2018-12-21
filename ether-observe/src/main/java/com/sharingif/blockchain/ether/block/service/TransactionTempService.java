@@ -12,11 +12,12 @@ public interface TransactionTempService extends IBaseService<TransactionTemp, ja
 
     /**
      * 添加处理中临时交易
+     * @param blockChainId
      * @param blockNumber
      * @param blockHash
      * @param txHash
      */
-    void addUnprocessedStatus(BigInteger blockNumber, String blockHash, String txHash);
+    void addUnprocessedStatus(String blockChainId, BigInteger blockNumber, String blockHash, String txHash);
 
     /**
      * 修改状态为处理中

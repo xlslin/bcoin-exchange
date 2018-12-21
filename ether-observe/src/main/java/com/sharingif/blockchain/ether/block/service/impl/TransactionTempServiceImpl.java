@@ -45,8 +45,9 @@ public class TransactionTempServiceImpl extends BaseServiceImpl<TransactionTemp,
 	}
 
 	@Override
-	public void addUnprocessedStatus(BigInteger blockNumber, String blockHash, String txHash) {
+	public void addUnprocessedStatus(String blockChainId, BigInteger blockNumber, String blockHash, String txHash) {
 		TransactionTemp queryTransactionTemp = new TransactionTemp();
+		queryTransactionTemp.setBlockChainId(blockChainId);
 		queryTransactionTemp.setBlockNumber(blockNumber);
 		queryTransactionTemp.setBlockHash(blockHash);
 		queryTransactionTemp.setTxHash(txHash);

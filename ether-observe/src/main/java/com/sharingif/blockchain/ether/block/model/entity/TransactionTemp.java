@@ -2,7 +2,6 @@ package com.sharingif.blockchain.ether.block.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
-import com.sharingif.cube.components.sequence.Sequence;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -25,13 +24,12 @@ public class TransactionTemp implements java.io.Serializable, IObjectDateOperati
 	//columns START
     /**
      * id			db_column: ID 
-     */
-	@Sequence(ref="uuidSequenceGenerator")
+     */	
 	private java.lang.String id;
     /**
-     * 区块id			db_column: BLOCK_CHAIN 
+     * 区块id			db_column: BLOCK_CHAIN_ID 
      */	
-	private java.lang.String blockChain;
+	private java.lang.String blockChainId;
     /**
      * 区块号			db_column: BLOCK_NUMBER 
      */	
@@ -64,11 +62,11 @@ public class TransactionTemp implements java.io.Serializable, IObjectDateOperati
 	public java.lang.String getId() {
 		return this.id;
 	}
-	public void setBlockChain(java.lang.String blockChain) {
-		this.blockChain = blockChain;
+	public void setBlockChainId(java.lang.String blockChainId) {
+		this.blockChainId = blockChainId;
 	}
-	public java.lang.String getBlockChain() {
-		return this.blockChain;
+	public java.lang.String getBlockChainId() {
+		return this.blockChainId;
 	}
 	public void setBlockNumber(BigInteger blockNumber) {
 		this.blockNumber = blockNumber;
@@ -110,7 +108,7 @@ public class TransactionTemp implements java.io.Serializable, IObjectDateOperati
 	public String toString() {
 		return new StringBuilder("TransactionTemp [")
 			.append("Id=").append(getId()).append(", ")
-					.append("BlockChain=").append(getBlockChain()).append(", ")
+					.append("BlockChainId=").append(getBlockChainId()).append(", ")
 					.append("BlockNumber=").append(getBlockNumber()).append(", ")
 					.append("BlockHash=").append(getBlockHash()).append(", ")
 					.append("TxHash=").append(getTxHash()).append(", ")
