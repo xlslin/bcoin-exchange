@@ -237,9 +237,9 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		// 修改TransactionTemp状态为已处理
 		transactionTempService.updateStatusToProcessed(transactionTemp.getId());
 		// 查看是否还有处理中的交易，如果没有修改BlockChain状态为未验证
-		List<TransactionTemp> transactionTempList = transactionTempService.getProcessingStatusTransactionTemp(transactionTemp.getBlockNumber(), transactionTemp.getBlockHash());
+		List<TransactionTemp> transactionTempList = transactionTempService.getProcessingStatusTransactionTemp(transactionTemp.getBlockChainId(), transactionTemp.getBlockNumber(), transactionTemp.getBlockHash());
 		if(transactionTempList == null || transactionTempList.isEmpty()) {
-			blockChainService.updateStatusToUnverified(transactionTemp.getId());
+			blockChainService.updateStatusToUnverified(transactionTemp.getBlockChainId());
 		}
 	}
 
@@ -258,7 +258,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			}
 		}
 
-		BlockChain blockChain = blockChainService.getById(transactionTemp.getId());
+		BlockChain blockChain = blockChainService.getById(transactionTemp.getBlockChainId());
 		handlerTransaction(transaction, blockChain.getHash(), blockChain.getBlockCreateTime());
 
 		updateTransactionTempAndBlockChain(transactionTemp);

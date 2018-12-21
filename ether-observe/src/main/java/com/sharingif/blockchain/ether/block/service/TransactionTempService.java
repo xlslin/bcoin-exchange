@@ -35,19 +35,21 @@ public interface TransactionTempService extends IBaseService<TransactionTemp, ja
 
     /**
      * 根据区块号、区块hash查询未处理状态
+     * @param blockChainId
      * @param blockNumber
      * @param blockHash
      * @return
      */
-    List<TransactionTemp> getUnprocessedStatusTransactionTemp(BigInteger blockNumber, String blockHash);
+    List<TransactionTemp> getUnprocessedStatusTransactionTemp(String blockChainId, BigInteger blockNumber, String blockHash);
 
     /**
      * 根据区块号、区块hash查询处理中的交易
+     * @param blockChainId
      * @param blockNumber
      * @param blockHash
      * @return
      */
-    List<TransactionTemp> getProcessingStatusTransactionTemp(BigInteger blockNumber, String blockHash);
+    List<TransactionTemp> getProcessingStatusTransactionTemp(String blockChainId, BigInteger blockNumber, String blockHash);
 
     /**
      * 添加TransactionJob、修改状态为已处理

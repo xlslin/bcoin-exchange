@@ -57,6 +57,7 @@ public class TransactionTempServiceImpl extends BaseServiceImpl<TransactionTemp,
 		}
 
 		TransactionTemp insertTransactionTemp = new TransactionTemp();
+		insertTransactionTemp.setBlockChainId(blockChainId);
 		insertTransactionTemp.setBlockNumber(blockNumber);
 		insertTransactionTemp.setBlockHash(blockHash);
 		insertTransactionTemp.setTxHash(txHash);
@@ -83,8 +84,9 @@ public class TransactionTempServiceImpl extends BaseServiceImpl<TransactionTemp,
 	}
 
 	@Override
-	public List<TransactionTemp> getUnprocessedStatusTransactionTemp(BigInteger blockNumber, String blockHash) {
+	public List<TransactionTemp> getUnprocessedStatusTransactionTemp(String blockChainId, BigInteger blockNumber, String blockHash) {
 		TransactionTemp transactionTemp = new TransactionTemp();
+		transactionTemp.setBlockChainId(blockChainId);
 		transactionTemp.setBlockNumber(blockNumber);
 		transactionTemp.setBlockHash(blockHash);
 		transactionTemp.setTxStatus(TransactionTemp.TX_STATUS_UNPROCESSED);
@@ -93,8 +95,9 @@ public class TransactionTempServiceImpl extends BaseServiceImpl<TransactionTemp,
 	}
 
 	@Override
-	public List<TransactionTemp> getProcessingStatusTransactionTemp(BigInteger blockNumber, String blockHash) {
+	public List<TransactionTemp> getProcessingStatusTransactionTemp(String blockChainId, BigInteger blockNumber, String blockHash) {
 		TransactionTemp transactionTemp = new TransactionTemp();
+		transactionTemp.setBlockChainId(blockChainId);
 		transactionTemp.setBlockNumber(blockNumber);
 		transactionTemp.setBlockHash(blockHash);
 		transactionTemp.setTxStatus(TransactionTemp.TX_STATUS_PROCESSING);

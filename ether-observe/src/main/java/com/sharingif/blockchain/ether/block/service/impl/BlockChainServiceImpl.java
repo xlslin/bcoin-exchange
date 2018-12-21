@@ -187,7 +187,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		}
 
 		BlockChain blockChain = blockChainList.get(0);
-		List<TransactionTemp> transactionTempList = transactionService.getTransactionTempService().getUnprocessedStatusTransactionTemp(blockChain.getBlockNumber(), blockChain.getHash());
+		List<TransactionTemp> transactionTempList = transactionService.getTransactionTempService().getUnprocessedStatusTransactionTemp(blockChain.getId(), blockChain.getBlockNumber(), blockChain.getHash());
 		if(transactionTempList == null || transactionTempList.isEmpty()) {
 			updateStatusToDataSync(blockChain.getId());
 
