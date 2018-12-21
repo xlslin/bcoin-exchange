@@ -2,6 +2,7 @@ package com.sharingif.blockchain.ether.block.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+import com.sharingif.cube.components.sequence.Sequence;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -24,7 +25,8 @@ public class TransactionTemp implements java.io.Serializable, IObjectDateOperati
 	//columns START
     /**
      * id			db_column: ID 
-     */	
+     */
+	@Sequence(ref="uuidSequenceGenerator")
 	private java.lang.String id;
     /**
      * 区块id			db_column: BLOCK_CHAIN_ID 
