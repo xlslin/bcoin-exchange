@@ -23,13 +23,13 @@ public class BlockChain implements java.io.Serializable, IObjectDateOperationHis
 	 */
 	public static final String STATUS_UNVERIFIED = "WYZ";
 	/**
-	 * 状态(YZCG:验证成功)
+	 * 状态(QKYZYX:区块验证有效)
 	 */
-	public static final String STATUS_VERIFY_SUCCESS = "YZCG";
+	public static final String STATUS_VERIFY_VALID = "QKYZYX";
 	/**
-	 * 状态(YZSB:验证失败)
+	 * 状态(QKYZWX:区块验证无效)
 	 */
-	public static final String STATUS_VERIFY_FAILED = "YZSB";
+	public static final String STATUS_VERIFY_INVALID = "QKYZWX";
 	
 	//columns START
     /**
@@ -54,7 +54,7 @@ public class BlockChain implements java.io.Serializable, IObjectDateOperationHis
      */	
 	private Date blockCreateTime;
     /**
-     * 状态(CSH:初始化、SJTBZ:数据同步中、WYZ:未验证、YZCG:验证成功、YZSB:验证失败)			db_column: STATUS 
+     * 状态(CSH:初始化、SJTBZ:数据同步中、WYZ:未验证、QKYZYX:区块验证有效、QKYZWX:区块验证无效)			db_column: STATUS
      */	
 	private java.lang.String status;
     /**

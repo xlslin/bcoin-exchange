@@ -28,7 +28,7 @@ public class JobScheduled {
     }
 
     @Scheduled(fixedRate = 1000*10)
-    public void putQueue() {
+    public synchronized void putQueue() {
         JobRequest jobRequest = new JobRequest();
         jobRequest.setLookupPath("/job/putQueue");
 
@@ -36,7 +36,7 @@ public class JobScheduled {
     }
 
     @Scheduled(fixedRate = 1000*10)
-    public void consume() {
+    public synchronized void consume() {
         JobRequest jobRequest = new JobRequest();
         jobRequest.setLookupPath("/job/consume");
 

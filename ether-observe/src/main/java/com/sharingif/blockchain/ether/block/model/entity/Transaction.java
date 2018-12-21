@@ -2,6 +2,7 @@ package com.sharingif.blockchain.ether.block.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+import com.sharingif.cube.components.sequence.Sequence;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -30,11 +31,20 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
 	 * 交易状态(WCL:未处理)
 	 */
 	public static final String TX_STATUS_UNTREATED = "WCL";
+	/**
+	 * 交易状态(QKQRYX:区块确认有效、QKQRWX:区块确认无效)
+	 */
+	public static final String TX_STATUS_BLOCK_CONFIRMED_VALID = "QKQRYX";
+	/**
+	 * 交易状态(QKQRWX:区块确认无效)
+	 */
+	public static final String TX_STATUS_BLOCK_CONFIRMED_INVALID = "QKQRWX";
 
 	//columns START
     /**
      * id			db_column: ID 
-     */	
+     */
+	@Sequence(ref="uuidSequenceGenerator")
 	private java.lang.String id;
     /**
      * 区块hash			db_column: BLOCK_HASH 
@@ -109,7 +119,7 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
 	 */
 	private Integer confirmBlockNumber;
 	/**
-	 * 交易状态(WCL:未处理、QKQRSCLZ:区块确认数处理中、YEWQR:余额未确认、YEQRYC:余额确认异常、YX:有效、WX:无效)			db_column: TX_STATUS
+	 * 交易状态(WCL:未处理、QKQRYX:区块确认有效、QKQRWX:区块确认无效)			db_column: TX_STATUS
 	 */
 	private String txStatus;
 	/**

@@ -22,9 +22,17 @@ public class BlockChainScheduled {
 
 
     @Scheduled(fixedRate = 1000*1)
-    public void syncDataJob() {
+    public synchronized void syncDataJob() {
         JobRequest jobRequest = new JobRequest();
         jobRequest.setLookupPath("/blockChain/syncDataJob");
+
+        simpleDispatcherHandler.doDispatch(jobRequest);
+    }
+
+    @Scheduled(fixedRate = 1000*1)
+    public synchronized void validateBolck() {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setLookupPath("/blockChain/validateBolck");
 
         simpleDispatcherHandler.doDispatch(jobRequest);
     }

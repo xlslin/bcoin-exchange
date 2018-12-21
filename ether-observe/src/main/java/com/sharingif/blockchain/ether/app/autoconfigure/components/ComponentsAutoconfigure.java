@@ -2,6 +2,7 @@ package com.sharingif.blockchain.ether.app.autoconfigure.components;
 
 import com.sharingif.cube.batch.core.JobConfig;
 import com.sharingif.cube.batch.core.JobService;
+import com.sharingif.cube.batch.core.exception.JobExceptionHandler;
 import com.sharingif.cube.batch.core.handler.SimpleDispatcherHandler;
 import com.sharingif.cube.batch.core.handler.adapter.JobRequestHandlerMethodArgumentResolver;
 import com.sharingif.cube.batch.core.handler.chain.JobViewHandlerMethodChain;
@@ -10,6 +11,8 @@ import com.sharingif.cube.batch.core.view.JobViewResolver;
 import com.sharingif.cube.communication.view.MultiViewResolver;
 import com.sharingif.cube.communication.view.ViewResolver;
 import com.sharingif.cube.components.handler.chain.RequestLocalContextHolderChain;
+import com.sharingif.cube.core.exception.handler.IExceptionHandler;
+import com.sharingif.cube.core.exception.handler.MultiCubeExceptionHandler;
 import com.sharingif.cube.core.handler.adapter.HandlerAdapter;
 import com.sharingif.cube.core.handler.adapter.HandlerMethodArgumentResolver;
 import com.sharingif.cube.core.handler.adapter.HandlerMethodHandlerAdapter;
@@ -138,11 +141,28 @@ public class ComponentsAutoconfigure {
         return multiViewResolver;
     }
 
+    @Bean("jobExceptionHandler")
+    public JobExceptionHandler createJobExceptionHandler() {
+        return new JobExceptionHandler();
+    }
+
+    @Bean("multiCubeExceptionHandler")
+    public MultiCubeExceptionHandler createMultiCubeExceptionHandler(JobExceptionHandler jobExceptionHandler) {
+        List<IExceptionHandler> exceptionHandlers = new ArrayList<IExceptionHandler>();
+        exceptionHandlers.add(jobExceptionHandler);
+
+        MultiCubeExceptionHandler multiCubeExceptionHandler = new MultiCubeExceptionHandler();
+        multiCubeExceptionHandler.setCubeExceptionHandlers(exceptionHandlers);
+
+        return multiCubeExceptionHandler;
+    }
+
     @Bean("simpleDispatcherHandler")
     public SimpleDispatcherHandler createSimpleDispatcherHandler(
             MultiHandlerMethodChain multiHandlerMethodChain
             , MultiHandlerMapping multiHandlerMapping
             , MultiHandlerMethodAdapter multiHandlerMethodAdapter
+            , MultiCubeExceptionHandler multiCubeExceptionHandler
             , MultiViewResolver multiViewResolver
     ) {
 
@@ -153,6 +173,7 @@ public class ComponentsAutoconfigure {
         simpleDispatcherHandler.setRequestContextResolver(new JobRequestContextResolver());
         simpleDispatcherHandler.setMultiHandlerMapping(multiHandlerMapping);
         simpleDispatcherHandler.setMultiHandlerMethodAdapter(multiHandlerMethodAdapter);
+        simpleDispatcherHandler.setMultiCubeExceptionHandler(multiCubeExceptionHandler);
         simpleDispatcherHandler.setMultiViewResolver(multiViewResolver);
         return simpleDispatcherHandler;
     }

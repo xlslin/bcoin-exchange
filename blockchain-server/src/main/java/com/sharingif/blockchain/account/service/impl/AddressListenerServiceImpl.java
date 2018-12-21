@@ -69,10 +69,12 @@ public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener,
 		Map<String,String> addressListenerMap = addressMap.get(req.getBlockType());
 		if(addressListenerMap == null) {
 			rsp.setWatch(false);
+			return rsp;
 		}
 
 		if(addressListenerMap.get(req.getAddress()) == null) {
 			rsp.setWatch(false);
+			return rsp;
 		}
 
 		return rsp;

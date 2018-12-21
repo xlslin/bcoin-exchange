@@ -31,5 +31,21 @@ public interface TransactionService extends IBaseService<Transaction, java.lang.
      * @param blockCreateTime
      */
     void syncData(BigInteger blockNumber, String hash, Date blockCreateTime);
-	
+
+    /**
+     * 修改指定区块的交易为有效
+     * @param blockNumber
+     * @param blockHash
+     * @param confirmBlockNumber
+     */
+    int updateStatusToBlockConfirmedValid(BigInteger blockNumber, String blockHash, int confirmBlockNumber);
+
+    /**
+     * 修改指定区块的交易为无效
+     * @param blockNumber
+     * @param blockHash
+     * @param confirmBlockNumber
+     */
+    int updateStatusToBlockConfirmedInvalid(BigInteger blockNumber, String blockHash, int confirmBlockNumber);
+
 }

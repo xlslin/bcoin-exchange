@@ -10,6 +10,7 @@ import com.sharingif.blockchain.ether.block.model.entity.Contract;
 import com.sharingif.blockchain.ether.block.dao.ContractDAO;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import com.sharingif.blockchain.ether.block.service.ContractService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 
@@ -33,6 +34,20 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract, java.lang.Str
 	}
 
 	@Override
+	public Contract getByIdForUpdate(String id) {
+		return contractDAO.queryByIdForUpdate(id);
+	}
+
+	@Transactional
+	protected void addContractLock(Contract insertContract) {
+		Contract contract = getByIdForUpdate(insertContract.getContractAddress());
+		if(contract != null) {
+			return;
+		}
+		contractDAO.insert(insertContract);
+	}
+
+	@Override
 	public Contract getContractAndAdd(String contractAddress) {
 		Contract queryContract = contractDAO.queryById(contractAddress);
 
@@ -43,22 +58,25 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract, java.lang.Str
 		try {
 			name = erc20ContractService.name(contractAddress);
 		} catch (Exception e) {
-			logger.error("get name error, contractAddress:{}", contractAddress, e);
+			logger.error("get name error, contractAddress:{}", contractAddress);
 		}
 		try {
 			symbol = erc20ContractService.symbol(contractAddress);
 		} catch (Exception e) {
-			logger.error("get symbol error, contractAddress:{}", contractAddress, e);
+			logger.error("get symbol error, contractAddress:{}", contractAddress);
 		}
 		try {
 			decimals = erc20ContractService.decimals(contractAddress);
 		} catch (Exception e) {
-			logger.error("get decimals error, contractAddress:{}", contractAddress, e);
+			logger.error("get decimals error, contractAddress:{}", contractAddress);
 		}
 		try {
 			totalSupply = erc20ContractService.totalSupply(contractAddress);
+			if(totalSupply.toString().length()>65) {
+				totalSupply = null;
+			}
 		} catch (Exception e) {
-			logger.error("get totalSupply error, contractAddress:{}", contractAddress, e);
+			logger.error("get totalSupply error, contractAddress:{}", contractAddress);
 		}
 
 		if(queryContract == null) {
@@ -69,7 +87,7 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract, java.lang.Str
 			insertContract.setDecimals(decimals);
 			insertContract.setTotalsupply(totalSupply);
 
-			contractDAO.insert(insertContract);
+			addContractLock(insertContract);
 		}
 
 		queryContract = contractDAO.queryById(contractAddress);

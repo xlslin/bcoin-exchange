@@ -382,6 +382,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		ORDER BY
 			ID
 	</select>
+
+	<update id="updateByBlockNumberBlockHash">
+		UPDATE
+		TRANSACTION
+		<set>
+			<include refid="transactionSetColumns" />
+		</set>
+		WHERE
+			BLOCK_NUMBER = #{blockNumber}
+		AND
+			BLOCK_HASH = #{blockHash}
+	</update>
 	
 </mapper>
 

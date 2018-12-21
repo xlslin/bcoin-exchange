@@ -187,6 +187,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		ORDER BY
 			CONTRACT_ADDRESS
 	</select>
+
+	<select id="queryByIdForUpdate" resultMap="contractResultMap">
+		SELECT
+			CONTRACT_ADDRESS
+			,NAME
+			,SYMBOL
+			,DECIMALS
+			,TOTALSUPPLY
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			CONTRACT
+		WHERE
+			CONTRACT_ADDRESS = #{id}
+		FOR UPDATE
+	</select>
 	
 </mapper>
 

@@ -9,5 +9,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class ContractDAOImpl extends BaseDAOImpl<Contract, String> implements ContractDAO {
-	
+
+    @Override
+    public Contract queryByIdForUpdate(String id) {
+        return selectOne("queryByIdForUpdate", id);
+    }
 }

@@ -4,6 +4,7 @@ import com.sharingif.blockchain.account.model.entity.BitCoin;
 import com.sharingif.blockchain.account.service.BitCoinService;
 import com.sharingif.blockchain.api.crypto.entity.BIP44ChangeReq;
 import com.sharingif.blockchain.api.crypto.entity.BIP44ChangeRsp;
+import com.sharingif.blockchain.app.constants.ErrorConstants;
 import com.sharingif.blockchain.crypto.api.key.service.BIP44ApiService;
 import com.sharingif.blockchain.crypto.dao.ExtendedKeyDAO;
 import com.sharingif.blockchain.crypto.model.entity.ExtendedKey;
@@ -11,6 +12,7 @@ import com.sharingif.blockchain.crypto.model.entity.Bip44KeyPath;
 import com.sharingif.blockchain.crypto.model.entity.Mnemonic;
 import com.sharingif.blockchain.crypto.service.ExtendedKeyService;
 import com.sharingif.blockchain.crypto.service.MnemonicService;
+import com.sharingif.cube.core.exception.validation.ValidationCubeException;
 import com.sharingif.cube.security.confidentiality.encrypt.TextEncryptor;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
@@ -64,6 +66,13 @@ public class ExtendedKeyServiceImpl extends BaseServiceImpl<ExtendedKey, String>
 
     @Override
     public BIP44ChangeRsp change(BIP44ChangeReq req) {
+        // 验证bip44币种是否支持
+        Integer bip44CoinType = req.getCoinType();
+        BitCoin bitCoin = bitCoinService.getBitCoinByBip44CoinType(String.valueOf(bip44CoinType));
+        if(bitCoin == null) {
+            throw new ValidationCubeException(ErrorConstants.BIP44_COIN_TYPE_DOES_NOT_EXIST, new Object[]{bip44CoinType});
+        }
+
         // 查询密码
         Mnemonic mnemonic = mnemonicService.getById(req.getMnemonicId());
         String mnemonicPassword = passwordTextEncryptor.decrypt(mnemonic.getPassword());
@@ -100,12 +109,18 @@ public class ExtendedKeyServiceImpl extends BaseServiceImpl<ExtendedKey, String>
     public ExtendedKey getExtendedKey(String coinType) {
         BitCoin bitCoin = bitCoinService.getBitCoinByCoinType(coinType);
 
+        if(bitCoin == null) {
+            throw new ValidationCubeException(ErrorConstants.COIN_TYPE_DOES_NOT_EXIST, new Object[]{coinType});
+        }
+
         ExtendedKey queryExtendedKey = new ExtendedKey();
         queryExtendedKey.setExtendedKeyPath(
                 new StringBuilder(Bip44KeyPath.BIP44)
                         .append("/")
                         .append(bitCoin.getBip44CoinType())
-                        .append("'/0")
+                        .append("'")
+                        .append("/0'")
+                        .append("/0")
                         .toString()
         );
 

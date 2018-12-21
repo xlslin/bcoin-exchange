@@ -1,17 +1,14 @@
 package com.sharingif.blockchain.account.service.impl;
 
 
-import javax.annotation.Resource;
-
+import com.sharingif.blockchain.account.dao.BitCoinDAO;
+import com.sharingif.blockchain.account.model.entity.BitCoin;
+import com.sharingif.blockchain.account.service.BitCoinService;
 import com.sharingif.blockchain.api.account.entity.BitCoinAddReq;
+import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 
-import com.sharingif.blockchain.account.model.entity.BitCoin;
-import com.sharingif.blockchain.account.dao.BitCoinDAO;
-import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
-import com.sharingif.blockchain.account.service.BitCoinService;
-
-import java.util.List;
+import javax.annotation.Resource;
 
 @Service
 public class BitCoinServiceImpl extends BaseServiceImpl<BitCoin, java.lang.String> implements BitCoinService {
@@ -43,6 +40,14 @@ public class BitCoinServiceImpl extends BaseServiceImpl<BitCoin, java.lang.Strin
 	public BitCoin getBitCoinByCoinType(String coinType) {
 		BitCoin bitCoin = new BitCoin();
 		bitCoin.setCoinType(coinType);
+
+		return bitCoinDAO.query(bitCoin);
+	}
+
+	@Override
+	public BitCoin getBitCoinByBip44CoinType(String bip44CoinType) {
+		BitCoin bitCoin = new BitCoin();
+		bitCoin.setBip44CoinType(bip44CoinType);
 
 		return bitCoinDAO.query(bitCoin);
 	}

@@ -14,6 +14,7 @@ import com.sharingif.blockchain.ether.block.service.TransactionService;
 import com.sharingif.blockchain.ether.deposit.model.entity.Deposit;
 import com.sharingif.blockchain.ether.deposit.service.DepositService;
 import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
+import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -205,6 +206,10 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		transaction.setActualFee(transaction.getGasUsed().multiply(transaction.getGasPrice()));
 		transaction.setBlockHash(hash);
 
+		if(StringUtils.isTrimEmpty(transaction.getTxTo())) {
+			return;
+		}
+
 		Boolean isContractAddress = ethereumBlockService.isContractAddress(transaction.getTxTo());
 		if(isContractAddress) {
 			handlerContractTransaction(transaction);
@@ -223,6 +228,30 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			org.web3j.protocol.core.methods.response.Transaction transaction = ethereumBlockService.getTransactionByHash(txHash);
 			handlerTransaction(transaction, hash, blockCreateTime);
 		}
+	}
+
+	@Override
+	public int updateStatusToBlockConfirmedValid(BigInteger blockNumber, String blockHash, int confirmBlockNumber) {
+		Transaction transaction = new Transaction();
+		transaction.setBlockNumber(blockNumber);
+		transaction.setBlockHash(blockHash);
+
+		transaction.setConfirmBlockNumber(confirmBlockNumber);
+		transaction.setTxStatus(Transaction.TX_STATUS_BLOCK_CONFIRMED_VALID);
+
+		return transactionDAO.updateByBlockNumberBlockHash(transaction);
+	}
+
+	@Override
+	public int updateStatusToBlockConfirmedInvalid(BigInteger blockNumber, String blockHash, int confirmBlockNumber) {
+		Transaction transaction = new Transaction();
+		transaction.setBlockNumber(blockNumber);
+		transaction.setBlockHash(blockHash);
+
+		transaction.setConfirmBlockNumber(confirmBlockNumber);
+		transaction.setTxStatus(Transaction.TX_STATUS_BLOCK_CONFIRMED_INVALID);
+
+		return transactionDAO.updateByBlockNumberBlockHash(transaction);
 	}
 
 }

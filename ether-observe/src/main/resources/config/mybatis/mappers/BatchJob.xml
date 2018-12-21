@@ -276,6 +276,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			STATUS = #{currentStatus}
 	]]>
 	</update>
+
+	<update id="updateStatusByLookupPathStatus">
+		<![CDATA[
+	    UPDATE
+	    	BATCH_JOB
+	    SET
+	        STATUS = #{updateStatus}
+	    WHERE
+			LOOKUP_PATH = #{lookupPath}
+		AND
+			STATUS = #{currentStatus}
+	]]>
+	</update>
 	
 </mapper>
 

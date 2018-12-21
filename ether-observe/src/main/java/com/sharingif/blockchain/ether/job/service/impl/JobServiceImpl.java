@@ -125,7 +125,7 @@ public class JobServiceImpl implements JobService, InitializingBean {
         updateBatchJob.setActualExecuteTime(new Date());
         updateBatchJob.setStatus(BatchJob.STATUS_FAILED);
         updateBatchJob.setExecuteCount(queryBatchJob.getExecuteCount()+1);
-        updateBatchJob.setErrorCause(message);
+        updateBatchJob.setErrorMessageCode(message);
         updateBatchJob.setErrorLocalizedMessage(localizedMessage);
         updateBatchJob.setErrorCause(cause);
 
@@ -200,12 +200,13 @@ public class JobServiceImpl implements JobService, InitializingBean {
 
     @Override
     public void updateJobStatusInQueueToSuspending() {
-        batchJobService.updateJobStatusInQueueToSuspending();
+        batchJobService.updateJobStatusInQueueToPending();
     }
 
 
     @Override
     public void afterPropertiesSet() throws Exception {
         updateJobStatusInQueueToSuspending();
+        batchJobService.updateBlockChainSyncDataHandlingToPending();
     }
 }
