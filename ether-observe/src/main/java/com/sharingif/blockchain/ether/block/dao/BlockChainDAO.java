@@ -11,6 +11,8 @@ import java.math.BigInteger;
 
 public interface BlockChainDAO extends BaseDAO<BlockChain, String> {
 
+    PaginationRepertory<BlockChain> queryPaginationListOrderByBlockNumberAsc(PaginationCondition<BlockChain> paginationCondition);
+
     PaginationRepertory<BlockChain> queryPaginationListByBlockNumberStatus(PaginationCondition<BlockChain> paginationCondition);
 
 }

@@ -73,8 +73,8 @@ public class BatchJobServiceImpl extends BaseServiceImpl<BatchJob, String> imple
     }
 
     @Override
-    public int updateBlockChainSyncDataHandlingToPending() {
-        return batchJobDAO.updateStatusByLookupPathStatus("BatchJob.STATUS_IN_QUEUE, BatchJob.STATUS_PENDING", BatchJob.STATUS_IN_QUEUE, BatchJob.STATUS_PENDING);
+    public int updateJobStatusHandlingToPending() {
+        return batchJobDAO.updateStatusByStatus(BatchJob.STATUS_HANDLING, BatchJob.STATUS_PENDING);
     }
 
 }

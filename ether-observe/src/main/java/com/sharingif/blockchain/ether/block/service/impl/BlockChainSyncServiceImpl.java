@@ -96,11 +96,15 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 			return;
 		}
 
-		// 如果数据库区块号小于区块链当前区块号，递增修改BlockChainSync，添加BlockChain表
-		while (currentSyncBlockNumber.compareTo(blockNumber)< 0) {
-			currentSyncBlockNumber = currentSyncBlockNumber.add(BigInteger.ONE);
-			updateBlockChainInfo(currentSyncBlockNumber);
+		// 如果有未处理或数据同步中的BlockChain就不处理
+		boolean hasInitializeAndDataSync = blockChainService.hasInitializeAndDataSync();
+		if(hasInitializeAndDataSync) {
+			return;
 		}
+
+		// 如果数据库区块号小于区块链当前区块号，递增修改BlockChainSync，添加BlockChain表
+		updateBlockChainInfo(currentSyncBlockNumber.add(BigInteger.ONE));
+
 	}
 
 

@@ -13,6 +13,12 @@ import java.util.Date;
 public interface TransactionService extends IBaseService<Transaction, java.lang.String> {
 
     /**
+     * 返回临时交易服务
+     * @return
+     */
+    TransactionTempService getTransactionTempService();
+
+    /**
      * 获取充值服务
      * @return
      */
@@ -25,12 +31,10 @@ public interface TransactionService extends IBaseService<Transaction, java.lang.
     WithdrawalService getWithdrawalService();
 
     /**
-     * 区块同步
-     * @param blockNumber
-     * @param hash
-     * @param blockCreateTime
+     * 区块交易同步
+     * @param transactionTempId
      */
-    void syncData(BigInteger blockNumber, String hash, Date blockCreateTime);
+    void syncData(String transactionTempId);
 
     /**
      * 修改指定区块的交易为有效

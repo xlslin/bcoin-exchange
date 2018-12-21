@@ -44,9 +44,9 @@ public interface BatchJobService extends IBaseService<BatchJob, String> {
     int updateJobStatusInQueueToPending();
 
     /**
-     * 修改区块同步job状态为待处理
+     * 修改处理中状态为待处理
      * @return
      */
-    int updateBlockChainSyncDataHandlingToPending();
+    int updateJobStatusHandlingToPending();
 
 }

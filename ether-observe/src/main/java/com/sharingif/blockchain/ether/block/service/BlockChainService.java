@@ -6,7 +6,6 @@ import com.sharingif.cube.batch.core.request.JobRequest;
 import com.sharingif.cube.support.service.base.IBaseService;
 
 import java.math.BigInteger;
-import java.util.List;
 
 
 public interface BlockChainService extends IBaseService<BlockChain, java.lang.String> {
@@ -20,10 +19,28 @@ public interface BlockChainService extends IBaseService<BlockChain, java.lang.St
     void initializeBlockChain(BigInteger blockNumber, String blockHash, BigInteger blockCreateTime);
 
     /**
+     * 是否有初始化、数据同步中的数据
+     * @return
+     */
+    boolean hasInitializeAndDataSync();
+
+    /**
+     * 修改状态为准备数据同步
+     * @param id
+     */
+    void updateStatusToReadyDataSync(String id);
+
+    /**
      * 修改状态为数据同步
      * @param id
      */
     void updateStatusToDataSync(String id);
+
+    /**
+     * 修改状态为未验证
+     * @param id
+     */
+    void updateStatusToUnverified(String id);
 
     /**
      * 修改状态为区块验证有效
@@ -40,15 +57,14 @@ public interface BlockChainService extends IBaseService<BlockChain, java.lang.St
     void updateStatusToVerifyInvalid(String id, BigInteger verifyBlockNumber);
 
     /**
-     * 修改状态为未验证
-     * @param id
+     * 同步块数据到交易临时表
      */
-    void updateStatusToUnverified(String id);
+    void syncDataToTransactionTemp();
 
     /**
-     * 准备块数据同步job
+     * 添加数据同步job
      */
-    List<BlockChain> syncDataJob();
+    void addSyncDataJob();
 
     /**
      * 块数据同步

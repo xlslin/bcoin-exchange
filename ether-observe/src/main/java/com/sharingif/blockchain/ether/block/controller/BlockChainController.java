@@ -26,9 +26,9 @@ public class BlockChainController {
 		this.blockChainService = blockChainService;
 	}
 
-	@RequestMapping(value="syncDataJob", method= RequestMethod.POST)
-	public List<BlockChain> syncDataJob() {
-		return blockChainService.syncDataJob();
+	@RequestMapping(value="syncDataToTransactionTemp", method= RequestMethod.POST)
+	public void syncDataToTransactionTemp() {
+		blockChainService.syncDataToTransactionTemp();
 	}
 
 	@RequestMapping(value="syncData", method= RequestMethod.POST)

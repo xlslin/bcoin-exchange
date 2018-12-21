@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="transactionTemp">
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="transactionTempColumns">
+    	<if test="null!=id">
+    		and ID = #{id}
+    	</if>
+    	<if test="null!=blockChain">
+    		and BLOCK_CHAIN = #{blockChain}
+    	</if>
+    	<if test="null!=blockNumber">
+    		and BLOCK_NUMBER = #{blockNumber}
+    	</if>
+    	<if test="null!=blockHash">
+    		and BLOCK_HASH = #{blockHash}
+    	</if>
+    	<if test="null!=txHash">
+    		and TX_HASH = #{txHash}
+    	</if>
+    	<if test="null!=txStatus">
+    		and TX_STATUS = #{txStatus}
+    	</if>
+    	<if test="null!=createTime">
+    		and CREATE_TIME = #{createTime}
+    	</if>
+    	<if test="null!=modifyTime">
+    		and MODIFY_TIME = #{modifyTime}
+    	</if>
+	</sql>
+	
+	<sql id="transactionTempSetColumns">
+		    <if test="null!=id">
+		    ID = #{id},
+		    </if>
+		    <if test="null!=blockChain">
+		    BLOCK_CHAIN = #{blockChain},
+		    </if>
+		    <if test="null!=blockNumber">
+		    BLOCK_NUMBER = #{blockNumber},
+		    </if>
+		    <if test="null!=blockHash">
+		    BLOCK_HASH = #{blockHash},
+		    </if>
+		    <if test="null!=txHash">
+		    TX_HASH = #{txHash},
+		    </if>
+		    <if test="null!=txStatus">
+		    TX_STATUS = #{txStatus},
+		    </if>
+		    <if test="null!=createTime">
+		    CREATE_TIME = #{createTime},
+		    </if>
+		    <if test="null!=modifyTime">
+		    MODIFY_TIME = #{modifyTime},
+		    </if>
+	</sql>
+
+	<resultMap id="transactionTempResultMap" type="com.sharingif.blockchain.ether.block.model.entity.TransactionTemp">
+        <result property="id" column="ID"/>
+        <result property="blockChain" column="BLOCK_CHAIN"/>
+        <result property="blockNumber" column="BLOCK_NUMBER"/>
+        <result property="blockHash" column="BLOCK_HASH"/>
+        <result property="txHash" column="TX_HASH"/>
+        <result property="txStatus" column="TX_STATUS"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+	</resultMap>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert">
+        INSERT INTO TRANSACTION_TEMP (
+        	ID
+        	,BLOCK_CHAIN
+        	,BLOCK_NUMBER
+        	,BLOCK_HASH
+        	,TX_HASH
+        	,TX_STATUS
+        	,CREATE_TIME
+        	,MODIFY_TIME
+        ) VALUES (
+        	#{id}
+        	,#{blockChain}
+        	,#{blockNumber}
+        	,#{blockHash}
+        	,#{txHash}
+        	,#{txStatus}
+        	,#{createTime}
+        	,#{modifyTime}
+        )
+	</insert>
+	
+	<delete id="deleteById">
+	    DELETE FROM
+	    	TRANSACTION_TEMP 
+	    WHERE
+	    ID = #{id} 
+    </delete>
+    
+    <delete id="deleteByCondition">
+	    DELETE FROM
+	    	TRANSACTION_TEMP 
+	    WHERE
+	    	1=1
+		    <include refid="transactionTempColumns" />
+    </delete>
+    
+	<update id="updateById">
+	    UPDATE
+	    	TRANSACTION_TEMP 
+        <set>
+	        <include refid="transactionTempSetColumns" />
+		</set>
+	    WHERE
+	    ID = #{id} 
+	</update>
+	
+    <select id="queryById" resultMap="transactionTempResultMap">
+		SELECT
+			ID
+			,BLOCK_CHAIN
+			,BLOCK_NUMBER
+			,BLOCK_HASH
+			,TX_HASH
+			,TX_STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			TRANSACTION_TEMP 
+		WHERE 
+			ID = #{id} 
+	</select>
+	
+	<select id="queryList" resultMap="transactionTempResultMap">
+		SELECT
+			ID
+			,BLOCK_CHAIN
+			,BLOCK_NUMBER
+			,BLOCK_HASH
+			,TX_HASH
+			,TX_STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			TRANSACTION_TEMP
+		WHERE
+			1=1
+			<include refid="transactionTempColumns" />
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryAll" resultMap="transactionTempResultMap">
+		SELECT
+			ID
+			,BLOCK_CHAIN
+			,BLOCK_NUMBER
+			,BLOCK_HASH
+			,TX_HASH
+			,TX_STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			TRANSACTION_TEMP 
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryPaginationListCount" resultType="Integer">
+		SELECT
+			COUNT(0)
+		FROM
+			TRANSACTION_TEMP 
+		WHERE
+			1=1 
+			<include refid="transactionTempColumns" />
+	</select>
+	
+	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="transactionTempResultMap">
+		SELECT
+			ID
+			,BLOCK_CHAIN
+			,BLOCK_NUMBER
+			,BLOCK_HASH
+			,TX_HASH
+			,TX_STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			TRANSACTION_TEMP
+		WHERE
+			1=1
+			<include refid="transactionTempColumns" />
+		ORDER BY
+			ID
+	</select>
+	
+</mapper>
+

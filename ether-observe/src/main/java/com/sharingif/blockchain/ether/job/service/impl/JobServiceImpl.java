@@ -221,14 +221,8 @@ public class JobServiceImpl implements JobService, InitializingBean {
     }
 
     @Override
-    public void updateJobStatusInQueueToSuspending() {
-        batchJobService.updateJobStatusInQueueToPending();
-    }
-
-
-    @Override
     public void afterPropertiesSet() throws Exception {
-        updateJobStatusInQueueToSuspending();
-        batchJobService.updateBlockChainSyncDataHandlingToPending();
+        batchJobService.updateJobStatusInQueueToPending();
+        batchJobService.updateJobStatusHandlingToPending();
     }
 }

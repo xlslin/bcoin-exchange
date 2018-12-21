@@ -17,6 +17,11 @@ import java.math.BigInteger;
 public class BlockChainDAOImpl extends BaseDAOImpl<BlockChain, String> implements BlockChainDAO {
 
     @Override
+    public PaginationRepertory<BlockChain> queryPaginationListOrderByBlockNumberAsc(PaginationCondition<BlockChain> paginationCondition) {
+        return queryPagination("queryPaginationListOrderByBlockNumberAsc", paginationCondition);
+    }
+
+    @Override
     public PaginationRepertory<BlockChain> queryPaginationListByBlockNumberStatus(PaginationCondition<BlockChain> paginationCondition) {
         return queryPagination("queryPaginationListByBlockNumberStatus", paginationCondition);
     }

@@ -3,6 +3,7 @@ package com.sharingif.blockchain.ether.block.service.impl;
 
 import com.sharingif.blockchain.ether.block.dao.BlockChainDAO;
 import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
+import com.sharingif.blockchain.ether.block.model.entity.TransactionTemp;
 import com.sharingif.blockchain.ether.block.service.BlockChainService;
 import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
 import com.sharingif.blockchain.ether.block.service.TransactionService;
@@ -70,10 +71,48 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	}
 
 	@Override
+	public boolean hasInitializeAndDataSync() {
+		BlockChain queryBlockChain = new BlockChain();
+		queryBlockChain.setStatus(BlockChain.STATUS_INITIALIZE);
+		List<BlockChain> blockChainList = blockChainDAO.queryList(queryBlockChain);
+
+		if(blockChainList != null && !blockChainList.isEmpty()) {
+			return true;
+		}
+
+		queryBlockChain.setStatus(BlockChain.STATUS_DATA_SYNC);
+		blockChainList = blockChainDAO.queryList(queryBlockChain);
+
+		if(blockChainList != null && !blockChainList.isEmpty()) {
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public void updateStatusToReadyDataSync(String id) {
+		BlockChain updateBlockChain = new BlockChain();
+		updateBlockChain.setId(id);
+		updateBlockChain.setStatus(BlockChain.STATUS_READY_DATA_SYNC);
+
+		blockChainDAO.updateById(updateBlockChain);
+	}
+
+	@Override
 	public void updateStatusToDataSync(String id) {
 		BlockChain updateBlockChain = new BlockChain();
 		updateBlockChain.setId(id);
 		updateBlockChain.setStatus(BlockChain.STATUS_DATA_SYNC);
+
+		blockChainDAO.updateById(updateBlockChain);
+	}
+
+	@Override
+	public void updateStatusToUnverified(String id) {
+		BlockChain updateBlockChain = new BlockChain();
+		updateBlockChain.setId(id);
+		updateBlockChain.setStatus(BlockChain.STATUS_UNVERIFIED);
 
 		blockChainDAO.updateById(updateBlockChain);
 	}
@@ -98,53 +137,74 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	}
 
 	@Override
-	public void updateStatusToUnverified(String id) {
-		BlockChain updateBlockChain = new BlockChain();
-		updateBlockChain.setId(id);
-		updateBlockChain.setStatus(BlockChain.STATUS_UNVERIFIED);
-
-		blockChainDAO.updateById(updateBlockChain);
-	}
-
-
-	@Override
-	@Transactional
-	public List<BlockChain> syncDataJob() {
+	public void syncDataToTransactionTemp() {
 		BlockChain queryBlockChain = new BlockChain();
 		queryBlockChain.setStatus(BlockChain.STATUS_INITIALIZE);
 		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
 		blockChainPaginationCondition.setCondition(queryBlockChain);
 		blockChainPaginationCondition.setQueryCount(false);
 		blockChainPaginationCondition.setCurrentPage(1);
-		blockChainPaginationCondition.setPageSize(10);
+		blockChainPaginationCondition.setPageSize(1);
 
-		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPagination(blockChainPaginationCondition);
+		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListOrderByBlockNumberAsc(blockChainPaginationCondition);
 		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
-		if(blockChainList == null && blockChainList.isEmpty()) {
-			return null;
+		if(blockChainList == null || blockChainList.isEmpty()) {
+			return;
 		}
 
-		for(BlockChain BlockChain : blockChainList) {
-			updateStatusToDataSync(BlockChain.getId());
+		BlockChain blockChain = blockChainList.get(0);
+		EthBlock.Block block = ethereumBlockService.getBlock(blockChain.getBlockNumber(), false);
+		// 如果数据库记录区块hash与当前区块hash不匹配直接修改BlockChain状态为"数据同步中"并返回
+		if(!blockChain.getHash().equals(block.getHash())) {
+			updateStatusToReadyDataSync(blockChain.getId());
+			return;
 		}
 
-		return blockChainList;
+
+		List<EthBlock.TransactionResult> transactionResultList = block.getTransactions();
+		for(EthBlock.TransactionResult<String> transactionResult : transactionResultList) {
+			String txHash = transactionResult.get();
+			transactionService.getTransactionTempService().addUnprocessedStatus(blockChain.getBlockNumber(), blockChain.getHash(), txHash);
+		}
+		updateStatusToReadyDataSync(blockChain.getId());
+
+	}
+
+	@Override
+	public void addSyncDataJob() {
+		BlockChain queryBlockChain = new BlockChain();
+		queryBlockChain.setStatus(BlockChain.STATUS_DATA_SYNC);
+		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
+		blockChainPaginationCondition.setCondition(queryBlockChain);
+		blockChainPaginationCondition.setQueryCount(false);
+		blockChainPaginationCondition.setCurrentPage(1);
+		blockChainPaginationCondition.setPageSize(1);
+
+		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListOrderByBlockNumberAsc(blockChainPaginationCondition);
+		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
+		if(blockChainList == null || blockChainList.isEmpty()) {
+			return;
+		}
+
+		BlockChain blockChain = blockChainList.get(0);
+		List<TransactionTemp> transactionTempList = transactionService.getTransactionTempService().getUnprocessedStatusTransactionTemp(blockChain.getBlockNumber(), blockChain.getHash());
+		if(transactionTempList == null || transactionTempList.isEmpty()) {
+			updateStatusToDataSync(blockChain.getId());
+
+			return;
+		}
+
+		for(TransactionTemp transactionTemp : transactionTempList){
+			transactionService.getTransactionTempService().addTransactionJobAndUpdateStatusToProcessing(transactionTemp);
+		}
+
+		updateStatusToDataSync(blockChain.getId());
 	}
 
 	@Override
 	public void syncData(JobRequest jobRequest) {
-		String blockChainId = jobRequest.getDataId();
-		BlockChain blockChain = blockChainDAO.queryById(blockChainId);
-
-		BigInteger blockNumber = blockChain.getBlockNumber();
-
-		transactionService.syncData(
-				blockNumber
-				,blockChain.getHash()
-				,blockChain.getBlockCreateTime()
-		);
-
-		updateStatusToUnverified(blockChainId);
+		String transactionTempId = jobRequest.getDataId();
+		transactionService.syncData(transactionTempId);
 	}
 
 	@Transactional
