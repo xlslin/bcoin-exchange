@@ -1,6 +1,7 @@
 package com.sharingif.blockchain.ether.block.service.impl;
 
 import com.sharingif.blockchain.ether.block.service.Erc20ContractService;
+import com.sharingif.cube.core.exception.validation.ValidationCubeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -80,8 +81,7 @@ public class Erc20ContractServiceImpl implements Erc20ContractService {
         try {
             return remoteCall.send();
         } catch (Exception e) {
-            logger.error("get name error", e);
-            throw new RuntimeException(e);
+            throw new ValidationCubeException("get name error");
         }
     }
 
@@ -95,8 +95,7 @@ public class Erc20ContractServiceImpl implements Erc20ContractService {
         try {
             return remoteCall.send();
         } catch (Exception e) {
-            logger.error("get symbol error", e);
-            throw new RuntimeException(e);
+            throw new ValidationCubeException("get symbol error");
         }
     }
 
@@ -110,8 +109,7 @@ public class Erc20ContractServiceImpl implements Erc20ContractService {
         try {
             return remoteCall.send();
         } catch (Exception e) {
-            logger.error("get decimals error", e);
-            throw new RuntimeException(e);
+            throw new ValidationCubeException("get decimals error");
         }
     }
 
@@ -125,8 +123,7 @@ public class Erc20ContractServiceImpl implements Erc20ContractService {
         try {
             return remoteCall.send();
         } catch (Exception e) {
-            logger.error("get totalSupply error", e);
-            throw new RuntimeException(e);
+            throw new ValidationCubeException("get totalSupply error");
         }
     }
 

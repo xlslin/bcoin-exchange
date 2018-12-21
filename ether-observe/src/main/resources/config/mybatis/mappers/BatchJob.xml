@@ -289,6 +289,33 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			STATUS = #{currentStatus}
 	]]>
 	</update>
+
+	<select id="queryPaginationListByPlanExecuteTimeStatus" parameterType="PaginationCondition" resultMap="batchJobResultMap">
+		<![CDATA[
+		SELECT
+		ID
+			,PARENT_JOB_ID
+			,LOOKUP_PATH
+			,PLAN_EXECUTE_TIME
+			,ACTUAL_EXECUTE_TIME
+			,EXECUTE_COUNT
+			,DATA_ID
+			,STATUS
+			,ERROR_MESSAGE_CODE
+			,ERROR_LOCALIZED_MESSAGE
+			,ERROR_CAUSE
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			BATCH_JOB
+		WHERE
+			PLAN_EXECUTE_TIME < #{planExecuteTime}
+		AND
+			STATUS = #{status}
+		ORDER BY
+		ID
+		]]>
+	</select>
 	
 </mapper>
 

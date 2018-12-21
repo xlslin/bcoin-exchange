@@ -9,6 +9,7 @@ import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,13 +36,14 @@ public class BatchJobServiceImpl extends BaseServiceImpl<BatchJob, String> imple
 
         BatchJob batchJob = new BatchJob();
         batchJob.setStatus(BatchJob.STATUS_PENDING);
+        batchJob.setPlanExecuteTime(new Date());
         PaginationCondition<BatchJob> suspendingPaginationCondition = new PaginationCondition<BatchJob>();
         suspendingPaginationCondition.setCondition(batchJob);
         suspendingPaginationCondition.setQueryCount(false);
         suspendingPaginationCondition.setCurrentPage(1);
         suspendingPaginationCondition.setPageSize(queryJobSize);
 
-        PaginationRepertory suspendingPaginationRepertory = batchJobDAO.queryPagination(suspendingPaginationCondition);
+        PaginationRepertory suspendingPaginationRepertory = batchJobDAO.queryPaginationListByPlanExecuteTimeStatus(suspendingPaginationCondition);
 
         return suspendingPaginationRepertory.getPageItems();
     }

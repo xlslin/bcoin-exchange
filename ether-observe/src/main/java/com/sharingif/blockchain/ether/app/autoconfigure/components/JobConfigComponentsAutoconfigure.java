@@ -13,7 +13,19 @@ public class JobConfigComponentsAutoconfigure {
 
     @Bean("blockChainSyncDataJobConfig")
     public JobConfig createBlockChainSyncDataJobConfig() {
-        return new JobConfig("/blockChain/syncDataJob","/blockChain/syncData");
+        JobConfig jobConfig = new JobConfig(null,"/blockChain/syncDataJob", "/blockChain/syncData");
+        jobConfig.setMaxExecuteCount(100);
+
+        return jobConfig;
+    }
+
+    @Bean("blockChainSyncDataConfig")
+    public JobConfig createBlockChainSyncDataConfig() {
+        JobConfig jobConfig = new JobConfig("/blockChain/syncDataJob","/blockChain/syncData", null);
+        jobConfig.setMaxExecuteCount(100);
+        jobConfig.setIntervalPlanExecuteTime(1000*60*5);
+
+        return jobConfig;
     }
 
 
@@ -21,7 +33,7 @@ public class JobConfigComponentsAutoconfigure {
     public Map<String, JobConfig> createAllJobConfig(List<JobConfig> jobConfigList) {
         Map<String, JobConfig> allJobConfig = new HashMap<>(jobConfigList.size());
         for(JobConfig jobConfig : jobConfigList) {
-            allJobConfig.put(jobConfig.getPreLookupPath(), jobConfig);
+            allJobConfig.put(jobConfig.getLookupPath(), jobConfig);
         }
 
         return allJobConfig;

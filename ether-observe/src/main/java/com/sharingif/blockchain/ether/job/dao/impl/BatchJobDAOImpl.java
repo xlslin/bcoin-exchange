@@ -3,6 +3,8 @@ package com.sharingif.blockchain.ether.job.dao.impl;
 import com.sharingif.blockchain.ether.app.dao.impl.BaseDAOImpl;
 import com.sharingif.blockchain.ether.job.dao.BatchJobDAO;
 import com.sharingif.blockchain.ether.job.model.entity.BatchJob;
+import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
+import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -18,6 +20,11 @@ import java.util.Map;
  */
 @Repository
 public class BatchJobDAOImpl extends BaseDAOImpl<BatchJob, String> implements BatchJobDAO {
+
+    @Override
+    public PaginationRepertory<BatchJob> queryPaginationListByPlanExecuteTimeStatus(PaginationCondition<BatchJob> paginationCondition) {
+        return queryPagination("queryPaginationListByPlanExecuteTimeStatus", paginationCondition);
+    }
 
     @Override
     public int updateStatusByStatus(String currentStatus, String updateStatus) {

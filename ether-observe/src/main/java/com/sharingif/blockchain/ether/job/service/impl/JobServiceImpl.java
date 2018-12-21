@@ -2,6 +2,7 @@ package com.sharingif.blockchain.ether.job.service.impl;
 
 import com.sharingif.blockchain.ether.job.model.entity.BatchJob;
 import com.sharingif.blockchain.ether.job.service.BatchJobService;
+import com.sharingif.cube.batch.core.JobConfig;
 import com.sharingif.cube.batch.core.JobModel;
 import com.sharingif.cube.batch.core.JobService;
 import com.sharingif.cube.batch.core.handler.SimpleDispatcherHandler;
@@ -9,17 +10,20 @@ import com.sharingif.cube.batch.core.request.JobRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -53,6 +57,7 @@ public class JobServiceImpl implements JobService, InitializingBean {
     private SimpleDispatcherHandler simpleDispatcherHandler;
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
     private DataSourceTransactionManager dataSourceTransactionManager;
+    private Map<String, JobConfig> allJobConfig;
 
     @Value("${job.queue.size}")
     public void setQueueSize(int queueSize) {
@@ -77,6 +82,10 @@ public class JobServiceImpl implements JobService, InitializingBean {
     @Resource
     public void setDataSourceTransactionManager(DataSourceTransactionManager dataSourceTransactionManager) {
         this.dataSourceTransactionManager = dataSourceTransactionManager;
+    }
+    @Resource
+    public void setAllJobConfig(@Qualifier("allJobConfig") Map<String, JobConfig> allJobConfig) {
+        this.allJobConfig = allJobConfig;
     }
 
     @Override
@@ -116,6 +125,7 @@ public class JobServiceImpl implements JobService, InitializingBean {
         batchJobService.updateById(updateBatchJob);
     }
 
+    @Transactional
     @Override
     public void failure(String jobId, String message, String localizedMessage, String cause) {
         BatchJob queryBatchJob = batchJobService.getById(jobId);
@@ -130,6 +140,18 @@ public class JobServiceImpl implements JobService, InitializingBean {
         updateBatchJob.setErrorCause(cause);
 
         batchJobService.updateById(updateBatchJob);
+
+        JobConfig jobConfig = allJobConfig.get(queryBatchJob.getLookupPath());
+        if(jobConfig.getMaxExecuteCount() > updateBatchJob.getExecuteCount()) {
+            BatchJob batchJob = new BatchJob();
+            batchJob.setLookupPath(jobConfig.getLookupPath());
+            batchJob.setPlanExecuteTime(new Date(System.currentTimeMillis()+jobConfig.getIntervalPlanExecuteTime()));
+            batchJob.setExecuteCount(updateBatchJob.getExecuteCount());
+            batchJob.setDataId(queryBatchJob.getDataId());
+            batchJob.setStatus(BatchJob.STATUS_PENDING);
+
+            batchJobService.add(batchJob);
+        }
     }
 
     @Override
