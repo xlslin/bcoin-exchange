@@ -31,6 +31,11 @@ public class BlockChainController {
 		blockChainService.syncDataToTransactionTemp();
 	}
 
+	@RequestMapping(value="addSyncDataJob", method= RequestMethod.POST)
+	public void addSyncDataJob() {
+		blockChainService.addSyncDataJob();
+	}
+
 	@RequestMapping(value="syncData", method= RequestMethod.POST)
 	public void syncData(JobRequest jobRequest) {
 		blockChainService.syncData(jobRequest);

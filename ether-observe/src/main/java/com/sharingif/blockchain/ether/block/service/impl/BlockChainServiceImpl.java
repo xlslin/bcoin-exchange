@@ -173,7 +173,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	@Override
 	public void addSyncDataJob() {
 		BlockChain queryBlockChain = new BlockChain();
-		queryBlockChain.setStatus(BlockChain.STATUS_DATA_SYNC);
+		queryBlockChain.setStatus(BlockChain.STATUS_READY_DATA_SYNC);
 		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
 		blockChainPaginationCondition.setCondition(queryBlockChain);
 		blockChainPaginationCondition.setQueryCount(false);

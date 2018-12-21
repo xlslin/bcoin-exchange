@@ -30,6 +30,14 @@ public class BlockChainScheduled {
     }
 
     @Scheduled(fixedRate = 1000*1)
+    public synchronized void addSyncDataJob() {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setLookupPath("/blockChain/addSyncDataJob");
+
+        simpleDispatcherHandler.doDispatch(jobRequest);
+    }
+
+    @Scheduled(fixedRate = 1000*1)
     public synchronized void validateBolck() {
         JobRequest jobRequest = new JobRequest();
         jobRequest.setLookupPath("/blockChain/validateBolck");
