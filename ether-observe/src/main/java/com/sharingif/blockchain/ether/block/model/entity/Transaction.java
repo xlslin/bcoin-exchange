@@ -174,7 +174,9 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
 		return this.txTo;
 	}
 	public void setContractAddress(java.lang.String contractAddress) {
-		this.contractAddress = contractAddress;
+		if(!StringUtils.isTrimEmpty(contractAddress)) {
+			this.contractAddress = contractAddress.toLowerCase();
+		}
 	}
 	public java.lang.String getContractAddress() {
 		return this.contractAddress;
