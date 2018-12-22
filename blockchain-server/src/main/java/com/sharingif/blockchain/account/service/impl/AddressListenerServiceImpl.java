@@ -40,6 +40,8 @@ public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener,
 	}
 
 	protected void add(String blockType, String address) {
+		address = address.toLowerCase();
+
 		AddressListener addressListener = new AddressListener();
 		addressListener.setBlockType(blockType);
 		addressListener.setAddress(address);

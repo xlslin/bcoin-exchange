@@ -3,6 +3,7 @@ package com.sharingif.blockchain.ether.block.model.entity;
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
 import com.sharingif.cube.components.sequence.Sequence;
+import com.sharingif.cube.core.util.StringUtils;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -157,13 +158,17 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
 		return this.blockNumber;
 	}
 	public void setTxFrom(java.lang.String txFrom) {
-		this.txFrom = txFrom;
+		if(!StringUtils.isTrimEmpty(txFrom)) {
+			this.txFrom = txFrom.toLowerCase();
+		}
 	}
 	public java.lang.String getTxFrom() {
 		return this.txFrom;
 	}
 	public void setTxTo(java.lang.String txTo) {
-		this.txTo = txTo;
+		if(!StringUtils.isTrimEmpty(txTo)) {
+			this.txTo = txTo.toLowerCase();
+		}
 	}
 	public java.lang.String getTxTo() {
 		return this.txTo;
