@@ -14,6 +14,7 @@ import com.sharingif.blockchain.ether.block.service.*;
 import com.sharingif.blockchain.ether.deposit.model.entity.Deposit;
 import com.sharingif.blockchain.ether.deposit.service.DepositService;
 import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
+import com.sharingif.cube.core.exception.validation.ValidationCubeException;
 import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
@@ -232,17 +233,6 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 	}
 
-	@Transactional
-	protected void updateTransactionTempAndBlockChain(TransactionTemp transactionTemp) {
-		// 修改TransactionTemp状态为已处理
-		transactionTempService.updateStatusToProcessed(transactionTemp.getId());
-		// 查看是否还有处理中的交易，如果没有修改BlockChain状态为未验证
-		List<TransactionTemp> transactionTempList = transactionTempService.getProcessingStatusTransactionTemp(transactionTemp.getBlockChainId(), transactionTemp.getBlockNumber(), transactionTemp.getBlockHash());
-		if(transactionTempList == null || transactionTempList.isEmpty()) {
-			blockChainService.updateStatusToUnverified(transactionTemp.getBlockChainId());
-		}
-	}
-
 	@Override
 	public void syncData(String transactionTempId) {
 		TransactionTemp transactionTemp = transactionTempService.getById(transactionTempId);
@@ -253,7 +243,8 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		} catch (Exception e) {
 			// 交易有可能分叉不存在，如果不存在直接修改状态返回,如果是其它异常直接报错
 			if(e.getCause() instanceof NoSuchElementException) {
-				updateTransactionTempAndBlockChain(transactionTemp);
+				// 修改TransactionTemp状态为已处理
+				transactionTempService.updateStatusToProcessed(transactionTemp.getId());
 				return;
 			}
 		}
@@ -261,7 +252,8 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		BlockChain blockChain = blockChainService.getById(transactionTemp.getBlockChainId());
 		handlerTransaction(transaction, blockChain.getHash(), blockChain.getBlockCreateTime());
 
-		updateTransactionTempAndBlockChain(transactionTemp);
+		// 修改TransactionTemp状态为已处理
+		transactionTempService.updateStatusToProcessed(transactionTemp.getId());
 	}
 
 	@Override

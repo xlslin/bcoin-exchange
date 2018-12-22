@@ -73,6 +73,11 @@ public interface BlockChainService extends IBaseService<BlockChain, java.lang.St
     void syncData(JobRequest jobRequest);
 
     /**
+     * 修改状态为区块验证有效
+     */
+    void updateStatusToUnverified();
+
+    /**
      * 验证块是否有效
      */
     void validateBolck();

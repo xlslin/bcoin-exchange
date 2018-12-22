@@ -38,6 +38,14 @@ public class BlockChainScheduled {
     }
 
     @Scheduled(fixedRate = 1000*1)
+    public synchronized void updateStatusToUnverified() {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setLookupPath("/blockChain/updateStatusToUnverified");
+
+        simpleDispatcherHandler.doDispatch(jobRequest);
+    }
+
+    @Scheduled(fixedRate = 1000*1)
     public synchronized void validateBolck() {
         JobRequest jobRequest = new JobRequest();
         jobRequest.setLookupPath("/blockChain/validateBolck");

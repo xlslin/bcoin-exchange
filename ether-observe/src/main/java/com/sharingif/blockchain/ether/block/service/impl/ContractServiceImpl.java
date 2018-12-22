@@ -38,10 +38,9 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract, java.lang.Str
 		return contractDAO.queryByIdForUpdate(id);
 	}
 
-	@Transactional
-	protected void addContractLock(Contract insertContract) {
-		Contract contract = getByIdForUpdate(insertContract.getContractAddress());
-		if(contract != null) {
+	protected void addContract(Contract insertContract) {
+		Contract queryContract = contractDAO.queryById(insertContract.getContractAddress());
+		if(queryContract != null) {
 			return;
 		}
 		contractDAO.insert(insertContract);
@@ -87,7 +86,7 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract, java.lang.Str
 			insertContract.setDecimals(decimals);
 			insertContract.setTotalsupply(totalSupply);
 
-			addContractLock(insertContract);
+			addContract(insertContract);
 		}
 
 		queryContract = contractDAO.queryById(contractAddress);

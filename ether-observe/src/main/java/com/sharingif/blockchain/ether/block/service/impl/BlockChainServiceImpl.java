@@ -207,6 +207,30 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		transactionService.syncData(transactionTempId);
 	}
 
+	@Override
+	public void updateStatusToUnverified() {
+		BlockChain queryBlockChain = new BlockChain();
+		queryBlockChain.setStatus(BlockChain.STATUS_DATA_SYNC);
+		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
+		blockChainPaginationCondition.setCondition(queryBlockChain);
+		blockChainPaginationCondition.setQueryCount(false);
+		blockChainPaginationCondition.setCurrentPage(1);
+		blockChainPaginationCondition.setPageSize(1);
+
+		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListOrderByBlockNumberAsc(blockChainPaginationCondition);
+		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
+		if(blockChainList == null || blockChainList.isEmpty()) {
+			return;
+		}
+
+		BlockChain blockChain = blockChainList.get(0);
+		// 查看是否还有处理中的交易，如果没有修改BlockChain状态为未验证
+		List<TransactionTemp> transactionTempList = transactionService.getTransactionTempService().getProcessingStatusTransactionTemp(blockChain.getId(), blockChain.getBlockNumber(), blockChain.getHash());
+		if(transactionTempList == null || transactionTempList.isEmpty()) {
+			updateStatusToUnverified(blockChain.getId());
+		}
+	}
+
 	@Transactional
 	protected void validateBolck(BlockChain blockChain, EthBlock.Block block, BigInteger blockNumber) {
 		if(blockChain.getHash().equals(block.getHash())) {

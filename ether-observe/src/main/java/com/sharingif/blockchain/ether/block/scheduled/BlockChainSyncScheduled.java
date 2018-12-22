@@ -20,7 +20,7 @@ public class BlockChainSyncScheduled {
         this.simpleDispatcherHandler = simpleDispatcherHandler;
     }
 
-    @Scheduled(fixedRate = 1000*5)
+    @Scheduled(fixedRate = 1000*1)
     public synchronized void sync() {
         JobRequest jobRequest = new JobRequest();
         jobRequest.setLookupPath("/blockChainSync/sync");
