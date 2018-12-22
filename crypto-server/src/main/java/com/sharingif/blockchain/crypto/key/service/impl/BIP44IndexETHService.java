@@ -32,7 +32,7 @@ public class BIP44IndexETHService implements BIP44IndexService {
         Credentials credentials = Credentials.create(ecKeyPair);
         String filePath = keystore.persistenceSecretKey(extendedKeyPath, currentIndexNumber, password, ecKeyPair);
 
-        secretKey.setAddress(credentials.getAddress());
+        secretKey.setAddress(credentials.getAddress().toLowerCase());
         secretKey.setFilePath(filePath);
 
         return secretKey;
