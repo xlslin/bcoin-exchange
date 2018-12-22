@@ -43,4 +43,12 @@ public class JobScheduled {
         simpleDispatcherHandler.doDispatch(jobRequest);
     }
 
+    @Scheduled(fixedRate = 1000*60*5)
+    public synchronized void deleteJobHistory() {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setLookupPath("/job/deleteJobHistory");
+
+        simpleDispatcherHandler.doDispatch(jobRequest);
+    }
+
 }

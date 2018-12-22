@@ -52,6 +52,14 @@ public interface TransactionTempService extends IBaseService<TransactionTemp, ja
     List<TransactionTemp> getProcessingStatusTransactionTemp(String blockChainId, BigInteger blockNumber, String blockHash);
 
     /**
+     * 删除已处理临时交易
+     * @param blockChainId
+     * @param blockNumber
+     * @param blockHash
+     */
+    int deleteProcessedTransactionTemp(String blockChainId, BigInteger blockNumber, String blockHash);
+
+    /**
      * 添加TransactionJob、修改状态为已处理
      */
     void addTransactionJobAndUpdateStatusToProcessing(TransactionTemp transactionTemp);

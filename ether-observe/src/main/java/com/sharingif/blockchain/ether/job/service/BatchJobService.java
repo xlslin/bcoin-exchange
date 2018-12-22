@@ -49,4 +49,10 @@ public interface BatchJobService extends IBaseService<BatchJob, String> {
      */
     int updateJobStatusHandlingToPending();
 
+    /**
+     * 删除已完成状态交易
+     * @return
+     */
+    int deleteSolvedBatchJob();
+
 }

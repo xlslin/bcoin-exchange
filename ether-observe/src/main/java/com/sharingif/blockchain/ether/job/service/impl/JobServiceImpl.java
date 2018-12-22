@@ -221,6 +221,11 @@ public class JobServiceImpl implements JobService, InitializingBean {
     }
 
     @Override
+    public void deleteJobHistory() {
+        batchJobService.deleteSolvedBatchJob();
+    }
+
+    @Override
     public void afterPropertiesSet() throws Exception {
         batchJobService.updateJobStatusInQueueToPending();
         batchJobService.updateJobStatusHandlingToPending();

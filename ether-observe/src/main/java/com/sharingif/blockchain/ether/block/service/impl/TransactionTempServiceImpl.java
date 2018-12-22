@@ -105,6 +105,17 @@ public class TransactionTempServiceImpl extends BaseServiceImpl<TransactionTemp,
 		return transactionTempDAO.queryList(transactionTemp);
 	}
 
+	@Override
+	public int deleteProcessedTransactionTemp(String blockChainId, BigInteger blockNumber, String blockHash) {
+		TransactionTemp transactionTemp = new TransactionTemp();
+		transactionTemp.setBlockChainId(blockChainId);
+		transactionTemp.setBlockNumber(blockNumber);
+		transactionTemp.setBlockHash(blockHash);
+		transactionTemp.setTxStatus(TransactionTemp.TX_STATUS_PROCESSED);
+
+		return transactionTempDAO.deleteByCondition(transactionTemp);
+	}
+
 	@Transactional
 	@Override
 	public void addTransactionJobAndUpdateStatusToProcessing(TransactionTemp transactionTemp) {

@@ -227,6 +227,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		// 查看是否还有处理中的交易，如果没有修改BlockChain状态为未验证
 		List<TransactionTemp> transactionTempList = transactionService.getTransactionTempService().getProcessingStatusTransactionTemp(blockChain.getId(), blockChain.getBlockNumber(), blockChain.getHash());
 		if(transactionTempList == null || transactionTempList.isEmpty()) {
+			transactionService.getTransactionTempService().deleteProcessedTransactionTemp(blockChain.getId(), blockChain.getBlockNumber(), blockChain.getHash());
 			updateStatusToUnverified(blockChain.getId());
 		}
 	}

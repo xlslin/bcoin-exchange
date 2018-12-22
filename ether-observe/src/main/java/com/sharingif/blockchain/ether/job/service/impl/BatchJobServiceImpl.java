@@ -77,4 +77,12 @@ public class BatchJobServiceImpl extends BaseServiceImpl<BatchJob, String> imple
         return batchJobDAO.updateStatusByStatus(BatchJob.STATUS_HANDLING, BatchJob.STATUS_PENDING);
     }
 
+    @Override
+    public int deleteSolvedBatchJob() {
+        BatchJob batchJob = new BatchJob();
+        batchJob.setStatus(BatchJob.STATUS_SOLVED);
+
+        return batchJobDAO.deleteByCondition(batchJob);
+    }
+
 }

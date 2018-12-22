@@ -31,4 +31,10 @@ public class JobController {
         jobService.consume();
     }
 
+    @RequestMapping(value="deleteJobHistory", method= RequestMethod.POST)
+    public void deleteJobHistory() {
+
+        jobService.deleteJobHistory();
+    }
+
 }
