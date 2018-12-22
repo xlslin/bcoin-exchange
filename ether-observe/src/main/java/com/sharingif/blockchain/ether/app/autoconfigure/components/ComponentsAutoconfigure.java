@@ -147,6 +147,7 @@ public class ComponentsAutoconfigure {
     @Bean("multiViewResolver")
     public MultiViewResolver createMultiViewResolver() {
         List<ViewResolver> viewResolvers = new ArrayList<ViewResolver>();
+        viewResolvers.add(new JobViewResolver());
         MultiViewResolver multiViewResolver = new MultiViewResolver();
         multiViewResolver.setViewResolvers(viewResolvers);
 
@@ -193,44 +194,26 @@ public class ComponentsAutoconfigure {
 
     @Bean("jobMultithreadDispatcherHandler")
     public MultithreadDispatcherHandler createJobMultithreadDispatcherHandler(
-            MultiHandlerMethodChain multiHandlerMethodChain
-            , MultiHandlerMapping multiHandlerMapping
-            , MultiHandlerMethodAdapter multiHandlerMethodAdapter
-            , MultiCubeExceptionHandler multiCubeExceptionHandler
-            , MultiViewResolver multiViewResolver
+            SimpleDispatcherHandler simpleDispatcherHandler
             , ThreadPoolTaskExecutor jobThreadPoolTaskExecutor
     ) {
         MultithreadDispatcherHandler multithreadDispatcherHandler = new MultithreadDispatcherHandler();
 
         multithreadDispatcherHandler.setMultithreadDispatcherHandlerThreadPoolTaskExecutor(jobThreadPoolTaskExecutor);
-        multithreadDispatcherHandler.setHandlerMethodChain(multiHandlerMethodChain);
-        multithreadDispatcherHandler.setRequestContextResolver(new JobRequestContextResolver());
-        multithreadDispatcherHandler.setMultiHandlerMapping(multiHandlerMapping);
-        multithreadDispatcherHandler.setMultiHandlerMethodAdapter(multiHandlerMethodAdapter);
-        multithreadDispatcherHandler.setMultiCubeExceptionHandler(multiCubeExceptionHandler);
-        multithreadDispatcherHandler.setMultiViewResolver(multiViewResolver);
+        multithreadDispatcherHandler.setSimpleDispatcherHandler(simpleDispatcherHandler);
 
         return multithreadDispatcherHandler;
     }
 
     @Bean("blockMultithreadDispatcherHandler")
     public MultithreadDispatcherHandler createMultithreadDispatcherHandler(
-            MultiHandlerMethodChain multiHandlerMethodChain
-            , MultiHandlerMapping multiHandlerMapping
-            , MultiHandlerMethodAdapter multiHandlerMethodAdapter
-            , MultiCubeExceptionHandler multiCubeExceptionHandler
-            , MultiViewResolver multiViewResolver
+            SimpleDispatcherHandler simpleDispatcherHandler
             , ThreadPoolTaskExecutor blockThreadPoolTaskExecutor
     ) {
         MultithreadDispatcherHandler multithreadDispatcherHandler = new MultithreadDispatcherHandler();
 
         multithreadDispatcherHandler.setMultithreadDispatcherHandlerThreadPoolTaskExecutor(blockThreadPoolTaskExecutor);
-        multithreadDispatcherHandler.setHandlerMethodChain(multiHandlerMethodChain);
-        multithreadDispatcherHandler.setRequestContextResolver(new JobRequestContextResolver());
-        multithreadDispatcherHandler.setMultiHandlerMapping(multiHandlerMapping);
-        multithreadDispatcherHandler.setMultiHandlerMethodAdapter(multiHandlerMethodAdapter);
-        multithreadDispatcherHandler.setMultiCubeExceptionHandler(multiCubeExceptionHandler);
-        multithreadDispatcherHandler.setMultiViewResolver(multiViewResolver);
+        multithreadDispatcherHandler.setSimpleDispatcherHandler(simpleDispatcherHandler);
 
         return multithreadDispatcherHandler;
     }

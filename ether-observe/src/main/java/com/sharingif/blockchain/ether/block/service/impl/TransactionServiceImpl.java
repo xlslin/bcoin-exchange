@@ -231,7 +231,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 			blockChainService.syncDataFinish(blockTransaction);
 		} catch (Exception e) {
-			logger.error("analysis block transaction error, blockTransaction:{}", blockTransaction);
+			logger.error("analysis block transaction error, blockTransaction:{}", blockTransaction, e);
 			try {
 				TimeUnit.SECONDS.sleep(1);
 			} catch (InterruptedException e2) {

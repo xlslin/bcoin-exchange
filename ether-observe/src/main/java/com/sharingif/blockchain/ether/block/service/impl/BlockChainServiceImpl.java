@@ -135,6 +135,11 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		}
 
 		List<EthBlock.TransactionResult> transactionResultList = block.getTransactions();
+
+		if(transactionResultList == null || transactionResultList.isEmpty()) {
+			updateStatusToUnverified(blockChain.getId());
+		}
+
 		for(EthBlock.TransactionResult<EthBlock.TransactionObject> transactionResult : transactionResultList) {
 			org.web3j.protocol.core.methods.response.Transaction transaction = transactionResult.get().get();
 			BlockTransaction blockTransaction = new BlockTransaction();
