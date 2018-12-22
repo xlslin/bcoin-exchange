@@ -35,14 +35,4 @@ public class BatchJobDAOImpl extends BaseDAOImpl<BatchJob, String> implements Ba
         return super.update("updateStatusByStatus", queryParameter);
     }
 
-    @Override
-    public int updateStatusByLookupPathStatus(String lookupPath, String currentStatus, String updateStatus) {
-        Map<String,String> queryParameter = new HashMap<String,String>();
-        queryParameter.put("lookupPath", lookupPath);
-        queryParameter.put("currentStatus", currentStatus);
-        queryParameter.put("updateStatus", updateStatus);
-
-        return super.update("updateStatusByStatus", queryParameter);
-    }
-
 }

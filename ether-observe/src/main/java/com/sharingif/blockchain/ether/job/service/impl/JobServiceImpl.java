@@ -5,6 +5,7 @@ import com.sharingif.blockchain.ether.job.service.BatchJobService;
 import com.sharingif.cube.batch.core.JobConfig;
 import com.sharingif.cube.batch.core.JobModel;
 import com.sharingif.cube.batch.core.JobService;
+import com.sharingif.cube.batch.core.handler.MultithreadDispatcherHandler;
 import com.sharingif.cube.batch.core.handler.SimpleDispatcherHandler;
 import com.sharingif.cube.batch.core.request.JobRequest;
 import org.slf4j.Logger;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -55,7 +55,7 @@ public class JobServiceImpl implements JobService, InitializingBean {
 
     private BatchJobService batchJobService;
     private SimpleDispatcherHandler simpleDispatcherHandler;
-    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private MultithreadDispatcherHandler jobMultithreadDispatcherHandler;
     private DataSourceTransactionManager dataSourceTransactionManager;
     private Map<String, JobConfig> allJobConfig;
 
@@ -75,9 +75,9 @@ public class JobServiceImpl implements JobService, InitializingBean {
     public void setSimpleDispatcherHandler(SimpleDispatcherHandler simpleDispatcherHandler) {
         this.simpleDispatcherHandler = simpleDispatcherHandler;
     }
-    @Resource(name = "workThreadPoolTaskExecutor")
-    public void setThreadPoolTaskExecutor(ThreadPoolTaskExecutor threadPoolTaskExecutor) {
-        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+    @Resource
+    public void setJobMultithreadDispatcherHandler(MultithreadDispatcherHandler jobMultithreadDispatcherHandler) {
+        this.jobMultithreadDispatcherHandler = jobMultithreadDispatcherHandler;
     }
     @Resource
     public void setDataSourceTransactionManager(DataSourceTransactionManager dataSourceTransactionManager) {
@@ -211,12 +211,8 @@ public class JobServiceImpl implements JobService, InitializingBean {
                 dataSourceTransactionManager.rollback(status);
             }
 
-            threadPoolTaskExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    simpleDispatcherHandler.doDispatch(inQueueJobRequest);
-                }
-            });
+            jobMultithreadDispatcherHandler.doDispatch(inQueueJobRequest);
+
         }
     }
 

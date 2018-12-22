@@ -1,6 +1,7 @@
 package com.sharingif.blockchain.ether.block.service;
 
 
+import com.sharingif.blockchain.ether.block.model.entity.BlockTransaction;
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.deposit.service.DepositService;
 import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
@@ -11,12 +12,6 @@ import java.util.Date;
 
 
 public interface TransactionService extends IBaseService<Transaction, java.lang.String> {
-
-    /**
-     * 返回临时交易服务
-     * @return
-     */
-    TransactionTempService getTransactionTempService();
 
     /**
      * 获取充值服务
@@ -32,9 +27,9 @@ public interface TransactionService extends IBaseService<Transaction, java.lang.
 
     /**
      * 区块交易同步
-     * @param transactionTempId
+     * @param blockTransaction
      */
-    void syncData(String transactionTempId);
+    void analysis(BlockTransaction blockTransaction);
 
     /**
      * 修改指定区块的交易为有效

@@ -20,27 +20,10 @@ public class BlockChainScheduled {
         this.simpleDispatcherHandler = simpleDispatcherHandler;
     }
 
-
-    @Scheduled(fixedRate = 1000*1)
-    public synchronized void syncDataToTransactionTemp() {
+    @Scheduled(fixedRate = -1)
+    public synchronized void syncData() {
         JobRequest jobRequest = new JobRequest();
-        jobRequest.setLookupPath("/blockChain/syncDataToTransactionTemp");
-
-        simpleDispatcherHandler.doDispatch(jobRequest);
-    }
-
-    @Scheduled(fixedRate = 1000*1)
-    public synchronized void addSyncDataJob() {
-        JobRequest jobRequest = new JobRequest();
-        jobRequest.setLookupPath("/blockChain/addSyncDataJob");
-
-        simpleDispatcherHandler.doDispatch(jobRequest);
-    }
-
-    @Scheduled(fixedRate = 1000*1)
-    public synchronized void updateStatusToUnverified() {
-        JobRequest jobRequest = new JobRequest();
-        jobRequest.setLookupPath("/blockChain/updateStatusToUnverified");
+        jobRequest.setLookupPath("/blockChain/syncData");
 
         simpleDispatcherHandler.doDispatch(jobRequest);
     }

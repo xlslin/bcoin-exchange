@@ -31,13 +31,4 @@ public interface BatchJobDAO extends BaseDAO<BatchJob, String> {
      */
     int updateStatusByStatus(String currentStatus, String updateStatus);
 
-    /**
-     * 修改指定交易状态为待处理
-     * @param currentStatus
-     * @param currentStatus
-     * @param updateStatus
-     * @return
-     */
-    int updateStatusByLookupPathStatus(String lookupPath, String currentStatus, String updateStatus);
-
 }

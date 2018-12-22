@@ -7,14 +7,16 @@ import com.sharingif.blockchain.api.account.service.AddressListenerApiService;
 import com.sharingif.blockchain.ether.app.autoconfigure.constants.CoinType;
 import com.sharingif.blockchain.ether.block.dao.TransactionDAO;
 import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
+import com.sharingif.blockchain.ether.block.model.entity.BlockTransaction;
 import com.sharingif.blockchain.ether.block.model.entity.Contract;
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
-import com.sharingif.blockchain.ether.block.model.entity.TransactionTemp;
-import com.sharingif.blockchain.ether.block.service.*;
+import com.sharingif.blockchain.ether.block.service.BlockChainService;
+import com.sharingif.blockchain.ether.block.service.ContractService;
+import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
+import com.sharingif.blockchain.ether.block.service.TransactionService;
 import com.sharingif.blockchain.ether.deposit.model.entity.Deposit;
 import com.sharingif.blockchain.ether.deposit.service.DepositService;
 import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
-import com.sharingif.cube.core.exception.validation.ValidationCubeException;
 import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
@@ -26,9 +28,8 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import javax.annotation.Resource;
 import java.math.BigInteger;
-import java.util.Date;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.lang.String> implements TransactionService {
@@ -39,7 +40,6 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	private EthereumBlockService ethereumBlockService;
 	private ContractService contractService;
 	private AddressListenerApiService addressListenerApiService;
-	private TransactionTempService transactionTempService;
 	private BlockChainService blockChainService;
 
 	public TransactionDAO getTransactionDAO() {
@@ -75,14 +75,6 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	@Resource
 	public void setAddressListenerApiService(AddressListenerApiService addressListenerApiService) {
 		this.addressListenerApiService = addressListenerApiService;
-	}
-	@Resource
-	public void setTransactionTempService(TransactionTempService transactionTempService) {
-		this.transactionTempService = transactionTempService;
-	}
-	@Override
-	public TransactionTempService getTransactionTempService() {
-		return transactionTempService;
 	}
 	@Resource
 	public void setBlockChainService(BlockChainService blockChainService) {
@@ -143,7 +135,6 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		}
 	}
 
-
 	protected void persistenceTransaction(Transaction transaction) {
 		boolean isWatchFrom = isWatch(transaction.getTxFrom());
 
@@ -165,10 +156,6 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			return;
 		}
 		persistenceTransaction(transaction, isWatchFrom, isWatchTo);
-	}
-
-	protected void handlerEthTransaction(Transaction transaction) {
-		persistenceTransaction(transaction);
 	}
 
 	protected void handlerContractTransaction(Transaction transaction) {
@@ -195,10 +182,9 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 		transaction.setCoinType(contract.getSymbol());
 
-		persistenceTransaction(transaction);
 	}
 
-	protected void handlerTransaction(org.web3j.protocol.core.methods.response.Transaction tx, String hash, Date blockCreateTime){
+	protected void analysis(BlockChain blockChain, org.web3j.protocol.core.methods.response.Transaction tx) {
 		TransactionReceipt transactionReceipt = ethereumBlockService.getTransactionReceipt(tx.getHash());
 
 		Transaction transaction = new Transaction();
@@ -215,45 +201,45 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		transaction.setCoinType(CoinType.ETH.name());
 		transaction.setGasUsed(transactionReceipt.getGasUsed());
 		transaction.setTxReceiptStatus(Transaction.convertTxReceiptStatus(transactionReceipt.getStatus()));
-		transaction.setTxTime(blockCreateTime);
+		transaction.setTxTime(blockChain.getBlockCreateTime());
 		transaction.setConfirmBlockNumber(0);
 		transaction.setActualFee(transaction.getGasUsed().multiply(transaction.getGasPrice()));
-		transaction.setBlockHash(hash);
-
-		if(StringUtils.isTrimEmpty(transaction.getTxTo())) {
-			return;
-		}
+		transaction.setBlockHash(blockChain.getHash());
 
 		Boolean isContractAddress = ethereumBlockService.isContractAddress(transaction.getTxTo());
 		if(isContractAddress) {
 			handlerContractTransaction(transaction);
-		} else {
-			handlerEthTransaction(transaction);
 		}
+
+		persistenceTransaction(transaction);
+
 
 	}
 
 	@Override
-	public void syncData(String transactionTempId) {
-		TransactionTemp transactionTemp = transactionTempService.getById(transactionTempId);
-
-		org.web3j.protocol.core.methods.response.Transaction transaction = null;
+	public void analysis(BlockTransaction blockTransaction) {
 		try {
-			transaction = ethereumBlockService.getTransactionByHash(transactionTemp.getTxHash());
-		} catch (Exception e) {
-			// 交易有可能分叉不存在，如果不存在直接修改状态返回,如果是其它异常直接报错
-			if(e.getCause() instanceof NoSuchElementException) {
-				// 修改TransactionTemp状态为已处理
-				transactionTempService.updateStatusToProcessed(transactionTemp.getId());
+			BlockChain blockChain = blockTransaction.getBlockChain();
+			org.web3j.protocol.core.methods.response.Transaction tx = blockTransaction.getTransaction();
+
+			if(StringUtils.isTrimEmpty(tx.getTo())) {
+				blockChainService.syncDataFinish(blockTransaction);
 				return;
 			}
+
+			analysis(blockChain, tx);
+
+			blockChainService.syncDataFinish(blockTransaction);
+		} catch (Exception e) {
+			logger.error("analysis block transaction error, blockTransaction:{}", blockTransaction);
+			try {
+				TimeUnit.SECONDS.sleep(1);
+			} catch (InterruptedException e2) {
+				logger.error("sync block transaction thread sleep error", e2);
+			}
+			analysis(blockTransaction);
 		}
 
-		BlockChain blockChain = blockChainService.getById(transactionTemp.getBlockChainId());
-		handlerTransaction(transaction, blockChain.getHash(), blockChain.getBlockCreateTime());
-
-		// 修改TransactionTemp状态为已处理
-		transactionTempService.updateStatusToProcessed(transactionTemp.getId());
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.sharingif.blockchain.ether.app.autoconfigure.components;
 import com.sharingif.cube.batch.core.JobConfig;
 import com.sharingif.cube.batch.core.JobService;
 import com.sharingif.cube.batch.core.exception.JobExceptionHandler;
+import com.sharingif.cube.batch.core.handler.MultithreadDispatcherHandler;
 import com.sharingif.cube.batch.core.handler.SimpleDispatcherHandler;
 import com.sharingif.cube.batch.core.handler.adapter.JobRequestHandlerMethodArgumentResolver;
 import com.sharingif.cube.batch.core.handler.chain.JobViewHandlerMethodChain;
@@ -51,12 +52,24 @@ public class ComponentsAutoconfigure {
         return threadPoolTaskScheduler;
     }
 
-    @Bean("workThreadPoolTaskExecutor")
+    @Bean("jobThreadPoolTaskExecutor")
     public ThreadPoolTaskExecutor createThreadPoolTaskExecutor(@Value("${work.max.pool.size}") int poolSize) {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
 
         threadPoolTaskExecutor.setCorePoolSize(poolSize);
         threadPoolTaskExecutor.setMaxPoolSize(poolSize);
+        threadPoolTaskExecutor.setThreadNamePrefix("jobThreadPoolTaskExecutor-");
+
+        return threadPoolTaskExecutor;
+    }
+
+    @Bean("blockThreadPoolTaskExecutor")
+    public ThreadPoolTaskExecutor createMultithreadDispatcherHandlerThreadPoolTaskExecutor(@Value("${work.max.pool.size}") int poolSize) {
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+
+        threadPoolTaskExecutor.setCorePoolSize(poolSize);
+        threadPoolTaskExecutor.setMaxPoolSize(poolSize);
+        threadPoolTaskExecutor.setThreadNamePrefix("blockThreadPoolTaskExecutor-");
 
         return threadPoolTaskExecutor;
     }
@@ -175,8 +188,54 @@ public class ComponentsAutoconfigure {
         simpleDispatcherHandler.setMultiHandlerMethodAdapter(multiHandlerMethodAdapter);
         simpleDispatcherHandler.setMultiCubeExceptionHandler(multiCubeExceptionHandler);
         simpleDispatcherHandler.setMultiViewResolver(multiViewResolver);
+
         return simpleDispatcherHandler;
     }
+
+    @Bean("jobMultithreadDispatcherHandler")
+    public MultithreadDispatcherHandler createJobMultithreadDispatcherHandler(
+            MultiHandlerMethodChain multiHandlerMethodChain
+            , MultiHandlerMapping multiHandlerMapping
+            , MultiHandlerMethodAdapter multiHandlerMethodAdapter
+            , MultiCubeExceptionHandler multiCubeExceptionHandler
+            , MultiViewResolver multiViewResolver
+            , ThreadPoolTaskExecutor jobThreadPoolTaskExecutor
+    ) {
+        MultithreadDispatcherHandler multithreadDispatcherHandler = new MultithreadDispatcherHandler();
+
+        multithreadDispatcherHandler.setMultithreadDispatcherHandlerThreadPoolTaskExecutor(jobThreadPoolTaskExecutor);
+        multithreadDispatcherHandler.setHandlerMethodChain(multiHandlerMethodChain);
+        multithreadDispatcherHandler.setRequestContextResolver(new JobRequestContextResolver());
+        multithreadDispatcherHandler.setMultiHandlerMapping(multiHandlerMapping);
+        multithreadDispatcherHandler.setMultiHandlerMethodAdapter(multiHandlerMethodAdapter);
+        multithreadDispatcherHandler.setMultiCubeExceptionHandler(multiCubeExceptionHandler);
+        multithreadDispatcherHandler.setMultiViewResolver(multiViewResolver);
+
+        return multithreadDispatcherHandler;
+    }
+
+    @Bean("blockMultithreadDispatcherHandler")
+    public MultithreadDispatcherHandler createMultithreadDispatcherHandler(
+            MultiHandlerMethodChain multiHandlerMethodChain
+            , MultiHandlerMapping multiHandlerMapping
+            , MultiHandlerMethodAdapter multiHandlerMethodAdapter
+            , MultiCubeExceptionHandler multiCubeExceptionHandler
+            , MultiViewResolver multiViewResolver
+            , ThreadPoolTaskExecutor blockThreadPoolTaskExecutor
+    ) {
+        MultithreadDispatcherHandler multithreadDispatcherHandler = new MultithreadDispatcherHandler();
+
+        multithreadDispatcherHandler.setMultithreadDispatcherHandlerThreadPoolTaskExecutor(blockThreadPoolTaskExecutor);
+        multithreadDispatcherHandler.setHandlerMethodChain(multiHandlerMethodChain);
+        multithreadDispatcherHandler.setRequestContextResolver(new JobRequestContextResolver());
+        multithreadDispatcherHandler.setMultiHandlerMapping(multiHandlerMapping);
+        multithreadDispatcherHandler.setMultiHandlerMethodAdapter(multiHandlerMethodAdapter);
+        multithreadDispatcherHandler.setMultiCubeExceptionHandler(multiCubeExceptionHandler);
+        multithreadDispatcherHandler.setMultiViewResolver(multiViewResolver);
+
+        return multithreadDispatcherHandler;
+    }
+
 
     @Bean("propertyTextEncryptor")
     public TextEncryptor createPropertyTextEncryptor(@Value("${property.key}") String key, Base64Coder base64Coder) throws UnsupportedEncodingException {

@@ -45,32 +45,28 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 	 * 添加区块信息
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	protected void addBlockChainInfo(BigInteger blockNumber) {
+	protected void addBlockChainInfo(EthBlock.Block block) {
 		BlockChainSync blockChainSync = new BlockChainSync();
-		blockChainSync.setCurrentSyncBlockNumber(blockNumber);
+		blockChainSync.setCurrentSyncBlockNumber(block.getNumber());
 		blockChainSyncDAO.insert(blockChainSync);
 
-		EthBlock.Block block = ethereumBlockService.getBlock(blockNumber, false);
-
-		blockChainService.initializeBlockChain(blockNumber, block.getHash(), block.getTimestamp());
+		blockChainService.addUntreatedStatus(block.getNumber(), block.getHash(), block.getTimestamp());
 	}
 
 	/**
 	 * 修改区块信息
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	protected void updateBlockChainInfo(BigInteger blockNumber) {
+	protected void updateBlockChainInfo(EthBlock.Block block) {
 		List<BlockChainSync> blockChainSyncList = blockChainSyncDAO.queryAll();
 		BlockChainSync queryBlockChainSync = blockChainSyncList.get(0);
 
 		BlockChainSync updateBlockChainSync = new BlockChainSync();
 		updateBlockChainSync.setId(queryBlockChainSync.getId());
-		updateBlockChainSync.setCurrentSyncBlockNumber(blockNumber);
+		updateBlockChainSync.setCurrentSyncBlockNumber(block.getNumber());
 		blockChainSyncDAO.updateById(updateBlockChainSync);
 
-		EthBlock.Block block = ethereumBlockService.getBlock(blockNumber, false);
-
-		blockChainService.initializeBlockChain(blockNumber, block.getHash(), block.getTimestamp());
+		blockChainService.addUntreatedStatus(block.getNumber(), block.getHash(), block.getTimestamp());
 	}
 
 	@Override
@@ -83,7 +79,8 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 
 		// 如果数据库区块同步信息为空，插入当前区块链信息到BlockChainSync表、BlockChain表并返回
 		if(blockChainSyncList == null || blockChainSyncList.isEmpty()) {
-			addBlockChainInfo(blockNumber);
+			EthBlock.Block block = ethereumBlockService.getBlock(blockNumber, false);
+			addBlockChainInfo(block);
 
 			return;
 		}
@@ -96,14 +93,10 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 			return;
 		}
 
-		// 如果有未处理或数据同步中的BlockChain就不处理
-		boolean hasInitializeAndDataSync = blockChainService.hasInitializeAndDataSync();
-		if(hasInitializeAndDataSync) {
-			return;
-		}
+		EthBlock.Block block = ethereumBlockService.getBlock(currentSyncBlockNumber.add(BigInteger.ONE), false);
 
 		// 如果数据库区块号小于区块链当前区块号，递增修改BlockChainSync，添加BlockChain表
-		updateBlockChainInfo(currentSyncBlockNumber.add(BigInteger.ONE));
+		updateBlockChainInfo(block);
 
 	}
 

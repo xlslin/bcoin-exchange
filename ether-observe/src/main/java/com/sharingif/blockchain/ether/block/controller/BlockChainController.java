@@ -2,7 +2,6 @@ package com.sharingif.blockchain.ether.block.controller;
 
 
 import com.sharingif.blockchain.ether.block.service.BlockChainService;
-import com.sharingif.cube.batch.core.request.JobRequest;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import org.springframework.stereotype.Controller;
@@ -24,24 +23,9 @@ public class BlockChainController {
 		this.blockChainService = blockChainService;
 	}
 
-	@RequestMapping(value="syncDataToTransactionTemp", method= RequestMethod.POST)
-	public void syncDataToTransactionTemp() {
-		blockChainService.syncDataToTransactionTemp();
-	}
-
-	@RequestMapping(value="addSyncDataJob", method= RequestMethod.POST)
-	public void addSyncDataJob() {
-		blockChainService.addSyncDataJob();
-	}
-
 	@RequestMapping(value="syncData", method= RequestMethod.POST)
-	public void syncData(JobRequest jobRequest) {
-		blockChainService.syncData(jobRequest);
-	}
-
-	@RequestMapping(value="updateStatusToUnverified", method= RequestMethod.POST)
-	public void updateStatusToUnverified() {
-		blockChainService.updateStatusToUnverified();
+	public void syncData() {
+		blockChainService.syncData();
 	}
 
 	@RequestMapping(value="validateBolck", method= RequestMethod.POST)

@@ -277,19 +277,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	]]>
 	</update>
 
-	<update id="updateStatusByLookupPathStatus">
-		<![CDATA[
-	    UPDATE
-	    	BATCH_JOB
-	    SET
-	        STATUS = #{updateStatus}
-	    WHERE
-			LOOKUP_PATH = #{lookupPath}
-		AND
-			STATUS = #{currentStatus}
-	]]>
-	</update>
-
 	<select id="queryPaginationListByPlanExecuteTimeStatus" parameterType="PaginationCondition" resultMap="batchJobResultMap">
 		<![CDATA[
 		SELECT

@@ -11,12 +11,9 @@ import java.util.Map;
 @Configuration
 public class JobConfigComponentsAutoconfigure {
 
-    @Bean("blockChainSyncDataConfig")
+    @Bean("transactionAnalysisJobConfig")
     public JobConfig createBlockChainSyncDataConfig() {
-        JobConfig jobConfig = new JobConfig(null,"/blockChain/syncData", null);
-        jobConfig.setMaxExecuteCount(100);
-        jobConfig.setIntervalPlanExecuteTime(1000*5);
-
+        JobConfig jobConfig = new JobConfig(null,"/transaction/analysis", null);
         return jobConfig;
     }
 

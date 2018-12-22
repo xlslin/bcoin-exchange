@@ -11,17 +11,9 @@ import java.util.Date;
 public class BlockChain implements java.io.Serializable, IObjectDateOperationHistory, IDataId {
 
 	/**
-	 * 状态(CSH:初始化)
+	 * 状态(WCL:未处理)
 	 */
-	public static final String STATUS_INITIALIZE = "CSH";
-	/**
-	 * 状态(ZBSJTB:准备数据同步)
-	 */
-	public static final String STATUS_READY_DATA_SYNC = "ZBSJTB";
-	/**
-	 * 状态(SJTBZ:数据同步中)
-	 */
-	public static final String STATUS_DATA_SYNC = "SJTBZ";
+	public static final String STATUS_UNTREATED = "WCL";
 	/**
 	 * 状态(WYZ:未验证)
 	 */
@@ -58,7 +50,7 @@ public class BlockChain implements java.io.Serializable, IObjectDateOperationHis
      */	
 	private Date blockCreateTime;
     /**
-     * 状态(CSH:初始化、ZBSJTB:准备数据同步、SJTBZ:数据同步中、WYZ:未验证、QKYZYX:区块验证有效、QKYZWX:区块验证无效)			db_column: STATUS
+     * 状态(WCL:未处理、WYZ:未验证、QKYZYX:区块验证有效、QKYZWX:区块验证无效)			db_column: STATUS
      */	
 	private java.lang.String status;
     /**

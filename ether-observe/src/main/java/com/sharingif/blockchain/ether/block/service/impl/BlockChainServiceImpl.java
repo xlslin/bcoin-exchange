@@ -3,10 +3,12 @@ package com.sharingif.blockchain.ether.block.service.impl;
 
 import com.sharingif.blockchain.ether.block.dao.BlockChainDAO;
 import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
-import com.sharingif.blockchain.ether.block.model.entity.TransactionTemp;
+import com.sharingif.blockchain.ether.block.model.entity.BlockTransaction;
 import com.sharingif.blockchain.ether.block.service.BlockChainService;
 import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
 import com.sharingif.blockchain.ether.block.service.TransactionService;
+import com.sharingif.cube.batch.core.JobConfig;
+import com.sharingif.cube.batch.core.handler.MultithreadDispatcherHandler;
 import com.sharingif.cube.batch.core.request.JobRequest;
 import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
 import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
@@ -20,6 +22,9 @@ import javax.annotation.Resource;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang.String> implements BlockChainService {
@@ -28,6 +33,9 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	private TransactionService transactionService;
 	private EthereumBlockService ethereumBlockService;
 	private String ethValidBlockNumber;
+	private Queue<BlockTransaction> currentBlockTransactionQueue = new ConcurrentLinkedQueue<BlockTransaction>();
+	private MultithreadDispatcherHandler blockMultithreadDispatcherHandler;
+	private JobConfig transactionAnalysisJobConfig;
 
 	public BlockChainDAO getBlockChainDAO() {
 		return blockChainDAO;
@@ -50,62 +58,25 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		this.ethValidBlockNumber = ethValidBlockNumber;
 	}
 
-	@Override
-	public void initializeBlockChain(BigInteger blockNumber, String blockHash, BigInteger blockCreateTime) {
-		BlockChain queryBlockChain = new BlockChain();
-		queryBlockChain.setBlockNumber(blockNumber);
-		queryBlockChain.setHash(blockHash);
-		queryBlockChain = blockChainDAO.query(queryBlockChain);
-		if(queryBlockChain != null) {
-			return;
-		}
+	@Resource
+	public void setBlockMultithreadDispatcherHandler(MultithreadDispatcherHandler blockMultithreadDispatcherHandler) {
+		this.blockMultithreadDispatcherHandler = blockMultithreadDispatcherHandler;
+	}
+	@Resource
+	public void setTransactionAnalysisJobConfig(JobConfig transactionAnalysisJobConfig) {
+		this.transactionAnalysisJobConfig = transactionAnalysisJobConfig;
+	}
 
+	@Override
+	public void addUntreatedStatus(BigInteger blockNumber, String blockHash, BigInteger blockCreateTime) {
 		BlockChain insertBlockChain = new BlockChain();
 		insertBlockChain.setBlockNumber(blockNumber);
 		insertBlockChain.setVerifyBlockNumber(blockNumber);
 		insertBlockChain.setHash(blockHash);
-		insertBlockChain.setStatus(BlockChain.STATUS_INITIALIZE);
+		insertBlockChain.setStatus(BlockChain.STATUS_UNTREATED);
 		insertBlockChain.setBlockCreateTime(new Date(blockCreateTime.multiply(new BigInteger("1000")).longValue()));
 
 		blockChainDAO.insert(insertBlockChain);
-	}
-
-	@Override
-	public boolean hasInitializeAndDataSync() {
-		BlockChain queryBlockChain = new BlockChain();
-		queryBlockChain.setStatus(BlockChain.STATUS_INITIALIZE);
-		List<BlockChain> blockChainList = blockChainDAO.queryList(queryBlockChain);
-
-		if(blockChainList != null && !blockChainList.isEmpty()) {
-			return true;
-		}
-
-		queryBlockChain.setStatus(BlockChain.STATUS_DATA_SYNC);
-		blockChainList = blockChainDAO.queryList(queryBlockChain);
-
-		if(blockChainList != null && !blockChainList.isEmpty()) {
-			return true;
-		}
-
-		return false;
-	}
-
-	@Override
-	public void updateStatusToReadyDataSync(String id) {
-		BlockChain updateBlockChain = new BlockChain();
-		updateBlockChain.setId(id);
-		updateBlockChain.setStatus(BlockChain.STATUS_READY_DATA_SYNC);
-
-		blockChainDAO.updateById(updateBlockChain);
-	}
-
-	@Override
-	public void updateStatusToDataSync(String id) {
-		BlockChain updateBlockChain = new BlockChain();
-		updateBlockChain.setId(id);
-		updateBlockChain.setStatus(BlockChain.STATUS_DATA_SYNC);
-
-		blockChainDAO.updateById(updateBlockChain);
 	}
 
 	@Override
@@ -136,100 +107,69 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		blockChainDAO.updateById(updateBlockChain);
 	}
 
-	@Override
-	public void syncDataToTransactionTemp() {
-		BlockChain queryBlockChain = new BlockChain();
-		queryBlockChain.setStatus(BlockChain.STATUS_INITIALIZE);
-		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
-		blockChainPaginationCondition.setCondition(queryBlockChain);
-		blockChainPaginationCondition.setQueryCount(false);
-		blockChainPaginationCondition.setCurrentPage(1);
-		blockChainPaginationCondition.setPageSize(1);
-
-		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListOrderByBlockNumberAsc(blockChainPaginationCondition);
-		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
-		if(blockChainList == null || blockChainList.isEmpty()) {
-			return;
-		}
-
-		BlockChain blockChain = blockChainList.get(0);
-		EthBlock.Block block = ethereumBlockService.getBlock(blockChain.getBlockNumber(), false);
-		// 如果数据库记录区块hash与当前区块hash不匹配直接修改BlockChain状态为"数据同步中"并返回
+	protected void syncData(BlockChain blockChain) {
+		EthBlock.Block block = ethereumBlockService.getBlock(blockChain.getBlockNumber(), true);
 		if(!blockChain.getHash().equals(block.getHash())) {
-			updateStatusToReadyDataSync(blockChain.getId());
+			updateStatusToUnverified(blockChain.getId());
 			return;
 		}
-
 
 		List<EthBlock.TransactionResult> transactionResultList = block.getTransactions();
-		for(EthBlock.TransactionResult<String> transactionResult : transactionResultList) {
-			String txHash = transactionResult.get();
-			transactionService.getTransactionTempService().addUnprocessedStatus(blockChain.getId(), blockChain.getBlockNumber(), blockChain.getHash(), txHash);
+		for(EthBlock.TransactionResult<EthBlock.TransactionObject> transactionResult : transactionResultList) {
+			org.web3j.protocol.core.methods.response.Transaction transaction = transactionResult.get().get();
+			BlockTransaction blockTransaction = new BlockTransaction();
+			currentBlockTransactionQueue.add(blockTransaction);
+			JobRequest<BlockTransaction> jobRequest = new JobRequest<BlockTransaction>();
+			jobRequest.setLookupPath(transactionAnalysisJobConfig.getLookupPath());
+			jobRequest.setData(blockTransaction);
+			blockMultithreadDispatcherHandler.doDispatch(jobRequest);
 		}
-		updateStatusToReadyDataSync(blockChain.getId());
+	}
 
+	protected void syncDataThreadSleep() {
+		try {
+			TimeUnit.SECONDS.sleep(1);
+		} catch (InterruptedException e) {
+			logger.error("sync block transaction thread sleep error", e);
+		}
 	}
 
 	@Override
-	public void addSyncDataJob() {
+	public void syncData() {
 		BlockChain queryBlockChain = new BlockChain();
-		queryBlockChain.setStatus(BlockChain.STATUS_READY_DATA_SYNC);
+		queryBlockChain.setStatus(BlockChain.STATUS_UNTREATED);
 		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
 		blockChainPaginationCondition.setCondition(queryBlockChain);
 		blockChainPaginationCondition.setQueryCount(false);
 		blockChainPaginationCondition.setCurrentPage(1);
 		blockChainPaginationCondition.setPageSize(1);
 
-		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListOrderByBlockNumberAsc(blockChainPaginationCondition);
-		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
-		if(blockChainList == null || blockChainList.isEmpty()) {
-			return;
+		while (true) {
+			if(currentBlockTransactionQueue.peek() != null) {
+				syncDataThreadSleep();
+				continue;
+			}
+
+			PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListOrderByBlockNumberAsc(blockChainPaginationCondition);
+			List<BlockChain> blockChainList = paginationRepertory.getPageItems();
+			if(blockChainList == null || blockChainList.isEmpty()) {
+				syncDataThreadSleep();
+				continue;
+			}
+
+			BlockChain blockChain = blockChainList.get(0);
+			syncData(blockChain);
 		}
 
-		BlockChain blockChain = blockChainList.get(0);
-		List<TransactionTemp> transactionTempList = transactionService.getTransactionTempService().getUnprocessedStatusTransactionTemp(blockChain.getId(), blockChain.getBlockNumber(), blockChain.getHash());
-		if(transactionTempList == null || transactionTempList.isEmpty()) {
-			updateStatusToDataSync(blockChain.getId());
-
-			return;
-		}
-
-		for(TransactionTemp transactionTemp : transactionTempList){
-			transactionService.getTransactionTempService().addTransactionJobAndUpdateStatusToProcessing(transactionTemp);
-		}
-
-		updateStatusToDataSync(blockChain.getId());
 	}
 
+	@Transactional
 	@Override
-	public void syncData(JobRequest jobRequest) {
-		String transactionTempId = jobRequest.getDataId();
-		transactionService.syncData(transactionTempId);
-	}
-
-	@Override
-	public void updateStatusToUnverified() {
-		BlockChain queryBlockChain = new BlockChain();
-		queryBlockChain.setStatus(BlockChain.STATUS_DATA_SYNC);
-		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
-		blockChainPaginationCondition.setCondition(queryBlockChain);
-		blockChainPaginationCondition.setQueryCount(false);
-		blockChainPaginationCondition.setCurrentPage(1);
-		blockChainPaginationCondition.setPageSize(1);
-
-		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListOrderByBlockNumberAsc(blockChainPaginationCondition);
-		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
-		if(blockChainList == null || blockChainList.isEmpty()) {
-			return;
+	public synchronized void syncDataFinish(BlockTransaction blockTransaction) {
+		if(currentBlockTransactionQueue.size() ==1) {
+			updateStatusToUnverified(blockTransaction.getBlockChain().getId());
 		}
-
-		BlockChain blockChain = blockChainList.get(0);
-		// 查看是否还有处理中的交易，如果没有修改BlockChain状态为未验证
-		List<TransactionTemp> transactionTempList = transactionService.getTransactionTempService().getProcessingStatusTransactionTemp(blockChain.getId(), blockChain.getBlockNumber(), blockChain.getHash());
-		if(transactionTempList == null || transactionTempList.isEmpty()) {
-			transactionService.getTransactionTempService().deleteProcessedTransactionTemp(blockChain.getId(), blockChain.getBlockNumber(), blockChain.getHash());
-			updateStatusToUnverified(blockChain.getId());
-		}
+		currentBlockTransactionQueue.remove(blockTransaction);
 	}
 
 	@Transactional
@@ -250,7 +190,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 					, blockChain.getHash()
 					, blockNumber.subtract(blockChain.getBlockNumber()).intValue()
 			);
-			initializeBlockChain(block.getNumber(), block.getHash(), block.getTimestamp());
+			addUntreatedStatus(block.getNumber(), block.getHash(), block.getTimestamp());
 		}
 	}
 

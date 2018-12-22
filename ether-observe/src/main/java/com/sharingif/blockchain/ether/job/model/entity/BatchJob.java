@@ -87,13 +87,13 @@ public class BatchJob implements java.io.Serializable, IObjectDateOperationHisto
 	//columns END
 
 	public JobRequest convertJobRequest() {
-		JobRequest jobRequest = new JobRequest();
+		JobRequest<String> jobRequest = new JobRequest<String>();
 		jobRequest.setParentJobId(getParentJobId());
 		jobRequest.setId(getId());
 		jobRequest.setLookupPath(getLookupPath());
 		jobRequest.setPlanExecuteTime(getPlanExecuteTime());
 		jobRequest.setExecuteCount(getExecuteCount());
-		jobRequest.setDataId(getDataId());
+		jobRequest.setData(getDataId());
 		jobRequest.setCreatetime(getCreateTime());
 
 		return jobRequest;
