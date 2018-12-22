@@ -145,9 +145,8 @@ public class ComponentsAutoconfigure {
     }
 
     @Bean("multiViewResolver")
-    public MultiViewResolver createMultiViewResolver(JobService jobService) {
+    public MultiViewResolver createMultiViewResolver() {
         List<ViewResolver> viewResolvers = new ArrayList<ViewResolver>();
-        viewResolvers.add(new JobViewResolver(jobService));
         MultiViewResolver multiViewResolver = new MultiViewResolver();
         multiViewResolver.setViewResolvers(viewResolvers);
 

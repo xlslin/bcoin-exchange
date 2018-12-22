@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang.String> implements BlockChainService {
@@ -107,7 +106,28 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		blockChainDAO.updateById(updateBlockChain);
 	}
 
-	protected void syncData(BlockChain blockChain) {
+	@Override
+	public void syncData() {
+		if(currentBlockTransactionQueue.peek() != null) {
+			return;
+		}
+
+		BlockChain queryBlockChain = new BlockChain();
+		queryBlockChain.setStatus(BlockChain.STATUS_UNTREATED);
+		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
+		blockChainPaginationCondition.setCondition(queryBlockChain);
+		blockChainPaginationCondition.setQueryCount(false);
+		blockChainPaginationCondition.setCurrentPage(1);
+		blockChainPaginationCondition.setPageSize(1);
+
+		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListOrderByBlockNumberAsc(blockChainPaginationCondition);
+		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
+		if(blockChainList == null || blockChainList.isEmpty()) {
+			return;
+		}
+
+		BlockChain blockChain = blockChainList.get(0);
+
 		EthBlock.Block block = ethereumBlockService.getBlock(blockChain.getBlockNumber(), true);
 		if(!blockChain.getHash().equals(block.getHash())) {
 			updateStatusToUnverified(blockChain.getId());
@@ -118,47 +138,13 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		for(EthBlock.TransactionResult<EthBlock.TransactionObject> transactionResult : transactionResultList) {
 			org.web3j.protocol.core.methods.response.Transaction transaction = transactionResult.get().get();
 			BlockTransaction blockTransaction = new BlockTransaction();
+			blockTransaction.setBlockChain(blockChain);
+			blockTransaction.setTransaction(transaction);
 			currentBlockTransactionQueue.add(blockTransaction);
 			JobRequest<BlockTransaction> jobRequest = new JobRequest<BlockTransaction>();
 			jobRequest.setLookupPath(transactionAnalysisJobConfig.getLookupPath());
 			jobRequest.setData(blockTransaction);
 			blockMultithreadDispatcherHandler.doDispatch(jobRequest);
-		}
-	}
-
-	protected void syncDataThreadSleep() {
-		try {
-			TimeUnit.SECONDS.sleep(1);
-		} catch (InterruptedException e) {
-			logger.error("sync block transaction thread sleep error", e);
-		}
-	}
-
-	@Override
-	public void syncData() {
-		BlockChain queryBlockChain = new BlockChain();
-		queryBlockChain.setStatus(BlockChain.STATUS_UNTREATED);
-		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
-		blockChainPaginationCondition.setCondition(queryBlockChain);
-		blockChainPaginationCondition.setQueryCount(false);
-		blockChainPaginationCondition.setCurrentPage(1);
-		blockChainPaginationCondition.setPageSize(1);
-
-		while (true) {
-			if(currentBlockTransactionQueue.peek() != null) {
-				syncDataThreadSleep();
-				continue;
-			}
-
-			PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListOrderByBlockNumberAsc(blockChainPaginationCondition);
-			List<BlockChain> blockChainList = paginationRepertory.getPageItems();
-			if(blockChainList == null || blockChainList.isEmpty()) {
-				syncDataThreadSleep();
-				continue;
-			}
-
-			BlockChain blockChain = blockChainList.get(0);
-			syncData(blockChain);
 		}
 
 	}
