@@ -25,7 +25,7 @@ public class BlockChainSync implements java.io.Serializable, IObjectDateOperatio
 	@Sequence(ref="uuidSequenceGenerator")
 	private String id;
     /**
-     * 当前同步区块数			db_column: BLOCK_NUMBER 
+     * 区块数			db_column: BLOCK_NUMBER
      */	
 	private BigInteger blockNumber;
     /**
