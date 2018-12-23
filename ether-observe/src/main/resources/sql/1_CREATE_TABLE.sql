@@ -27,7 +27,7 @@ CREATE TABLE CONTRACT
 (
   CONTRACT_ADDRESS      VARCHAR(100) NOT NULL COMMENT '合约地址',
   NAME                  VARCHAR(100) COMMENT '名称',
-  SYMBOL                VARCHAR(20) COMMENT '符号',
+  SYMBOL                VARCHAR(100) COMMENT '符号',
   DECIMALS              INT COMMENT '小数位',
   TOTALSUPPLY           DECIMAL(65,0) COMMENT '总发行量',
   CREATE_TIME           TIMESTAMP NULL COMMENT '创建时间',

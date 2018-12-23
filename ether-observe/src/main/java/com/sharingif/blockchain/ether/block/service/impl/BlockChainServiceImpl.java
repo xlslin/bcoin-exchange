@@ -154,7 +154,6 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 
 	}
 
-	@Transactional
 	@Override
 	public synchronized void syncDataFinish(BlockTransaction blockTransaction) {
 		if(currentBlockTransactionQueue.size() ==1) {
