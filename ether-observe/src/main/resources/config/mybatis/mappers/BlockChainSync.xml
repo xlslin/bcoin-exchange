@@ -12,8 +12,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=id">
     		and ID = #{id}
     	</if>
-    	<if test="null!=currentSyncBlockNumber">
-    		and CURRENT_SYNC_BLOCK_NUMBER = #{currentSyncBlockNumber}
+    	<if test="null!=blockNumber">
+    		and BLOCK_NUMBER = #{blockNumber}
+    	</if>
+    	<if test="null!=type">
+    		and TYPE = #{type}
     	</if>
     	<if test="null!=createTime">
     		and CREATE_TIME = #{createTime}
@@ -27,8 +30,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=id">
 		    ID = #{id},
 		    </if>
-		    <if test="null!=currentSyncBlockNumber">
-		    CURRENT_SYNC_BLOCK_NUMBER = #{currentSyncBlockNumber},
+		    <if test="null!=blockNumber">
+		    BLOCK_NUMBER = #{blockNumber},
+		    </if>
+		    <if test="null!=type">
+		    TYPE = #{type},
 		    </if>
 		    <if test="null!=createTime">
 		    CREATE_TIME = #{createTime},
@@ -40,7 +46,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<resultMap id="blockChainSyncResultMap" type="com.sharingif.blockchain.ether.block.model.entity.BlockChainSync">
         <result property="id" column="ID"/>
-        <result property="currentSyncBlockNumber" column="CURRENT_SYNC_BLOCK_NUMBER"/>
+        <result property="blockNumber" column="BLOCK_NUMBER"/>
+        <result property="type" column="TYPE"/>
         <result property="createTime" column="CREATE_TIME"/>
         <result property="modifyTime" column="MODIFY_TIME"/>
 	</resultMap>
@@ -49,12 +56,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<insert id="insert">
         INSERT INTO BLOCK_CHAIN_SYNC (
         	ID
-        	,CURRENT_SYNC_BLOCK_NUMBER
+        	,BLOCK_NUMBER
+        	,TYPE
         	,CREATE_TIME
         	,MODIFY_TIME
         ) VALUES (
         	#{id}
-        	,#{currentSyncBlockNumber}
+        	,#{blockNumber}
+        	,#{type}
         	,#{createTime}
         	,#{modifyTime}
         )
@@ -88,7 +97,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="queryById" resultMap="blockChainSyncResultMap">
 		SELECT
 			ID
-			,CURRENT_SYNC_BLOCK_NUMBER
+			,BLOCK_NUMBER
+			,TYPE
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -100,7 +110,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryList" resultMap="blockChainSyncResultMap">
 		SELECT
 			ID
-			,CURRENT_SYNC_BLOCK_NUMBER
+			,BLOCK_NUMBER
+			,TYPE
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -115,7 +126,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryAll" resultMap="blockChainSyncResultMap">
 		SELECT
 			ID
-			,CURRENT_SYNC_BLOCK_NUMBER
+			,BLOCK_NUMBER
+			,TYPE
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -137,7 +149,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="blockChainSyncResultMap">
 		SELECT
 			ID
-			,CURRENT_SYNC_BLOCK_NUMBER
+			,BLOCK_NUMBER
+			,TYPE
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM

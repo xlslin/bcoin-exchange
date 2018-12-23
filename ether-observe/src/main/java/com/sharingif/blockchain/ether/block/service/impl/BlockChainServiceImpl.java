@@ -3,8 +3,10 @@ package com.sharingif.blockchain.ether.block.service.impl;
 
 import com.sharingif.blockchain.ether.block.dao.BlockChainDAO;
 import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
+import com.sharingif.blockchain.ether.block.model.entity.BlockChainSync;
 import com.sharingif.blockchain.ether.block.model.entity.BlockTransaction;
 import com.sharingif.blockchain.ether.block.service.BlockChainService;
+import com.sharingif.blockchain.ether.block.service.BlockChainSyncService;
 import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
 import com.sharingif.blockchain.ether.block.service.TransactionService;
 import com.sharingif.cube.batch.core.JobConfig;
@@ -29,6 +31,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang.String> implements BlockChainService {
 	
 	private BlockChainDAO blockChainDAO;
+	private BlockChainSyncService blockChainSyncService;
 	private TransactionService transactionService;
 	private EthereumBlockService ethereumBlockService;
 	private String ethValidBlockNumber;
@@ -43,6 +46,10 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	public void setBlockChainDAO(BlockChainDAO blockChainDAO) {
 		super.setBaseDAO(blockChainDAO);
 		this.blockChainDAO = blockChainDAO;
+	}
+	@Resource
+	public void setBlockChainSyncService(BlockChainSyncService blockChainSyncService) {
+		this.blockChainSyncService = blockChainSyncService;
 	}
 	@Resource
 	public void setTransactionService(TransactionService transactionService) {
@@ -163,22 +170,31 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	}
 
 	@Transactional
-	protected void validateBolck(BlockChain blockChain, EthBlock.Block block, BigInteger blockNumber) {
-		if(blockChain.getHash().equals(block.getHash())) {
-			// 修改块、交易有效
-			updateStatusToVerifyValid(blockChain.getId(), blockNumber);
+	protected void validateBolck(BlockChainSync confirmationBlockChainSync, BlockChain unverifiedBlockChain, EthBlock.Block block, BigInteger currentBlockNumber) {
+		if(unverifiedBlockChain.getHash().equals(block.getHash())) {
+			// 修验证块数、改块有效、交易有效
+
+			BlockChainSync updateBlockChainSync = new BlockChainSync();
+			updateBlockChainSync.setId(confirmationBlockChainSync.getId());
+			updateBlockChainSync.setBlockNumber(unverifiedBlockChain.getBlockNumber());
+			blockChainSyncService.updateById(updateBlockChainSync);
+
+			updateStatusToVerifyValid(unverifiedBlockChain.getId(), currentBlockNumber);
+
 			transactionService.updateStatusToBlockConfirmedValid(
-					blockChain.getBlockNumber()
-					, blockChain.getHash()
-					, blockNumber.subtract(blockChain.getBlockNumber()).intValue()
+					unverifiedBlockChain.getBlockNumber()
+					, unverifiedBlockChain.getHash()
+					, currentBlockNumber.subtract(unverifiedBlockChain.getBlockNumber()).intValue()
 			);
 		} else {
 			// 修改块、交易无效
-			updateStatusToVerifyInvalid(blockChain.getId(), blockNumber);
+
+			updateStatusToVerifyInvalid(unverifiedBlockChain.getId(), currentBlockNumber);
+
 			transactionService.updateStatusToBlockConfirmedInvalid(
-					blockChain.getBlockNumber()
-					, blockChain.getHash()
-					, blockNumber.subtract(blockChain.getBlockNumber()).intValue()
+					unverifiedBlockChain.getBlockNumber()
+					, unverifiedBlockChain.getHash()
+					, currentBlockNumber.subtract(unverifiedBlockChain.getBlockNumber()).intValue()
 			);
 			addUntreatedStatus(block.getNumber(), block.getHash(), block.getTimestamp());
 		}
@@ -186,27 +202,24 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 
 	@Override
 	public void validateBolck() {
-		BigInteger blockNumber = ethereumBlockService.getBlockNumber();
-		BlockChain queryBlockChain = new BlockChain();
-		queryBlockChain.setBlockNumber(blockNumber.subtract(new BigInteger(ethValidBlockNumber)));
-		queryBlockChain.setStatus(BlockChain.STATUS_UNVERIFIED);
-		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
-		blockChainPaginationCondition.setCondition(queryBlockChain);
-		blockChainPaginationCondition.setQueryCount(false);
-		blockChainPaginationCondition.setCurrentPage(1);
-		blockChainPaginationCondition.setPageSize(20);
+		BigInteger currentBlockNumber = ethereumBlockService.getBlockNumber();
 
-		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListByBlockNumberStatus(blockChainPaginationCondition);
-		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
-
-		if(blockChainList == null && blockChainList.isEmpty()) {
+		BlockChainSync confirmationBlockChainSync = blockChainSyncService.getConfirmationType();
+		BigInteger validateBlockNumber = confirmationBlockChainSync.getBlockNumber().add(BigInteger.ONE);
+		if(validateBlockNumber.add(new BigInteger(ethValidBlockNumber)).compareTo(currentBlockNumber) > 0) {
 			return;
 		}
 
-		for(BlockChain blockChain : blockChainList) {
-			EthBlock.Block block = ethereumBlockService.getBlock(blockChain.getBlockNumber(), false);
-			validateBolck(blockChain, block, blockNumber);
+		BlockChain unverifiedBlockChain = new BlockChain();
+		unverifiedBlockChain.setBlockNumber(validateBlockNumber);
+		unverifiedBlockChain.setStatus(BlockChain.STATUS_UNVERIFIED);
+		unverifiedBlockChain = blockChainDAO.query(unverifiedBlockChain);
+		if(unverifiedBlockChain == null) {
+			return;
 		}
+
+		EthBlock.Block block = ethereumBlockService.getBlock(unverifiedBlockChain.getBlockNumber(), false);
+		validateBolck(confirmationBlockChainSync, unverifiedBlockChain, block, currentBlockNumber);
 	}
 
 }

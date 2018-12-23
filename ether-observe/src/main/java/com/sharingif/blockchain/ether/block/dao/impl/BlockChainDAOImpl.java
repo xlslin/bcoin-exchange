@@ -2,15 +2,11 @@ package com.sharingif.blockchain.ether.block.dao.impl;
 
 
 import com.sharingif.blockchain.ether.app.dao.impl.BaseDAOImpl;
+import com.sharingif.blockchain.ether.block.dao.BlockChainDAO;
+import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
 import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
 import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
 import org.springframework.stereotype.Repository;
-
-
-import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
-import com.sharingif.blockchain.ether.block.dao.BlockChainDAO;
-
-import java.math.BigInteger;
 
 
 @Repository
@@ -21,8 +17,4 @@ public class BlockChainDAOImpl extends BaseDAOImpl<BlockChain, String> implement
         return queryPagination("queryPaginationListOrderByBlockNumberAsc", paginationCondition);
     }
 
-    @Override
-    public PaginationRepertory<BlockChain> queryPaginationListByBlockNumberStatus(PaginationCondition<BlockChain> paginationCondition) {
-        return queryPagination("queryPaginationListByBlockNumberStatus", paginationCondition);
-    }
 }

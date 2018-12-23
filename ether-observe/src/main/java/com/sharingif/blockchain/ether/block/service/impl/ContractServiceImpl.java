@@ -56,7 +56,7 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract, java.lang.Str
 		BigInteger totalSupply = null;
 		try {
 			name = erc20ContractService.name(contractAddress);
-			if(name.toString().length()>100) {
+			if(name.length()>100) {
 				name = null;
 			}
 		} catch (Exception e) {
@@ -64,7 +64,7 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract, java.lang.Str
 		}
 		try {
 			symbol = erc20ContractService.symbol(contractAddress);
-			if(symbol.toString().length()>100) {
+			if(symbol.length()>100) {
 				symbol = null;
 			}
 		} catch (Exception e) {
