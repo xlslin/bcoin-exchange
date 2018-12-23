@@ -14,6 +14,7 @@ import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
 import com.sharingif.blockchain.ether.block.service.TransactionService;
 import com.sharingif.blockchain.ether.deposit.model.entity.Deposit;
 import com.sharingif.blockchain.ether.deposit.service.DepositService;
+import com.sharingif.blockchain.ether.withdrawal.model.entity.Withdrawal;
 import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
 import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
@@ -118,18 +119,29 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		addUntreatedTransaction(transaction);
 
 		if(isWatchFrom) {
-			// TODO
+			Withdrawal withdrawal = new Withdrawal();
+			withdrawal.setBlockNumber(transaction.getBlockNumber());
+			withdrawal.setTransactionId(transaction.getId());
+			withdrawal.setTxHash(transaction.getTxHash());
+			withdrawal.setCoinType(transaction.getCoinType());
+			withdrawal.setTxFrom(transaction.getTxFrom());
+			withdrawal.setTxTo(transaction.getTxTo());
+			withdrawal.setAmount(transaction.getTxValue());
+			withdrawal.setFee(transaction.getActualFee());
+			withdrawalService.addUntreated(withdrawal);
 		}
 
 		if(isWatchTo) {
 			Deposit deposit = new Deposit();
+			deposit.setBlockNumber(transaction.getBlockNumber());
 			deposit.setTransactionId(transaction.getId());
+			deposit.setTxHash(transaction.getTxHash());
 			deposit.setCoinType(transaction.getCoinType());
 			deposit.setTxFrom(transaction.getTxFrom());
 			deposit.setTxTo(transaction.getTxTo());
 			deposit.setAmount(transaction.getTxValue());
-			deposit.setTxHash(transaction.getTxHash());
-			depositService.addUntreatedDeposit(deposit);
+			deposit.setFee(transaction.getActualFee());
+			depositService.addUntreated(deposit);
 		}
 	}
 

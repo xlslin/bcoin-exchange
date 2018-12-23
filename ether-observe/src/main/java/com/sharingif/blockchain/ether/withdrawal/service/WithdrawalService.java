@@ -11,6 +11,6 @@ public interface WithdrawalService extends IBaseService<Withdrawal, java.lang.St
      * 添加未处理提现
      * @param withdrawal
      */
-    void addUntreatedWithdrawal(Withdrawal withdrawal);
+    void addUntreated(Withdrawal withdrawal);
 	
 }

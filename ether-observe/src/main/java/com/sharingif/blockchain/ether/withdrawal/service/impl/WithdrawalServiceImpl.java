@@ -1,14 +1,13 @@
 package com.sharingif.blockchain.ether.withdrawal.service.impl;
 
 
-import javax.annotation.Resource;
-
+import com.sharingif.blockchain.ether.withdrawal.dao.WithdrawalDAO;
+import com.sharingif.blockchain.ether.withdrawal.model.entity.Withdrawal;
+import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
+import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 
-import com.sharingif.blockchain.ether.withdrawal.model.entity.Withdrawal;
-import com.sharingif.blockchain.ether.withdrawal.dao.WithdrawalDAO;
-import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
-import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
+import javax.annotation.Resource;
 
 @Service
 public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang.String> implements WithdrawalService {
@@ -24,10 +23,9 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		this.withdrawalDAO = withdrawalDAO;
 	}
 
-
 	@Override
-	public void addUntreatedWithdrawal(Withdrawal withdrawal) {
+	public void addUntreated(Withdrawal withdrawal) {
 		withdrawal.setStatus(Withdrawal.STATUS_UNTREATED);
-		add(withdrawal);
+		withdrawalDAO.insert(withdrawal);
 	}
 }

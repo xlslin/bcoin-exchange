@@ -23,7 +23,7 @@ public class Deposit implements java.io.Serializable, IObjectDateOperationHistor
     /**
      * 区块数			db_column: BLOCK_NUMBER 
      */	
-	private java.lang.Long blockNumber;
+	private BigInteger blockNumber;
     /**
      * ETH交易id			db_column: TRANSACTION_ID 
      */	
@@ -72,10 +72,10 @@ public class Deposit implements java.io.Serializable, IObjectDateOperationHistor
 	public java.lang.String getId() {
 		return this.id;
 	}
-	public void setBlockNumber(java.lang.Long blockNumber) {
+	public void setBlockNumber(BigInteger blockNumber) {
 		this.blockNumber = blockNumber;
 	}
-	public java.lang.Long getBlockNumber() {
+	public BigInteger getBlockNumber() {
 		return this.blockNumber;
 	}
 	public void setTransactionId(java.lang.String transactionId) {

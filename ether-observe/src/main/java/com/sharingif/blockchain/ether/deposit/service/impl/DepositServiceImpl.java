@@ -26,7 +26,7 @@ public class DepositServiceImpl extends BaseServiceImpl<Deposit, java.lang.Strin
 
 
 	@Override
-	public void addUntreatedDeposit(Deposit deposit) {
+	public void addUntreated(Deposit deposit) {
 		deposit.setStatus(Deposit.STATUS_UNTREATED);
 		add(deposit);
 	}

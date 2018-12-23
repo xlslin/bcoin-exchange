@@ -11,6 +11,6 @@ public interface DepositService extends IBaseService<Deposit, java.lang.String> 
      * 添加未处理充值
      * @param deposit
      */
-    void addUntreatedDeposit(Deposit deposit);
+    void addUntreated(Deposit deposit);
 
 }
