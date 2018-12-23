@@ -13,7 +13,7 @@ public class Deposit implements java.io.Serializable, IObjectDateOperationHistor
 	 * 处理状态(WCL:未处理)
 	 */
 	public static final String STATUS_UNTREATED = "WCL";
-	
+
 	//columns START
     /**
      * id			db_column: ID 
@@ -21,9 +21,17 @@ public class Deposit implements java.io.Serializable, IObjectDateOperationHistor
 	@Sequence(ref="uuidSequenceGenerator")
 	private java.lang.String id;
     /**
+     * 区块数			db_column: BLOCK_NUMBER 
+     */	
+	private java.lang.Long blockNumber;
+    /**
      * ETH交易id			db_column: TRANSACTION_ID 
      */	
 	private java.lang.String transactionId;
+    /**
+     * 交易hash			db_column: TX_HASH 
+     */	
+	private java.lang.String txHash;
     /**
      * 币种			db_column: COIN_TYPE 
      */	
@@ -41,11 +49,11 @@ public class Deposit implements java.io.Serializable, IObjectDateOperationHistor
      */	
 	private BigInteger amount;
     /**
-     * 交易hash			db_column: TX_HASH 
+     * 手续费			db_column: FEE 
      */	
-	private java.lang.String txHash;
+	private BigInteger fee;
     /**
-     * 处理状态(WCL:未处理、CLZ:处理中、SUCCESS:充值成功、FAIL:充值失败)			db_column: STATUS
+     * 处理状态(WCL:未处理、TZZ:通知中、TZCG:通知成功、QKYZZ:区块验证中、SUCCESS:成功、FAIL:失败、CGTZZ:成功通知中、SBTZZ:失败通知中、CGTZ:成功通知中、SBTZ:失败通知)			db_column: STATUS 
      */	
 	private java.lang.String status;
     /**
@@ -64,11 +72,23 @@ public class Deposit implements java.io.Serializable, IObjectDateOperationHistor
 	public java.lang.String getId() {
 		return this.id;
 	}
+	public void setBlockNumber(java.lang.Long blockNumber) {
+		this.blockNumber = blockNumber;
+	}
+	public java.lang.Long getBlockNumber() {
+		return this.blockNumber;
+	}
 	public void setTransactionId(java.lang.String transactionId) {
 		this.transactionId = transactionId;
 	}
 	public java.lang.String getTransactionId() {
 		return this.transactionId;
+	}
+	public void setTxHash(java.lang.String txHash) {
+		this.txHash = txHash;
+	}
+	public java.lang.String getTxHash() {
+		return this.txHash;
 	}
 	public void setCoinType(java.lang.String coinType) {
 		this.coinType = coinType;
@@ -94,11 +114,11 @@ public class Deposit implements java.io.Serializable, IObjectDateOperationHistor
 	public BigInteger getAmount() {
 		return this.amount;
 	}
-	public void setTxHash(java.lang.String txHash) {
-		this.txHash = txHash;
+	public void setFee(BigInteger fee) {
+		this.fee = fee;
 	}
-	public java.lang.String getTxHash() {
-		return this.txHash;
+	public BigInteger getFee() {
+		return this.fee;
 	}
 	public void setStatus(java.lang.String status) {
 		this.status = status;
@@ -122,12 +142,14 @@ public class Deposit implements java.io.Serializable, IObjectDateOperationHistor
 	public String toString() {
 		return new StringBuilder("Deposit [")
 			.append("Id=").append(getId()).append(", ")
+					.append("BlockNumber=").append(getBlockNumber()).append(", ")
 					.append("TransactionId=").append(getTransactionId()).append(", ")
+					.append("TxHash=").append(getTxHash()).append(", ")
 					.append("CoinType=").append(getCoinType()).append(", ")
 					.append("TxFrom=").append(getTxFrom()).append(", ")
 					.append("TxTo=").append(getTxTo()).append(", ")
 					.append("Amount=").append(getAmount()).append(", ")
-					.append("TxHash=").append(getTxHash()).append(", ")
+					.append("Fee=").append(getFee()).append(", ")
 					.append("Status=").append(getStatus()).append(", ")
 					.append("CreateTime=").append(getCreateTime()).append(", ")
 					.append("ModifyTime=").append(getModifyTime())

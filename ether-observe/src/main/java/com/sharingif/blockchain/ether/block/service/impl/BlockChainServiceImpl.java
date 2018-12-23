@@ -3,7 +3,6 @@ package com.sharingif.blockchain.ether.block.service.impl;
 
 import com.sharingif.blockchain.ether.block.dao.BlockChainDAO;
 import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
-import com.sharingif.blockchain.ether.block.model.entity.BlockChainSync;
 import com.sharingif.blockchain.ether.block.service.BlockChainService;
 import com.sharingif.blockchain.ether.block.service.BlockChainSyncService;
 import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
@@ -172,8 +171,10 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		for(EthBlock.TransactionResult<EthBlock.TransactionObject> transactionResult : transactionResultList) {
 			org.web3j.protocol.core.methods.response.Transaction transaction = transactionResult.get().get();
 			TransactionReceipt transactionReceipt = ethereumBlockService.getTransactionReceipt(transaction.getHash());
-
+			transactionService.analysis(transaction, transactionReceipt, blockChain.getBlockCreateTime());
 		}
+
+		updateStatusToUnverified(blockChain.getId());
 	}
 
 	@Transactional

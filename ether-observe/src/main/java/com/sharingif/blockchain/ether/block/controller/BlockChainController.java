@@ -31,7 +31,7 @@ public class BlockChainController {
 
 	@RequestMapping(value="synchingData", method= RequestMethod.POST)
 	public void synchingData(JobRequest<String> jobRequest) {
-		blockChainService.synchingData(jobRequest.getId());
+		blockChainService.synchingData(jobRequest.getData());
 	}
 
 	@RequestMapping(value="validateBolck", method= RequestMethod.POST)

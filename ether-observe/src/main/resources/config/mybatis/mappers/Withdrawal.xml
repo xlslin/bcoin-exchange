@@ -12,11 +12,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=id">
     		and ID = #{id}
     	</if>
-    	<if test="null!=withdrawalId">
-    		and WITHDRAWAL_ID = #{withdrawalId}
+    	<if test="null!=blockNumber">
+    		and BLOCK_NUMBER = #{blockNumber}
     	</if>
     	<if test="null!=transactionId">
     		and TRANSACTION_ID = #{transactionId}
+    	</if>
+    	<if test="null!=txHash">
+    		and TX_HASH = #{txHash}
     	</if>
     	<if test="null!=coinType">
     		and COIN_TYPE = #{coinType}
@@ -33,18 +36,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=fee">
     		and FEE = #{fee}
     	</if>
-    	<if test="null!=gasLimit">
-    		and GAS_LIMIT = #{gasLimit}
-    	</if>
-    	<if test="null!=gasUsed">
-    		and GAS_USED = #{gasUsed}
-    	</if>
-    	<if test="null!=gasPrice">
-    		and GAS_PRICE = #{gasPrice}
-    	</if>
-    	<if test="null!=txHash">
-    		and TX_HASH = #{txHash}
-    	</if>
     	<if test="null!=status">
     		and STATUS = #{status}
     	</if>
@@ -60,11 +51,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=id">
 		    ID = #{id},
 		    </if>
-		    <if test="null!=withdrawalId">
-		    WITHDRAWAL_ID = #{withdrawalId},
+		    <if test="null!=blockNumber">
+		    BLOCK_NUMBER = #{blockNumber},
 		    </if>
 		    <if test="null!=transactionId">
 		    TRANSACTION_ID = #{transactionId},
+		    </if>
+		    <if test="null!=txHash">
+		    TX_HASH = #{txHash},
 		    </if>
 		    <if test="null!=coinType">
 		    COIN_TYPE = #{coinType},
@@ -81,18 +75,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=fee">
 		    FEE = #{fee},
 		    </if>
-		    <if test="null!=gasLimit">
-		    GAS_LIMIT = #{gasLimit},
-		    </if>
-		    <if test="null!=gasUsed">
-		    GAS_USED = #{gasUsed},
-		    </if>
-		    <if test="null!=gasPrice">
-		    GAS_PRICE = #{gasPrice},
-		    </if>
-		    <if test="null!=txHash">
-		    TX_HASH = #{txHash},
-		    </if>
 		    <if test="null!=status">
 		    STATUS = #{status},
 		    </if>
@@ -106,17 +88,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<resultMap id="withdrawalResultMap" type="com.sharingif.blockchain.ether.withdrawal.model.entity.Withdrawal">
         <result property="id" column="ID"/>
-        <result property="withdrawalId" column="WITHDRAWAL_ID"/>
+        <result property="blockNumber" column="BLOCK_NUMBER"/>
         <result property="transactionId" column="TRANSACTION_ID"/>
+        <result property="txHash" column="TX_HASH"/>
         <result property="coinType" column="COIN_TYPE"/>
         <result property="txFrom" column="TX_FROM"/>
         <result property="txTo" column="TX_TO"/>
         <result property="amount" column="AMOUNT"/>
         <result property="fee" column="FEE"/>
-        <result property="gasLimit" column="GAS_LIMIT"/>
-        <result property="gasUsed" column="GAS_USED"/>
-        <result property="gasPrice" column="GAS_PRICE"/>
-        <result property="txHash" column="TX_HASH"/>
         <result property="status" column="STATUS"/>
         <result property="createTime" column="CREATE_TIME"/>
         <result property="modifyTime" column="MODIFY_TIME"/>
@@ -126,33 +105,27 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<insert id="insert">
         INSERT INTO WITHDRAWAL (
         	ID
-        	,WITHDRAWAL_ID
+        	,BLOCK_NUMBER
         	,TRANSACTION_ID
+        	,TX_HASH
         	,COIN_TYPE
         	,TX_FROM
         	,TX_TO
         	,AMOUNT
         	,FEE
-        	,GAS_LIMIT
-        	,GAS_USED
-        	,GAS_PRICE
-        	,TX_HASH
         	,STATUS
         	,CREATE_TIME
         	,MODIFY_TIME
         ) VALUES (
         	#{id}
-        	,#{withdrawalId}
+        	,#{blockNumber}
         	,#{transactionId}
+        	,#{txHash}
         	,#{coinType}
         	,#{txFrom}
         	,#{txTo}
         	,#{amount}
         	,#{fee}
-        	,#{gasLimit}
-        	,#{gasUsed}
-        	,#{gasPrice}
-        	,#{txHash}
         	,#{status}
         	,#{createTime}
         	,#{modifyTime}
@@ -187,17 +160,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="queryById" resultMap="withdrawalResultMap">
 		SELECT
 			ID
-			,WITHDRAWAL_ID
+			,BLOCK_NUMBER
 			,TRANSACTION_ID
+			,TX_HASH
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
 			,AMOUNT
 			,FEE
-			,GAS_LIMIT
-			,GAS_USED
-			,GAS_PRICE
-			,TX_HASH
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME
@@ -210,17 +180,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryList" resultMap="withdrawalResultMap">
 		SELECT
 			ID
-			,WITHDRAWAL_ID
+			,BLOCK_NUMBER
 			,TRANSACTION_ID
+			,TX_HASH
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
 			,AMOUNT
 			,FEE
-			,GAS_LIMIT
-			,GAS_USED
-			,GAS_PRICE
-			,TX_HASH
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME
@@ -236,17 +203,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryAll" resultMap="withdrawalResultMap">
 		SELECT
 			ID
-			,WITHDRAWAL_ID
+			,BLOCK_NUMBER
 			,TRANSACTION_ID
+			,TX_HASH
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
 			,AMOUNT
 			,FEE
-			,GAS_LIMIT
-			,GAS_USED
-			,GAS_PRICE
-			,TX_HASH
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME
@@ -269,17 +233,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="withdrawalResultMap">
 		SELECT
 			ID
-			,WITHDRAWAL_ID
+			,BLOCK_NUMBER
 			,TRANSACTION_ID
+			,TX_HASH
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
 			,AMOUNT
 			,FEE
-			,GAS_LIMIT
-			,GAS_USED
-			,GAS_PRICE
-			,TX_HASH
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME

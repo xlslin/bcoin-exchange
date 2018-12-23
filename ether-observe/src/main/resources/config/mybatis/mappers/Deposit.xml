@@ -12,8 +12,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=id">
     		and ID = #{id}
     	</if>
+    	<if test="null!=blockNumber">
+    		and BLOCK_NUMBER = #{blockNumber}
+    	</if>
     	<if test="null!=transactionId">
     		and TRANSACTION_ID = #{transactionId}
+    	</if>
+    	<if test="null!=txHash">
+    		and TX_HASH = #{txHash}
     	</if>
     	<if test="null!=coinType">
     		and COIN_TYPE = #{coinType}
@@ -27,8 +33,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=amount">
     		and AMOUNT = #{amount}
     	</if>
-    	<if test="null!=txHash">
-    		and TX_HASH = #{txHash}
+    	<if test="null!=fee">
+    		and FEE = #{fee}
     	</if>
     	<if test="null!=status">
     		and STATUS = #{status}
@@ -45,8 +51,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=id">
 		    ID = #{id},
 		    </if>
+		    <if test="null!=blockNumber">
+		    BLOCK_NUMBER = #{blockNumber},
+		    </if>
 		    <if test="null!=transactionId">
 		    TRANSACTION_ID = #{transactionId},
+		    </if>
+		    <if test="null!=txHash">
+		    TX_HASH = #{txHash},
 		    </if>
 		    <if test="null!=coinType">
 		    COIN_TYPE = #{coinType},
@@ -60,8 +72,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=amount">
 		    AMOUNT = #{amount},
 		    </if>
-		    <if test="null!=txHash">
-		    TX_HASH = #{txHash},
+		    <if test="null!=fee">
+		    FEE = #{fee},
 		    </if>
 		    <if test="null!=status">
 		    STATUS = #{status},
@@ -76,12 +88,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<resultMap id="depositResultMap" type="com.sharingif.blockchain.ether.deposit.model.entity.Deposit">
         <result property="id" column="ID"/>
+        <result property="blockNumber" column="BLOCK_NUMBER"/>
         <result property="transactionId" column="TRANSACTION_ID"/>
+        <result property="txHash" column="TX_HASH"/>
         <result property="coinType" column="COIN_TYPE"/>
         <result property="txFrom" column="TX_FROM"/>
         <result property="txTo" column="TX_TO"/>
         <result property="amount" column="AMOUNT"/>
-        <result property="txHash" column="TX_HASH"/>
+        <result property="fee" column="FEE"/>
         <result property="status" column="STATUS"/>
         <result property="createTime" column="CREATE_TIME"/>
         <result property="modifyTime" column="MODIFY_TIME"/>
@@ -91,23 +105,27 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<insert id="insert">
         INSERT INTO DEPOSIT (
         	ID
+        	,BLOCK_NUMBER
         	,TRANSACTION_ID
+        	,TX_HASH
         	,COIN_TYPE
         	,TX_FROM
         	,TX_TO
         	,AMOUNT
-        	,TX_HASH
+        	,FEE
         	,STATUS
         	,CREATE_TIME
         	,MODIFY_TIME
         ) VALUES (
         	#{id}
+        	,#{blockNumber}
         	,#{transactionId}
+        	,#{txHash}
         	,#{coinType}
         	,#{txFrom}
         	,#{txTo}
         	,#{amount}
-        	,#{txHash}
+        	,#{fee}
         	,#{status}
         	,#{createTime}
         	,#{modifyTime}
@@ -142,12 +160,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="queryById" resultMap="depositResultMap">
 		SELECT
 			ID
+			,BLOCK_NUMBER
 			,TRANSACTION_ID
+			,TX_HASH
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
 			,AMOUNT
-			,TX_HASH
+			,FEE
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME
@@ -160,12 +180,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryList" resultMap="depositResultMap">
 		SELECT
 			ID
+			,BLOCK_NUMBER
 			,TRANSACTION_ID
+			,TX_HASH
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
 			,AMOUNT
-			,TX_HASH
+			,FEE
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME
@@ -181,12 +203,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryAll" resultMap="depositResultMap">
 		SELECT
 			ID
+			,BLOCK_NUMBER
 			,TRANSACTION_ID
+			,TX_HASH
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
 			,AMOUNT
-			,TX_HASH
+			,FEE
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME
@@ -209,12 +233,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="depositResultMap">
 		SELECT
 			ID
+			,BLOCK_NUMBER
 			,TRANSACTION_ID
+			,TX_HASH
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
 			,AMOUNT
-			,TX_HASH
+			,FEE
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME
