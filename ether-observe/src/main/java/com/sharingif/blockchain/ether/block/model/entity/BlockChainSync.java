@@ -14,9 +14,9 @@ public class BlockChainSync implements java.io.Serializable, IObjectDateOperatio
 	 */
 	public static final String TYPE_SYNC = "00";
 	/**
-	 * 类型(01:区块验证)
+	 * 类型(01:余额确认)
 	 */
-	public static final String TYPE_CONFIRMATION = "01";
+	public static final String TYPE_BALANCE_CONFIRMATION = "01";
 
 	//columns START
     /**
@@ -29,7 +29,7 @@ public class BlockChainSync implements java.io.Serializable, IObjectDateOperatio
      */	
 	private BigInteger blockNumber;
     /**
-     * 类型(00:区块同步、01:区块验证)			db_column: TYPE 
+     * 类型(00:区块同步、01:余额确认)			db_column: TYPE
      */	
 	private String type;
     /**

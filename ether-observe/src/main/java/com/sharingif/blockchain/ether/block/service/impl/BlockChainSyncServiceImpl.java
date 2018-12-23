@@ -52,7 +52,7 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 		blockChainSyncDAO.insert(syncBlockChainSync);
 
 		BlockChainSync confirmationBlockChainSync = new BlockChainSync();
-		confirmationBlockChainSync.setType(BlockChainSync.TYPE_CONFIRMATION);
+		confirmationBlockChainSync.setType(BlockChainSync.TYPE_BALANCE_CONFIRMATION);
 		confirmationBlockChainSync.setBlockNumber(block.getNumber());
 		blockChainSyncDAO.insert(confirmationBlockChainSync);
 
@@ -84,9 +84,9 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 	}
 
 	@Override
-	public BlockChainSync getConfirmationType() {
+	public BlockChainSync getBalanceConfirmationType() {
 		BlockChainSync blockChainSync = new BlockChainSync();
-		blockChainSync.setType(BlockChainSync.TYPE_CONFIRMATION);
+		blockChainSync.setType(BlockChainSync.TYPE_BALANCE_CONFIRMATION);
 
 		return blockChainSyncDAO.query(blockChainSync);
 	}

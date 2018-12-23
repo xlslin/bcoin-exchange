@@ -17,4 +17,9 @@ public class BlockChainDAOImpl extends BaseDAOImpl<BlockChain, String> implement
         return queryPagination("queryPaginationListOrderByBlockNumberAsc", paginationCondition);
     }
 
+    @Override
+    public PaginationRepertory<BlockChain> queryPaginationListByBlockNumberStatus(PaginationCondition<BlockChain> paginationCondition) {
+        return queryPagination("queryPaginationListByBlockNumberStatus", paginationCondition);
+    }
+
 }

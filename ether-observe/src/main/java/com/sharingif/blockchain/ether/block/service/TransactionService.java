@@ -1,11 +1,11 @@
 package com.sharingif.blockchain.ether.block.service;
 
 
-import com.sharingif.blockchain.ether.block.model.entity.BlockTransaction;
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.deposit.service.DepositService;
 import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
 import com.sharingif.cube.support.service.base.IBaseService;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -27,9 +27,11 @@ public interface TransactionService extends IBaseService<Transaction, java.lang.
 
     /**
      * 区块交易同步
-     * @param blockTransaction
+     * @param transaction
+     * @param transactionReceipt
+     * @param blockCreateTime
      */
-    void analysis(BlockTransaction blockTransaction);
+    void analysis(org.web3j.protocol.core.methods.response.Transaction transaction, TransactionReceipt transactionReceipt, Date blockCreateTime);
 
     /**
      * 修改指定区块的交易为有效

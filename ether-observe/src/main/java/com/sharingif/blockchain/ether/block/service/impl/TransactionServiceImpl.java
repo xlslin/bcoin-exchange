@@ -6,8 +6,6 @@ import com.sharingif.blockchain.api.account.entity.AddressListenerIsWatchRsp;
 import com.sharingif.blockchain.api.account.service.AddressListenerApiService;
 import com.sharingif.blockchain.ether.app.autoconfigure.constants.CoinType;
 import com.sharingif.blockchain.ether.block.dao.TransactionDAO;
-import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
-import com.sharingif.blockchain.ether.block.model.entity.BlockTransaction;
 import com.sharingif.blockchain.ether.block.model.entity.Contract;
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.block.service.BlockChainService;
@@ -28,8 +26,8 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import javax.annotation.Resource;
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.lang.String> implements TransactionService {
@@ -184,27 +182,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 	}
 
-	protected void analysis(BlockChain blockChain, org.web3j.protocol.core.methods.response.Transaction tx) {
-		TransactionReceipt transactionReceipt = ethereumBlockService.getTransactionReceipt(tx.getHash());
-
-		Transaction transaction = new Transaction();
-		transaction.setTxHash(tx.getHash());
-		transaction.setBlockNumber(tx.getBlockNumber());
-		transaction.setTxFrom(tx.getFrom());
-		transaction.setTxTo(tx.getTo());
-		transaction.setTxInput(tx.getInput());
-		transaction.setTxIndex(tx.getTransactionIndex());
-		transaction.setGasLimit(tx.getGas());
-		transaction.setGasPrice(tx.getGasPrice());
-		transaction.setNonce(tx.getNonce());
-		transaction.setTxValue(tx.getValue());
-		transaction.setCoinType(CoinType.ETH.name());
-		transaction.setGasUsed(transactionReceipt.getGasUsed());
-		transaction.setTxReceiptStatus(Transaction.convertTxReceiptStatus(transactionReceipt.getStatus()));
-		transaction.setTxTime(blockChain.getBlockCreateTime());
-		transaction.setConfirmBlockNumber(0);
-		transaction.setActualFee(transaction.getGasUsed().multiply(transaction.getGasPrice()));
-		transaction.setBlockHash(blockChain.getHash());
+	protected void analysis(Transaction transaction) {
 
 		Boolean isContractAddress = ethereumBlockService.isContractAddress(transaction.getTxTo());
 		if(isContractAddress) {
@@ -217,27 +195,42 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	}
 
 	@Override
-	public void analysis(BlockTransaction blockTransaction) {
-		try {
-			BlockChain blockChain = blockTransaction.getBlockChain();
-			org.web3j.protocol.core.methods.response.Transaction tx = blockTransaction.getTransaction();
+	public void analysis(org.web3j.protocol.core.methods.response.Transaction tx, TransactionReceipt transactionReceipt, Date blockCreateTime) {
 
+
+		Transaction transaction = null;
+		try {
 			if(StringUtils.isTrimEmpty(tx.getTo())) {
-				blockChainService.syncDataFinish(blockTransaction);
+				logger.info("tx to is null, txhash:{}", tx.getHash());
 				return;
 			}
 
-			analysis(blockChain, tx);
+			transaction = new Transaction();
 
-			blockChainService.syncDataFinish(blockTransaction);
+			transaction.setTxHash(tx.getHash());
+			transaction.setBlockNumber(tx.getBlockNumber());
+			transaction.setTxFrom(tx.getFrom());
+			transaction.setTxTo(tx.getTo());
+			transaction.setTxInput(tx.getInput());
+			transaction.setTxIndex(tx.getTransactionIndex());
+			transaction.setGasLimit(tx.getGas());
+			transaction.setGasPrice(tx.getGasPrice());
+			transaction.setNonce(tx.getNonce());
+			transaction.setTxValue(tx.getValue());
+			transaction.setCoinType(CoinType.ETH.name());
+			transaction.setGasUsed(transactionReceipt.getGasUsed());
+			transaction.setTxReceiptStatus(Transaction.convertTxReceiptStatus(transactionReceipt.getStatus()));
+			transaction.setTxTime(blockCreateTime);
+			transaction.setConfirmBlockNumber(0);
+			transaction.setActualFee(transaction.getGasUsed().multiply(transaction.getGasPrice()));
+			transaction.setBlockHash(tx.getBlockHash());
+
+			analysis(transaction);
+
 		} catch (Exception e) {
-			logger.error("analysis block transaction error, blockTransaction:{}", blockTransaction, e);
-			try {
-				TimeUnit.SECONDS.sleep(1);
-			} catch (InterruptedException e2) {
-				logger.error("sync block transaction thread sleep error", e2);
-			}
-			analysis(blockTransaction);
+			// geth连接超时
+			logger.error("analysis block transaction error, transaction:{}", transaction, e);
+			analysis(tx, transactionReceipt, blockCreateTime);
 		}
 
 	}

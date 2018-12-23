@@ -145,7 +145,11 @@ public class JobServiceImpl implements JobService, InitializingBean {
         if(jobConfig.getMaxExecuteCount() > updateBatchJob.getExecuteCount()) {
             BatchJob batchJob = new BatchJob();
             batchJob.setLookupPath(jobConfig.getLookupPath());
-            batchJob.setPlanExecuteTime(new Date(System.currentTimeMillis()+jobConfig.getIntervalPlanExecuteTime()));
+            if(jobConfig.getIntervalPlanExecuteTime() == null) {
+                batchJob.setPlanExecuteTime(queryBatchJob.getPlanExecuteTime());
+            } else {
+                batchJob.setPlanExecuteTime(new Date(System.currentTimeMillis()+jobConfig.getIntervalPlanExecuteTime()));
+            }
             batchJob.setExecuteCount(updateBatchJob.getExecuteCount());
             batchJob.setDataId(queryBatchJob.getDataId());
             batchJob.setStatus(BatchJob.STATUS_PENDING);

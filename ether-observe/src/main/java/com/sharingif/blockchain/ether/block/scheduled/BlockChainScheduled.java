@@ -21,9 +21,17 @@ public class BlockChainScheduled {
     }
 
     @Scheduled(fixedRate = 1000*1)
-    public synchronized void syncData() {
+    public synchronized void readySyncData() {
         JobRequest jobRequest = new JobRequest();
-        jobRequest.setLookupPath("/blockChain/syncData");
+        jobRequest.setLookupPath("/blockChain/readySyncData");
+
+        simpleDispatcherHandler.doDispatch(jobRequest);
+    }
+
+    @Scheduled(fixedRate = 1000*1)
+    public synchronized void synchingData() {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setLookupPath("/blockChain/synchingData");
 
         simpleDispatcherHandler.doDispatch(jobRequest);
     }

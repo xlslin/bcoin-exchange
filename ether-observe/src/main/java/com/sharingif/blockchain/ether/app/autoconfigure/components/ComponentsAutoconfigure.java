@@ -1,7 +1,6 @@
 package com.sharingif.blockchain.ether.app.autoconfigure.components;
 
 import com.sharingif.cube.batch.core.JobConfig;
-import com.sharingif.cube.batch.core.JobService;
 import com.sharingif.cube.batch.core.exception.JobExceptionHandler;
 import com.sharingif.cube.batch.core.handler.MultithreadDispatcherHandler;
 import com.sharingif.cube.batch.core.handler.SimpleDispatcherHandler;
@@ -59,17 +58,6 @@ public class ComponentsAutoconfigure {
         threadPoolTaskExecutor.setCorePoolSize(poolSize);
         threadPoolTaskExecutor.setMaxPoolSize(poolSize);
         threadPoolTaskExecutor.setThreadNamePrefix("jobThreadPoolTaskExecutor-");
-
-        return threadPoolTaskExecutor;
-    }
-
-    @Bean("blockThreadPoolTaskExecutor")
-    public ThreadPoolTaskExecutor createMultithreadDispatcherHandlerThreadPoolTaskExecutor(@Value("${work.max.pool.size}") int poolSize) {
-        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-
-        threadPoolTaskExecutor.setCorePoolSize(poolSize);
-        threadPoolTaskExecutor.setMaxPoolSize(poolSize);
-        threadPoolTaskExecutor.setThreadNamePrefix("blockThreadPoolTaskExecutor-");
 
         return threadPoolTaskExecutor;
     }
@@ -204,20 +192,6 @@ public class ComponentsAutoconfigure {
 
         return multithreadDispatcherHandler;
     }
-
-    @Bean("blockMultithreadDispatcherHandler")
-    public MultithreadDispatcherHandler createMultithreadDispatcherHandler(
-            SimpleDispatcherHandler simpleDispatcherHandler
-            , ThreadPoolTaskExecutor blockThreadPoolTaskExecutor
-    ) {
-        MultithreadDispatcherHandler multithreadDispatcherHandler = new MultithreadDispatcherHandler();
-
-        multithreadDispatcherHandler.setMultithreadDispatcherHandlerThreadPoolTaskExecutor(blockThreadPoolTaskExecutor);
-        multithreadDispatcherHandler.setSimpleDispatcherHandler(simpleDispatcherHandler);
-
-        return multithreadDispatcherHandler;
-    }
-
 
     @Bean("propertyTextEncryptor")
     public TextEncryptor createPropertyTextEncryptor(@Value("${property.key}") String key, Base64Coder base64Coder) throws UnsupportedEncodingException {

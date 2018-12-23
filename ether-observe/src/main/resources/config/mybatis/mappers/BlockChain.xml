@@ -220,5 +220,27 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		BLOCK_NUMBER
 	</select>
 
+	<select id="queryPaginationListByBlockNumberStatus" parameterType="PaginationCondition" resultMap="blockChainResultMap">
+		<![CDATA[
+		SELECT
+			ID
+			,BLOCK_NUMBER
+			,VERIFY_BLOCK_NUMBER
+			,HASH
+			,BLOCK_CREATE_TIME
+			,STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			BLOCK_CHAIN
+		WHERE
+				BLOCK_NUMBER <= #{blockNumber}
+			AND
+				STATUS = #{status}
+		ORDER BY
+			BLOCK_NUMBER
+		]]>
+	</select>
+
 </mapper>
 

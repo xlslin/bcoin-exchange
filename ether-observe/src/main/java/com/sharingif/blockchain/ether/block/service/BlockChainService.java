@@ -2,7 +2,6 @@ package com.sharingif.blockchain.ether.block.service;
 
 
 import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
-import com.sharingif.blockchain.ether.block.model.entity.BlockTransaction;
 import com.sharingif.cube.support.service.base.IBaseService;
 
 import java.math.BigInteger;
@@ -17,6 +16,12 @@ public interface BlockChainService extends IBaseService<BlockChain, java.lang.St
      * @param blockCreateTime
      */
     void addUntreatedStatus(BigInteger blockNumber, String blockHash, BigInteger blockCreateTime);
+
+    /**
+     * 修改状态为区块同步中
+     * @param id
+     */
+    void updateBlockSynching(String id);
 
     /**
      * 修改状态为未验证
@@ -39,15 +44,15 @@ public interface BlockChainService extends IBaseService<BlockChain, java.lang.St
     void updateStatusToVerifyInvalid(String id, BigInteger verifyBlockNumber);
 
     /**
-     * 块数据同步
+     * 准备块数据同步
      */
-    void syncData();
+    void readySyncData();
 
     /**
-     * 处理块数据同步完成
-     * @param blockTransaction
+     * 块数据同步中
+     * @param blockChainId
      */
-    void syncDataFinish(BlockTransaction blockTransaction);
+    void synchingData(String blockChainId);
 
     /**
      * 验证块是否有效

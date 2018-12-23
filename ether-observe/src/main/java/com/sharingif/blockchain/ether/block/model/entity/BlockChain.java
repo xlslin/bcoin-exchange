@@ -15,6 +15,10 @@ public class BlockChain implements java.io.Serializable, IObjectDateOperationHis
 	 */
 	public static final String STATUS_UNTREATED = "WCL";
 	/**
+	 * 状态(QKTBZ:区块同步中)
+	 */
+	public static final String STATUS_BLOCK_SYNCHING = "QKTBZ";
+	/**
 	 * 状态(WYZ:未验证)
 	 */
 	public static final String STATUS_UNVERIFIED = "WYZ";
@@ -50,7 +54,7 @@ public class BlockChain implements java.io.Serializable, IObjectDateOperationHis
      */	
 	private Date blockCreateTime;
     /**
-     * 状态(WCL:未处理、WYZ:未验证、QKYZYX:区块验证有效、QKYZWX:区块验证无效)			db_column: STATUS
+     * 状态(WCL:未处理、QKTBZ:区块同步中、WYZ:未验证、QKYZYX:区块验证有效、QKYZWX:区块验证无效)			db_column: STATUS
      */	
 	private java.lang.String status;
     /**

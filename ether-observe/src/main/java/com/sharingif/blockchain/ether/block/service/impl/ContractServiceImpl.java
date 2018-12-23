@@ -39,11 +39,17 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract, java.lang.Str
 	}
 
 	protected void addContract(Contract insertContract) {
-		Contract queryContract = contractDAO.queryById(insertContract.getContractAddress());
-		if(queryContract != null) {
-			return;
+		try {
+			Contract queryContract = contractDAO.queryById(insertContract.getContractAddress());
+			if(queryContract != null) {
+				return;
+			}
+			contractDAO.insert(insertContract);
+		} catch (Exception e) {
+			// 并发数据重复
+			logger.error("add contract error", e);
+			addContract(insertContract);
 		}
-		contractDAO.insert(insertContract);
 	}
 
 	@Override

@@ -40,7 +40,7 @@ CREATE TABLE BLOCK_CHAIN_SYNC
 (
   ID                    CHAR(32) NOT NULL COMMENT 'id',
   BLOCK_NUMBER          BIGINT NOT NULL COMMENT '区块数',
-  TYPE                  CHAR(2) NOT NULL COMMENT '类型(00:区块同步、01:区块验证)',
+  TYPE                  CHAR(2) NOT NULL COMMENT '类型(00:区块同步、01:余额确认)',
   CREATE_TIME           TIMESTAMP NULL COMMENT '创建时间',
   MODIFY_TIME           TIMESTAMP NULL COMMENT '修改时间',
   PRIMARY KEY (ID)
@@ -53,7 +53,7 @@ CREATE TABLE BLOCK_CHAIN
   VERIFY_BLOCK_NUMBER   BIGINT NOT NULL COMMENT '验证区块号',
   HASH                  VARCHAR(100) NOT NULL COMMENT '区块hash',
   BLOCK_CREATE_TIME     TIMESTAMP NULL COMMENT '块创建时间',
-  STATUS                VARCHAR(20) NOT NULL COMMENT '状态(WCL:未处理、WYZ:未验证、QKYZYX:区块验证有效、QKYZWX:区块验证无效)',
+  STATUS                VARCHAR(20) NOT NULL COMMENT '状态(WCL:未处理、QKTBZ:区块同步中、WYZ:未验证、QKYZYX:区块验证有效、QKYZWX:区块验证无效)',
   CREATE_TIME           TIMESTAMP NULL COMMENT '创建时间',
   MODIFY_TIME           TIMESTAMP NULL COMMENT '修改时间',
   PRIMARY KEY (ID)
