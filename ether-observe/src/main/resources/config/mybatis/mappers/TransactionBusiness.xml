@@ -5,10 +5,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 
 <!-- 不使用namespace的话sql搜索定位会比较方便 -->
-<mapper namespace="withdrawal">
+<mapper namespace="transactionBusiness">
 
 	<!-- 用于select查询公用抽取的列 -->
-	<sql id="withdrawalColumns">
+	<sql id="transactionBusinessColumns">
     	<if test="null!=id">
     		and ID = #{id}
     	</if>
@@ -36,6 +36,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=fee">
     		and FEE = #{fee}
     	</if>
+    	<if test="null!=type">
+    		and TYPE = #{type}
+    	</if>
     	<if test="null!=status">
     		and STATUS = #{status}
     	</if>
@@ -47,7 +50,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	</if>
 	</sql>
 	
-	<sql id="withdrawalSetColumns">
+	<sql id="transactionBusinessSetColumns">
 		    <if test="null!=id">
 		    ID = #{id},
 		    </if>
@@ -75,6 +78,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=fee">
 		    FEE = #{fee},
 		    </if>
+		    <if test="null!=type">
+		    TYPE = #{type},
+		    </if>
 		    <if test="null!=status">
 		    STATUS = #{status},
 		    </if>
@@ -86,7 +92,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    </if>
 	</sql>
 
-	<resultMap id="withdrawalResultMap" type="com.sharingif.blockchain.ether.withdrawal.model.entity.Withdrawal">
+	<resultMap id="transactionBusinessResultMap" type="com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness">
         <result property="id" column="ID"/>
         <result property="blockNumber" column="BLOCK_NUMBER"/>
         <result property="transactionId" column="TRANSACTION_ID"/>
@@ -96,6 +102,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         <result property="txTo" column="TX_TO"/>
         <result property="amount" column="AMOUNT"/>
         <result property="fee" column="FEE"/>
+        <result property="type" column="TYPE"/>
         <result property="status" column="STATUS"/>
         <result property="createTime" column="CREATE_TIME"/>
         <result property="modifyTime" column="MODIFY_TIME"/>
@@ -103,7 +110,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
 	<insert id="insert">
-        INSERT INTO WITHDRAWAL (
+        INSERT INTO TRANSACTION_BUSINESS (
         	ID
         	,BLOCK_NUMBER
         	,TRANSACTION_ID
@@ -113,6 +120,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,TX_TO
         	,AMOUNT
         	,FEE
+        	,TYPE
         	,STATUS
         	,CREATE_TIME
         	,MODIFY_TIME
@@ -126,6 +134,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,#{txTo}
         	,#{amount}
         	,#{fee}
+        	,#{type}
         	,#{status}
         	,#{createTime}
         	,#{modifyTime}
@@ -134,30 +143,30 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<delete id="deleteById">
 	    DELETE FROM
-	    	WITHDRAWAL 
+	    	TRANSACTION_BUSINESS 
 	    WHERE
 	    ID = #{id} 
     </delete>
     
     <delete id="deleteByCondition">
 	    DELETE FROM
-	    	WITHDRAWAL 
+	    	TRANSACTION_BUSINESS 
 	    WHERE
 	    	1=1
-		    <include refid="withdrawalColumns" />
+		    <include refid="transactionBusinessColumns" />
     </delete>
     
 	<update id="updateById">
 	    UPDATE
-	    	WITHDRAWAL 
+	    	TRANSACTION_BUSINESS 
         <set>
-	        <include refid="withdrawalSetColumns" />
+	        <include refid="transactionBusinessSetColumns" />
 		</set>
 	    WHERE
 	    ID = #{id} 
 	</update>
 	
-    <select id="queryById" resultMap="withdrawalResultMap">
+    <select id="queryById" resultMap="transactionBusinessResultMap">
 		SELECT
 			ID
 			,BLOCK_NUMBER
@@ -168,16 +177,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,TX_TO
 			,AMOUNT
 			,FEE
+			,TYPE
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
-			WITHDRAWAL 
+			TRANSACTION_BUSINESS 
 		WHERE 
 			ID = #{id} 
 	</select>
 	
-	<select id="queryList" resultMap="withdrawalResultMap">
+	<select id="queryList" resultMap="transactionBusinessResultMap">
 		SELECT
 			ID
 			,BLOCK_NUMBER
@@ -188,19 +198,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,TX_TO
 			,AMOUNT
 			,FEE
+			,TYPE
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
-			WITHDRAWAL
+			TRANSACTION_BUSINESS
 		WHERE
 			1=1
-			<include refid="withdrawalColumns" />
+			<include refid="transactionBusinessColumns" />
 		ORDER BY
 			ID
 	</select>
 	
-	<select id="queryAll" resultMap="withdrawalResultMap">
+	<select id="queryAll" resultMap="transactionBusinessResultMap">
 		SELECT
 			ID
 			,BLOCK_NUMBER
@@ -211,11 +222,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,TX_TO
 			,AMOUNT
 			,FEE
+			,TYPE
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
-			WITHDRAWAL 
+			TRANSACTION_BUSINESS 
 		ORDER BY
 			ID
 	</select>
@@ -224,13 +236,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		SELECT
 			COUNT(0)
 		FROM
-			WITHDRAWAL 
+			TRANSACTION_BUSINESS 
 		WHERE
 			1=1 
-			<include refid="withdrawalColumns" />
+			<include refid="transactionBusinessColumns" />
 	</select>
 	
-	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="withdrawalResultMap">
+	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="transactionBusinessResultMap">
 		SELECT
 			ID
 			,BLOCK_NUMBER
@@ -241,14 +253,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,TX_TO
 			,AMOUNT
 			,FEE
+			,TYPE
 			,STATUS
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
-			WITHDRAWAL
+			TRANSACTION_BUSINESS
 		WHERE
 			1=1
-			<include refid="withdrawalColumns" />
+			<include refid="transactionBusinessColumns" />
 		ORDER BY
 			ID
 	</select>

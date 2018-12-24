@@ -8,14 +8,8 @@ import com.sharingif.blockchain.ether.app.autoconfigure.constants.CoinType;
 import com.sharingif.blockchain.ether.block.dao.TransactionDAO;
 import com.sharingif.blockchain.ether.block.model.entity.Contract;
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
-import com.sharingif.blockchain.ether.block.service.BlockChainService;
-import com.sharingif.blockchain.ether.block.service.ContractService;
-import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
-import com.sharingif.blockchain.ether.block.service.TransactionService;
-import com.sharingif.blockchain.ether.deposit.model.entity.Deposit;
-import com.sharingif.blockchain.ether.deposit.service.DepositService;
-import com.sharingif.blockchain.ether.withdrawal.model.entity.Withdrawal;
-import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
+import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
+import com.sharingif.blockchain.ether.block.service.*;
 import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
@@ -34,8 +28,7 @@ import java.util.List;
 public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.lang.String> implements TransactionService {
 	
 	private TransactionDAO transactionDAO;
-	private DepositService depositService;
-	private WithdrawalService withdrawalService;
+	private TransactionBusinessService transactionBusinessService;
 	private EthereumBlockService ethereumBlockService;
 	private ContractService contractService;
 	private AddressListenerApiService addressListenerApiService;
@@ -50,18 +43,8 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		this.transactionDAO = transactionDAO;
 	}
 	@Resource
-	public void setDepositService(DepositService depositService) {
-		this.depositService = depositService;
-	}
-	public DepositService getDepositService() {
-		return depositService;
-	}
-	@Resource
-	public void setWithdrawalService(WithdrawalService withdrawalService) {
-		this.withdrawalService = withdrawalService;
-	}
-	public WithdrawalService getWithdrawalService() {
-		return withdrawalService;
+	public void setTransactionBusinessService(TransactionBusinessService transactionBusinessService) {
+		this.transactionBusinessService = transactionBusinessService;
 	}
 	@Resource
 	public void setEthereumBlockService(EthereumBlockService ethereumBlockService) {
@@ -118,31 +101,24 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	protected void persistenceTransaction(Transaction transaction, boolean isWatchFrom, boolean isWatchTo) {
 		addUntreatedTransaction(transaction);
 
+		TransactionBusiness transactionBusiness = new TransactionBusiness();
+		transactionBusiness.setBlockNumber(transaction.getBlockNumber());
+		transactionBusiness.setTransactionId(transaction.getId());
+		transactionBusiness.setTxHash(transaction.getTxHash());
+		transactionBusiness.setCoinType(transaction.getCoinType());
+		transactionBusiness.setTxFrom(transaction.getTxFrom());
+		transactionBusiness.setTxTo(transaction.getTxTo());
+		transactionBusiness.setAmount(transaction.getTxValue());
+		transactionBusiness.setFee(transaction.getActualFee());
+
 		if(isWatchFrom) {
-			Withdrawal withdrawal = new Withdrawal();
-			withdrawal.setBlockNumber(transaction.getBlockNumber());
-			withdrawal.setTransactionId(transaction.getId());
-			withdrawal.setTxHash(transaction.getTxHash());
-			withdrawal.setCoinType(transaction.getCoinType());
-			withdrawal.setTxFrom(transaction.getTxFrom());
-			withdrawal.setTxTo(transaction.getTxTo());
-			withdrawal.setAmount(transaction.getTxValue());
-			withdrawal.setFee(transaction.getActualFee());
-			withdrawalService.addUntreated(withdrawal);
+			transactionBusinessService.addUntreatedWithdrawal(transactionBusiness);
 		}
 
 		if(isWatchTo) {
-			Deposit deposit = new Deposit();
-			deposit.setBlockNumber(transaction.getBlockNumber());
-			deposit.setTransactionId(transaction.getId());
-			deposit.setTxHash(transaction.getTxHash());
-			deposit.setCoinType(transaction.getCoinType());
-			deposit.setTxFrom(transaction.getTxFrom());
-			deposit.setTxTo(transaction.getTxTo());
-			deposit.setAmount(transaction.getTxValue());
-			deposit.setFee(transaction.getActualFee());
-			depositService.addUntreated(deposit);
+			transactionBusinessService.addUntreatedDeposit(transactionBusiness);
 		}
+
 	}
 
 	protected void handlerContractTransaction(Transaction transaction, boolean isWatchFrom) {

@@ -1,4 +1,4 @@
-package com.sharingif.blockchain.ether.withdrawal.model.entity;
+package com.sharingif.blockchain.ether.block.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
@@ -7,13 +7,22 @@ import com.sharingif.cube.components.sequence.Sequence;
 import java.math.BigInteger;
 import java.util.Date;
 
-public class Withdrawal implements java.io.Serializable, IObjectDateOperationHistory {
+public class TransactionBusiness implements java.io.Serializable, IObjectDateOperationHistory {
+
+	/**
+	 * 交易类型(DEPOSIT:充值)
+	 */
+	public static final String TYPE_DEPOSIT = "DEPOSIT";
+	/**
+	 * 交易类型(WITHDRAWAL:提现)
+	 */
+	public static final String TYPE_WITHDRAWAL = "WITHDRAWAL";
 
 	/**
 	 * 处理状态(WCL:未处理)
 	 */
 	public static final String STATUS_UNTREATED = "WCL";
-
+	
 	//columns START
     /**
      * id			db_column: ID 
@@ -52,6 +61,10 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
      * 手续费			db_column: FEE 
      */	
 	private BigInteger fee;
+    /**
+     * 交易类型(DEPOSIT:充值、WITHDRAWAL:提现)			db_column: TYPE 
+     */	
+	private java.lang.String type;
     /**
      * 处理状态(WCL:未处理、TZZ:通知中、TZCG:通知成功、QKYZZ:区块验证中、SUCCESS:成功、FAIL:失败、CGTZZ:成功通知中、SBTZZ:失败通知中、CGTZ:成功通知中、SBTZ:失败通知)			db_column: STATUS 
      */	
@@ -120,6 +133,12 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 	public BigInteger getFee() {
 		return this.fee;
 	}
+	public void setType(java.lang.String type) {
+		this.type = type;
+	}
+	public java.lang.String getType() {
+		return this.type;
+	}
 	public void setStatus(java.lang.String status) {
 		this.status = status;
 	}
@@ -140,7 +159,7 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 	}
 
 	public String toString() {
-		return new StringBuilder("Withdrawal [")
+		return new StringBuilder("TransactionBusiness [")
 			.append("Id=").append(getId()).append(", ")
 					.append("BlockNumber=").append(getBlockNumber()).append(", ")
 					.append("TransactionId=").append(getTransactionId()).append(", ")
@@ -150,6 +169,7 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 					.append("TxTo=").append(getTxTo()).append(", ")
 					.append("Amount=").append(getAmount()).append(", ")
 					.append("Fee=").append(getFee()).append(", ")
+					.append("Type=").append(getType()).append(", ")
 					.append("Status=").append(getStatus()).append(", ")
 					.append("CreateTime=").append(getCreateTime()).append(", ")
 					.append("ModifyTime=").append(getModifyTime())

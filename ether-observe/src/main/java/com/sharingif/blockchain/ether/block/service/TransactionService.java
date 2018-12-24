@@ -14,18 +14,6 @@ import java.util.Date;
 public interface TransactionService extends IBaseService<Transaction, java.lang.String> {
 
     /**
-     * 获取充值服务
-     * @return
-     */
-    DepositService getDepositService();
-
-    /**
-     * 获取取现服务
-     * @return
-     */
-    WithdrawalService getWithdrawalService();
-
-    /**
      * 区块交易同步
      * @param transaction
      * @param transactionReceipt
