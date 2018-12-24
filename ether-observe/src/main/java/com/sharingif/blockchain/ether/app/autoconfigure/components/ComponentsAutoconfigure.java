@@ -7,6 +7,7 @@ import com.sharingif.cube.batch.core.handler.SimpleDispatcherHandler;
 import com.sharingif.cube.batch.core.handler.adapter.JobRequestHandlerMethodArgumentResolver;
 import com.sharingif.cube.batch.core.handler.chain.JobViewHandlerMethodChain;
 import com.sharingif.cube.batch.core.request.JobRequestContextResolver;
+import com.sharingif.cube.batch.core.view.JobView;
 import com.sharingif.cube.batch.core.view.JobViewResolver;
 import com.sharingif.cube.communication.view.MultiViewResolver;
 import com.sharingif.cube.communication.view.ViewResolver;
@@ -132,10 +133,20 @@ public class ComponentsAutoconfigure {
         return multiHandlerMethodAdapter;
     }
 
+    @Bean("jobView")
+    public JobView createJobView() {
+        JobView jobView = new JobView();
+
+        return jobView;
+    }
+
     @Bean("multiViewResolver")
-    public MultiViewResolver createMultiViewResolver() {
+    public MultiViewResolver createMultiViewResolver(JobView jobView) {
+        JobViewResolver jobViewResolver = new JobViewResolver();
+        jobViewResolver.setJobView(jobView);
+
         List<ViewResolver> viewResolvers = new ArrayList<ViewResolver>();
-        viewResolvers.add(new JobViewResolver());
+        viewResolvers.add(jobViewResolver);
         MultiViewResolver multiViewResolver = new MultiViewResolver();
         multiViewResolver.setViewResolvers(viewResolvers);
 

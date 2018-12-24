@@ -32,7 +32,7 @@ public class BatchJobServiceImpl extends BaseServiceImpl<BatchJob, String> imple
     }
 
     @Override
-    public List<BatchJob> getSuspendingStatus(int queryJobSize) {
+    public List<BatchJob> getSuspendingStatus() {
 
         BatchJob batchJob = new BatchJob();
         batchJob.setStatus(BatchJob.STATUS_PENDING);
@@ -41,7 +41,7 @@ public class BatchJobServiceImpl extends BaseServiceImpl<BatchJob, String> imple
         suspendingPaginationCondition.setCondition(batchJob);
         suspendingPaginationCondition.setQueryCount(false);
         suspendingPaginationCondition.setCurrentPage(1);
-        suspendingPaginationCondition.setPageSize(queryJobSize);
+        suspendingPaginationCondition.setPageSize(PaginationCondition.DEFAULT_PAGE_SIZE);
 
         PaginationRepertory suspendingPaginationRepertory = batchJobDAO.queryPaginationListByPlanExecuteTimeStatus(suspendingPaginationCondition);
 

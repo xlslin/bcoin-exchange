@@ -114,11 +114,12 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 			return;
 		}
 
-		EthBlock.Block block = ethereumBlockService.getBlock(currentSyncBlockNumber.add(BigInteger.ONE), false);
-
 		// 如果数据库区块号小于区块链当前区块号，递增修改BlockChainSync，添加BlockChain表
-		updateBlockChainInfo(block);
-
+		while (currentSyncBlockNumber.compareTo(blockNumber)< 0) {
+			currentSyncBlockNumber = currentSyncBlockNumber.add(BigInteger.ONE);
+			EthBlock.Block block = ethereumBlockService.getBlock(currentSyncBlockNumber, false);
+			updateBlockChainInfo(block);
+		}
 	}
 
 

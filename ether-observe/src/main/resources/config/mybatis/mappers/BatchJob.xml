@@ -300,7 +300,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		AND
 			STATUS = #{status}
 		ORDER BY
-		ID
+			PLAN_EXECUTE_TIME
 		]]>
 	</select>
 	

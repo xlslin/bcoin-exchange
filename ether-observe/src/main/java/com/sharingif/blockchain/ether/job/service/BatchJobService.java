@@ -18,10 +18,9 @@ public interface BatchJobService extends IBaseService<BatchJob, String> {
 
     /**
      * 查询待处理Job
-     * @param queryJobSize
      * @return
      */
-    List<BatchJob> getSuspendingStatus(int queryJobSize);
+    List<BatchJob> getSuspendingStatus();
 
     /**
      * 修改job状态为队列中

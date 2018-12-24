@@ -118,13 +118,13 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	}
 
 	@Transactional
-	protected void readySyncData(BlockChain blockChain, Date planExecuteTime) {
+	protected void readySyncData(BlockChain blockChain) {
 		updateBlockSynching(blockChain.getId());
 
 		JobModel jobModel = new JobModel();
 		jobModel.setLookupPath(blockChainSynchingDataJobConfig.getLookupPath());
 		jobModel.setDataId(blockChain.getId());
-		jobModel.setPlanExecuteTime(planExecuteTime);
+		jobModel.setPlanExecuteTime(blockChain.getBlockCreateTime());
 		jobService.add(null, jobModel);
 	}
 
@@ -145,9 +145,8 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 			return;
 		}
 
-		long currentTimeMillis = System.currentTimeMillis();
-		for(int i=0; i<blockChainList.size(); i++) {
-			readySyncData(blockChainList.get(i), new Date(currentTimeMillis+i));
+		for(BlockChain blockChain : blockChainList) {
+			readySyncData(blockChain);
 		}
 
 	}
@@ -155,6 +154,11 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	@Override
 	public void synchingData(String blockChainId) {
 		BlockChain blockChain = blockChainDAO.queryById(blockChainId);
+
+		// job业务处理处理成功修改job状态失败导致交易重复调用
+		if(!BlockChain.STATUS_BLOCK_SYNCHING.equals(blockChain.getStatus())) {
+			return;
+		}
 
 		EthBlock.Block block = ethereumBlockService.getBlock(blockChain.getBlockNumber(), true);
 		if(!blockChain.getHash().equals(block.getHash())) {

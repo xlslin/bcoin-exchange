@@ -145,15 +145,47 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		}
 	}
 
-	protected void persistenceTransaction(Transaction transaction) {
+	protected void handlerContractTransaction(Transaction transaction, boolean isWatchFrom) {
+		transaction.setContractAddress(transaction.getTxTo());
+		transaction.setTxTo(null);
+
+		List<Type> transferResponseList = null;
+		try {
+			transferResponseList = ethereumBlockService.getErc20ContractService().getTransfer(transaction.getTxInput());
+		} catch (Exception e) {
+			logger.error("get transfer error, transaction:{}", transaction, e);
+		}
+		if(transferResponseList == null || transferResponseList.isEmpty()) {
+			logger.info("transfer response list is null, transaction:{}", transaction);
+			// 交易失败但是是观察地址需要处理手续费
+			if(isWatchFrom == false) {
+				transaction.setTxValue(BigInteger.ZERO);
+				return;
+			}
+		} else {
+			Address address = (Address)transferResponseList.get(0);
+			Uint256 amount = (Uint256)transferResponseList.get(1);
+
+			transaction.setTxTo(address.getValue());
+			transaction.setTxValue(amount.getValue());
+		}
+
+	}
+
+	protected void analysis(Transaction transaction) {
+
 		boolean isWatchFrom = isWatch(transaction.getTxFrom());
+
+		Boolean isContractAddress = ethereumBlockService.isContractAddress(transaction.getTxTo());
+		if(isContractAddress) {
+			handlerContractTransaction(transaction, isWatchFrom);
+		}
 
 		boolean isWatchTo = isWatch(transaction.getTxTo());
 
 		if(isWatchFrom == false && isWatchTo == false) {
 			return;
 		}
-
 
 		if(isDuplicationData(
 				transaction.getBlockHash()
@@ -165,43 +197,17 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		) {
 			return;
 		}
+
+		if(!StringUtils.isTrimEmpty(transaction.getContractAddress())) {
+			Contract contract = contractService.getContractAndAdd(transaction.getContractAddress());
+			if(!contract.isErc20Contract()) {
+				logger.error("is not erc20 contract, transaction:{}",transaction);
+				return;
+			}
+			transaction.setCoinType(contract.getSymbol());
+		}
+
 		persistenceTransaction(transaction, isWatchFrom, isWatchTo);
-	}
-
-	protected void handlerContractTransaction(Transaction transaction) {
-		transaction.setContractAddress(transaction.getTxTo());
-		transaction.setTxTo(null);
-
-		Contract contract = contractService.getContractAndAdd(transaction.getContractAddress());
-		if(!contract.isErc20Contract()) {
-			logger.error("is not erc20 contract, transaction:{}",transaction);
-			return;
-		}
-
-		List<Type> transferResponseList = ethereumBlockService.getErc20ContractService().getTransfer(transaction.getTxInput());
-		if(transferResponseList == null || transferResponseList.isEmpty()) {
-			logger.error("transfer response list is null, transaction:{}", transaction);
-			return;
-		}
-
-		Address address = (Address)transferResponseList.get(0);
-		Uint256 amount = (Uint256)transferResponseList.get(1);
-
-		transaction.setTxTo(address.getValue());
-		transaction.setTxValue(amount.getValue());
-
-		transaction.setCoinType(contract.getSymbol());
-
-	}
-
-	protected void analysis(Transaction transaction) {
-
-		Boolean isContractAddress = ethereumBlockService.isContractAddress(transaction.getTxTo());
-		if(isContractAddress) {
-			handlerContractTransaction(transaction);
-		}
-
-		persistenceTransaction(transaction);
 
 
 	}

@@ -48,10 +48,6 @@ public class JobServiceImpl implements JobService, InitializingBean {
      * 队列
      */
     private Queue<JobRequest> queue = new ConcurrentLinkedQueue<JobRequest>();
-    /**
-     * 查询job列表最大条数
-     */
-    private int queryJobSize;
 
     private BatchJobService batchJobService;
     private SimpleDispatcherHandler simpleDispatcherHandler;
@@ -62,10 +58,6 @@ public class JobServiceImpl implements JobService, InitializingBean {
     @Value("${job.queue.size}")
     public void setQueueSize(int queueSize) {
         this.queueSize = queueSize;
-    }
-    @Value("${job.query.jobSize}")
-    public void setQueryJobSize(int queryJobSize) {
-        this.queryJobSize = queryJobSize;
     }
     @Resource
     public void setBatchJobService(BatchJobService batchJobService) {
@@ -165,7 +157,7 @@ public class JobServiceImpl implements JobService, InitializingBean {
             return;
         }
 
-        List<BatchJob> suspendingJobRequestList = batchJobService.getSuspendingStatus(queryJobSize);
+        List<BatchJob> suspendingJobRequestList = batchJobService.getSuspendingStatus();
 
         if(suspendingJobRequestList == null || suspendingJobRequestList.size() == 0) {
             return;
