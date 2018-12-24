@@ -12,20 +12,6 @@ public interface DepositService {
     void addUntreated(TransactionBusiness transactionBusiness);
 
     /**
-     * 修改状态为初始化充值通知中
-     * @param id
-     * @return
-     */
-    int updateStatusToInitNotice(String id);
-
-    /**
-     * 修改状态为初始化充值通知成功
-     * @param id
-     * @return
-     */
-    int updateStatusToInitNoticed(String id);
-
-    /**
      * 准备充值通知
      */
     void readyDepositNotice();

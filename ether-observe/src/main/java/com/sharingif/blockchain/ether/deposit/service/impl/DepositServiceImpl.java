@@ -43,27 +43,9 @@ public class DepositServiceImpl implements DepositService {
         transactionBusinessService.add(transactionBusiness);
     }
 
-    @Override
-    public int updateStatusToInitNotice(String id) {
-        TransactionBusiness transactionBusiness = new TransactionBusiness();
-        transactionBusiness.setId(id);
-        transactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICE);
-
-        return transactionBusinessService.updateById(transactionBusiness);
-    }
-
-    @Override
-    public int updateStatusToInitNoticed(String id) {
-        TransactionBusiness transactionBusiness = new TransactionBusiness();
-        transactionBusiness.setId(id);
-        transactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
-
-        return transactionBusinessService.updateById(transactionBusiness);
-    }
-
     @Transactional
     protected void readyDepositNotice(TransactionBusiness transactionBusiness) {
-        updateStatusToInitNotice(transactionBusiness.getId());
+        transactionBusinessService.updateStatusToInitNotice(transactionBusiness.getId());
 
         JobModel jobModel = new JobModel();
         jobModel.setLookupPath(depositInitDepositNoticeJobConfig.getLookupPath());
@@ -76,6 +58,7 @@ public class DepositServiceImpl implements DepositService {
     public void readyDepositNotice() {
         TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
         queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
+        queryTransactionBusiness.setType(TransactionBusiness.TYPE_DEPOSIT);
         PaginationCondition<TransactionBusiness> blockChainPaginationCondition = new PaginationCondition<TransactionBusiness>();
         blockChainPaginationCondition.setCondition(queryTransactionBusiness);
         blockChainPaginationCondition.setQueryCount(false);
@@ -100,7 +83,7 @@ public class DepositServiceImpl implements DepositService {
             return;
         }
 
-        updateStatusToInitNoticed(id);
+        transactionBusinessService.updateStatusToInitNoticed(id);
     }
 
 }

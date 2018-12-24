@@ -11,4 +11,10 @@ public interface WithdrawalService {
      */
     void addUntreated(TransactionBusiness transactionBusiness);
 
+    /**
+     * 初始化提现通知
+     * @param id
+     */
+    void initDepositNotice(String id);
+
 }

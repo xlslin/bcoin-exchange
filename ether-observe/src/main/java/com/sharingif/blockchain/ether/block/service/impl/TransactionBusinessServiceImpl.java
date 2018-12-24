@@ -24,4 +24,22 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 		this.transactionBusinessDAO = transactionBusinessDAO;
 	}
 
+	@Override
+	public int updateStatusToInitNotice(String id) {
+		TransactionBusiness transactionBusiness = new TransactionBusiness();
+		transactionBusiness.setId(id);
+		transactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICE);
+
+		return transactionBusinessDAO.updateById(transactionBusiness);
+	}
+
+	@Override
+	public int updateStatusToInitNoticed(String id) {
+		TransactionBusiness transactionBusiness = new TransactionBusiness();
+		transactionBusiness.setId(id);
+		transactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
+
+		return transactionBusinessDAO.updateById(transactionBusiness);
+	}
+
 }
