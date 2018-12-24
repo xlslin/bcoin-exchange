@@ -27,7 +27,7 @@ public class JobScheduled {
         this.simpleDispatcherHandler = simpleDispatcherHandler;
     }
 
-    @Scheduled(fixedRate = 1000*10)
+    @Scheduled(fixedRate = 1000*1)
     public synchronized void putQueue() {
         JobRequest jobRequest = new JobRequest();
         jobRequest.setLookupPath("/job/putQueue");
@@ -35,7 +35,7 @@ public class JobScheduled {
         simpleDispatcherHandler.doDispatch(jobRequest);
     }
 
-    @Scheduled(fixedRate = 1000*10)
+    @Scheduled(fixedRate = 1000*1)
     public synchronized void consume() {
         JobRequest jobRequest = new JobRequest();
         jobRequest.setLookupPath("/job/consume");
