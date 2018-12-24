@@ -23,10 +23,9 @@ public class WithdrawalServiceImpl implements WithdrawalService {
 
     @Override
     public void addUntreated(TransactionBusiness transactionBusiness) {
-        transactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
         transactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
 
-        transactionBusinessService.add(transactionBusiness);
+        transactionBusinessService.addUntreated(transactionBusiness);
     }
 
     @Override

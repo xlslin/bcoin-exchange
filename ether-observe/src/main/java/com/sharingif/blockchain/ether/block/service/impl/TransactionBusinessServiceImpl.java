@@ -25,6 +25,13 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 	}
 
 	@Override
+	public void addUntreated(TransactionBusiness transactionBusiness) {
+		transactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
+
+		transactionBusinessDAO.insert(transactionBusiness);
+	}
+
+	@Override
 	public int updateStatusToInitNotice(String id) {
 		TransactionBusiness transactionBusiness = new TransactionBusiness();
 		transactionBusiness.setId(id);

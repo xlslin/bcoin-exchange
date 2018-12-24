@@ -37,10 +37,9 @@ public class DepositServiceImpl implements DepositService {
 
     @Override
     public void addUntreated(TransactionBusiness transactionBusiness) {
-        transactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
         transactionBusiness.setType(TransactionBusiness.TYPE_DEPOSIT);
 
-        transactionBusinessService.add(transactionBusiness);
+        transactionBusinessService.addUntreated(transactionBusiness);
     }
 
     @Transactional
