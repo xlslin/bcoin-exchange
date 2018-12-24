@@ -4,7 +4,6 @@ package com.sharingif.blockchain.ether.block.service.impl;
 import com.sharingif.blockchain.ether.block.dao.BlockChainDAO;
 import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
 import com.sharingif.blockchain.ether.block.service.BlockChainService;
-import com.sharingif.blockchain.ether.block.service.BlockChainSyncService;
 import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
 import com.sharingif.blockchain.ether.block.service.TransactionService;
 import com.sharingif.cube.batch.core.JobConfig;
@@ -28,7 +27,6 @@ import java.util.List;
 public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang.String> implements BlockChainService {
 	
 	private BlockChainDAO blockChainDAO;
-	private BlockChainSyncService blockChainSyncService;
 	private TransactionService transactionService;
 	private EthereumBlockService ethereumBlockService;
 	private String ethValidBlockNumber;
@@ -43,10 +41,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		super.setBaseDAO(blockChainDAO);
 		this.blockChainDAO = blockChainDAO;
 	}
-	@Resource
-	public void setBlockChainSyncService(BlockChainSyncService blockChainSyncService) {
-		this.blockChainSyncService = blockChainSyncService;
-	}
+
 	@Resource
 	public void setTransactionService(TransactionService transactionService) {
 		this.transactionService = transactionService;

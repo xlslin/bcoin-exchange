@@ -18,6 +18,14 @@ public class JobConfigComponentsAutoconfigure {
         return jobConfig;
     }
 
+    @Bean("depositInitDepositNoticeJobConfig")
+    public JobConfig createDepositInitDepositNoticeJobConfigJobConfig() {
+        JobConfig jobConfig = new JobConfig(null,"/deposit/initDepositNotice", null);
+        jobConfig.setIntervalPlanExecuteTime(1000*60*5);
+        jobConfig.setMaxExecuteCount(5);
+        return jobConfig;
+    }
+
     @Bean("allJobConfig")
     public Map<String, JobConfig> createAllJobConfig(List<JobConfig> jobConfigList) {
         Map<String, JobConfig> allJobConfig = new HashMap<>(jobConfigList.size());

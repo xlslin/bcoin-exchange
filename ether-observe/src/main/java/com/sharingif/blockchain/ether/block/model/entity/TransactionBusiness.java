@@ -22,6 +22,14 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	 * 处理状态(WCL:未处理)
 	 */
 	public static final String STATUS_UNTREATED = "WCL";
+	/**
+	 * 处理状态(CSHTZZ:初始化通知中)
+	 */
+	public static final String STATUS_INIT_NOTICE = "CSHTZZ";
+	/**
+	 * 处理状态(CSHTZCG:初始化通知成功)
+	 */
+	public static final String STATUS_INIT_NOTICED = "CSHTZCG";
 	
 	//columns START
     /**
@@ -66,7 +74,7 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
      */	
 	private java.lang.String type;
     /**
-     * 处理状态(WCL:未处理、TZZ:通知中、TZCG:通知成功、QKYZZ:区块验证中、SUCCESS:成功、FAIL:失败、CGTZZ:成功通知中、SBTZZ:失败通知中、CGTZ:成功通知中、SBTZ:失败通知)			db_column: STATUS 
+     * 处理状态(WCL:未处理、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、QKYZZ:区块验证中、SUCCESS:成功、FAIL:失败、CGTZZ:成功通知中、SBTZZ:失败通知中、CGTZ:成功通知中、SBTZ:失败通知)			db_column: STATUS
      */	
 	private java.lang.String status;
     /**

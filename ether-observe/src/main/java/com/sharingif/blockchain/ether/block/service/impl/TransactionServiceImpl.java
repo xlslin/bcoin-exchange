@@ -10,6 +10,8 @@ import com.sharingif.blockchain.ether.block.model.entity.Contract;
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.ether.block.service.*;
+import com.sharingif.blockchain.ether.deposit.service.DepositService;
+import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
 import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
@@ -28,7 +30,8 @@ import java.util.List;
 public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.lang.String> implements TransactionService {
 	
 	private TransactionDAO transactionDAO;
-	private TransactionBusinessService transactionBusinessService;
+	private DepositService depositService;
+	private WithdrawalService withdrawalService;
 	private EthereumBlockService ethereumBlockService;
 	private ContractService contractService;
 	private AddressListenerApiService addressListenerApiService;
@@ -43,8 +46,12 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		this.transactionDAO = transactionDAO;
 	}
 	@Resource
-	public void setTransactionBusinessService(TransactionBusinessService transactionBusinessService) {
-		this.transactionBusinessService = transactionBusinessService;
+	public void setDepositService(DepositService depositService) {
+		this.depositService = depositService;
+	}
+	@Resource
+	public void setWithdrawalService(WithdrawalService withdrawalService) {
+		this.withdrawalService = withdrawalService;
 	}
 	@Resource
 	public void setEthereumBlockService(EthereumBlockService ethereumBlockService) {
@@ -112,11 +119,12 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		transactionBusiness.setFee(transaction.getActualFee());
 
 		if(isWatchFrom) {
-			transactionBusinessService.addUntreatedWithdrawal(transactionBusiness);
+			withdrawalService.addUntreated(transactionBusiness);
 		}
 
 		if(isWatchTo) {
-			transactionBusinessService.addUntreatedDeposit(transactionBusiness);
+			transactionBusiness.setId(null);
+			depositService.addUntreated(transactionBusiness);
 		}
 
 	}

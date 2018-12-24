@@ -24,20 +24,4 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 		this.transactionBusinessDAO = transactionBusinessDAO;
 	}
 
-
-	@Override
-	public void addUntreatedDeposit(TransactionBusiness transactionBusiness) {
-		transactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
-		transactionBusiness.setType(TransactionBusiness.TYPE_DEPOSIT);
-
-		transactionBusinessDAO.insert(transactionBusiness);
-	}
-
-	@Override
-	public void addUntreatedWithdrawal(TransactionBusiness transactionBusiness) {
-		transactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
-		transactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
-
-		transactionBusinessDAO.insert(transactionBusiness);
-	}
 }
