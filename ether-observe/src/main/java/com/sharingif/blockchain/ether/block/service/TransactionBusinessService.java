@@ -27,4 +27,23 @@ public interface TransactionBusinessService extends IBaseService<TransactionBusi
      */
     int updateStatusToInitNoticed(String id);
 
+    /**
+     * 修改状态为有效
+     * @param id
+     * @return
+     */
+    int updateStatusToValid(String id);
+
+    /**
+     * 修改状态为无效
+     * @param id
+     * @return
+     */
+    int updateStatusToInvalid(String id);
+
+    /**
+     * 验证交易是否有效
+     */
+    void validateTransaction();
+
 }

@@ -33,7 +33,7 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
 	 */
 	public static final String TX_STATUS_UNTREATED = "WCL";
 	/**
-	 * 交易状态(QKQRYX:区块确认有效、QKQRWX:区块确认无效)
+	 * 交易状态(QKQRYX:区块确认有效)
 	 */
 	public static final String TX_STATUS_BLOCK_CONFIRMED_VALID = "QKQRYX";
 	/**
@@ -274,6 +274,14 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
 
 	public static String convertTxReceiptStatus(String status) {
 		return  (RECEIPT_STATUS_SUCCESS.equals(status) ? TX_RECEIPT_STATUS_SUCCESS : TX_RECEIPT_STATUS_FAIL);
+	}
+
+	public boolean isUntreated() {
+		return TX_STATUS_UNTREATED.equals(getTxStatus());
+	}
+
+	public boolean isBlockConfirmedValid() {
+		return TX_STATUS_BLOCK_CONFIRMED_VALID.equals(getTxStatus());
 	}
 
 	public String toString() {

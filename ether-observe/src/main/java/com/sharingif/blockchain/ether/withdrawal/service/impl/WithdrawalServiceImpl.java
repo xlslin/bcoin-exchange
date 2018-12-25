@@ -33,13 +33,13 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
         queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
         queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
-        PaginationCondition<TransactionBusiness> blockChainPaginationCondition = new PaginationCondition<TransactionBusiness>();
-        blockChainPaginationCondition.setCondition(queryTransactionBusiness);
-        blockChainPaginationCondition.setQueryCount(false);
-        blockChainPaginationCondition.setCurrentPage(1);
-        blockChainPaginationCondition.setPageSize(20);
+        PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
+        paginationCondition.setCondition(queryTransactionBusiness);
+        paginationCondition.setQueryCount(false);
+        paginationCondition.setCurrentPage(1);
+        paginationCondition.setPageSize(20);
 
-        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessService.getPagination(blockChainPaginationCondition);
+        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessService.getPagination(paginationCondition);
         List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
         if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
             return;
