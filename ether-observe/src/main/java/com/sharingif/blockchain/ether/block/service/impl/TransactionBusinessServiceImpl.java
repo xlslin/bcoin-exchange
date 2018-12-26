@@ -2,6 +2,8 @@ package com.sharingif.blockchain.ether.block.service.impl;
 
 
 import com.sharingif.blockchain.ether.block.dao.TransactionBusinessDAO;
+import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
+import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.ether.block.service.TransactionBusinessService;
 import com.sharingif.blockchain.ether.deposit.service.DepositService;
@@ -41,6 +43,7 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 	@Override
 	public void addUntreated(TransactionBusiness transactionBusiness) {
 		transactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
+		transactionBusiness.setTxStatus(BlockChain.STATUS_UNVERIFIED);
 
 		transactionBusinessDAO.insert(transactionBusiness);
 	}
@@ -68,9 +71,9 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 		TransactionBusiness transactionBusiness = new TransactionBusiness();
 		transactionBusiness.setBlockNumber(blockNumber);
 		transactionBusiness.setBlockHash(blockHash);
-		transactionBusiness.setTxStatus(TransactionBusiness.STATUS_VALID);
+		transactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
 
-		return transactionBusinessDAO.updateById(transactionBusiness);
+		return transactionBusinessDAO.updateByBlockNumberBlockHash(transactionBusiness);
 	}
 
 	@Override
@@ -78,7 +81,16 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 		TransactionBusiness transactionBusiness = new TransactionBusiness();
 		transactionBusiness.setBlockNumber(blockNumber);
 		transactionBusiness.setBlockHash(blockHash);
-		transactionBusiness.setTxStatus(TransactionBusiness.STATUS_INVALID);
+		transactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_INVALID);
+
+		return transactionBusinessDAO.updateByBlockNumberBlockHash(transactionBusiness);
+	}
+
+	@Override
+	public int updateTxStatusToSettled(String id) {
+		TransactionBusiness transactionBusiness = new TransactionBusiness();
+		transactionBusiness.setId(id);
+		transactionBusiness.setTxStatus(BlockChain.STATUS_SETTLED);
 
 		return transactionBusinessDAO.updateById(transactionBusiness);
 	}
@@ -94,10 +106,12 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 		for(TransactionBusiness transactionBusiness : transactionBusinessList) {
 			if(TransactionBusiness.TYPE_DEPOSIT.equals(transactionBusiness.getType())) {
 				depositService.deposit(transactionBusiness);
+				updateTxStatusToSettled(transactionBusiness.getId());
 				continue;
 			}
 			if(TransactionBusiness.TYPE_WITHDRAWAL.equals(transactionBusiness.getType())) {
 				withdrawalService.withdrawalSuccess(transactionBusiness);
+				updateTxStatusToSettled(transactionBusiness.getId());
 				continue;
 			}
 		}
@@ -115,6 +129,7 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 		for(TransactionBusiness transactionBusiness : transactionBusinessList) {
 			if(TransactionBusiness.TYPE_WITHDRAWAL.equals(transactionBusiness.getType())) {
 				withdrawalService.withdrawalFailure(transactionBusiness);
+				updateTxStatusToSettled(transactionBusiness.getId());
 				continue;
 			}
 		}

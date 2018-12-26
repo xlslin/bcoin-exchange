@@ -6,12 +6,14 @@ import com.sharingif.blockchain.api.account.entity.AddressListenerIsWatchRsp;
 import com.sharingif.blockchain.api.account.service.AddressListenerApiService;
 import com.sharingif.blockchain.ether.app.autoconfigure.constants.CoinType;
 import com.sharingif.blockchain.ether.block.dao.TransactionDAO;
+import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
 import com.sharingif.blockchain.ether.block.model.entity.Contract;
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.ether.block.service.*;
 import com.sharingif.blockchain.ether.deposit.service.DepositService;
 import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
+import com.sharingif.cube.core.exception.UnknownCubeException;
 import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
@@ -74,7 +76,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	}
 
 	public void addUntreatedTransaction(Transaction transaction) {
-		transaction.setTxStatus(Transaction.TX_STATUS_UNTREATED);
+		transaction.setTxStatus(BlockChain.STATUS_UNVERIFIED);
 		add(transaction);
 	}
 
@@ -113,6 +115,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 		TransactionBusiness transactionBusiness = new TransactionBusiness();
 		transactionBusiness.setBlockNumber(transaction.getBlockNumber());
+		transactionBusiness.setBlockHash(transaction.getBlockHash());
 		transactionBusiness.setTransactionId(transaction.getId());
 		transactionBusiness.setTxHash(transaction.getTxHash());
 		transactionBusiness.setCoinType(transaction.getCoinType());
@@ -249,7 +252,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		transaction.setBlockHash(blockHash);
 
 		transaction.setConfirmBlockNumber(confirmBlockNumber);
-		transaction.setTxStatus(Transaction.TX_STATUS_BLOCK_CONFIRMED_VALID);
+		transaction.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
 
 		int updateNumber = transactionDAO.updateByBlockNumberBlockHash(transaction);
 
@@ -265,7 +268,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		transaction.setBlockHash(blockHash);
 
 		transaction.setConfirmBlockNumber(confirmBlockNumber);
-		transaction.setTxStatus(Transaction.TX_STATUS_BLOCK_CONFIRMED_INVALID);
+		transaction.setTxStatus(BlockChain.STATUS_VERIFY_INVALID);
 
 		int updateNumber = transactionDAO.updateByBlockNumberBlockHash(transaction);
 

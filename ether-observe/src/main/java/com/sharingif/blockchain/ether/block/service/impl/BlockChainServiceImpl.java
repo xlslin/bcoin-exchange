@@ -140,7 +140,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 
 	@Transactional
 	protected void readySyncData(BlockChain blockChain) {
-		updateStatusToSettling(blockChain.getId());
+		updateBlockSynching(blockChain.getId());
 
 		JobModel jobModel = new JobModel();
 		jobModel.setLookupPath(blockChainSynchingDataJobConfig.getLookupPath());
@@ -244,7 +244,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListByBlockNumberStatus(blockChainPaginationCondition);
 		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
 
-		if(blockChainList == null && blockChainList.isEmpty()) {
+		if(blockChainList == null || blockChainList.isEmpty()) {
 			return;
 		}
 
@@ -256,7 +256,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 
 	@Transactional
 	protected void readySettle(BlockChain verifyValidBlockChain, JobConfig jobConfig) {
-		updateBlockSynching(verifyValidBlockChain.getId());
+		updateStatusToSettling(verifyValidBlockChain.getId());
 
 		JobModel jobModel = new JobModel();
 		jobModel.setLookupPath(jobConfig.getLookupPath());
@@ -277,7 +277,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListByBlockNumberStatus(blockChainPaginationCondition);
 		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
 
-		if(blockChainList == null && blockChainList.isEmpty()) {
+		if(blockChainList == null || blockChainList.isEmpty()) {
 			return;
 		}
 
@@ -299,7 +299,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	@Override
 	public void settleBolckSuccess(String blockChainId) {
 		BlockChain settlingBlockChain = blockChainDAO.queryById(blockChainId);
-		if(BlockChain.STATUS_SETTLING.equals(settlingBlockChain.getStatus())) {
+		if(!BlockChain.STATUS_SETTLING.equals(settlingBlockChain.getStatus())) {
 			return;
 		}
 
@@ -311,7 +311,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	@Override
 	public void settleBolckFailure(String blockChainId) {
 		BlockChain settlingBlockChain = blockChainDAO.queryById(blockChainId);
-		if(BlockChain.STATUS_SETTLING.equals(settlingBlockChain.getStatus())) {
+		if(!BlockChain.STATUS_SETTLING.equals(settlingBlockChain.getStatus())) {
 			return;
 		}
 

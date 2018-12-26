@@ -221,7 +221,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<select id="queryPaginationListByBlockNumberStatus" parameterType="PaginationCondition" resultMap="blockChainResultMap">
-		<![CDATA[
 		SELECT
 			ID
 			,BLOCK_NUMBER
@@ -234,12 +233,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		FROM
 			BLOCK_CHAIN
 		WHERE
-				BLOCK_NUMBER <= #{blockNumber}
-			AND
-				STATUS = #{status}
+			1=1
+			<if test="null!=blockNumber">
+				<![CDATA[
+    			AND BLOCK_NUMBER <= #{blockNumber}
+    			]]>
+			</if>
+			AND STATUS = #{status}
 		ORDER BY
 			BLOCK_NUMBER
-		]]>
 	</select>
 
 </mapper>

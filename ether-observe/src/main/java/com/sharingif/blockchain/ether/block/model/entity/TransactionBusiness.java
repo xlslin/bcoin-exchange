@@ -30,14 +30,6 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	 * 处理状态(CSHTZCG:初始化通知成功)
 	 */
 	public static final String STATUS_INIT_NOTICED = "CSHTZCG";
-	/**
-	 * 处理状态(YX:有效)
-	 */
-	public static final String STATUS_VALID = "YX";
-	/**
-	 * 处理状态(WX:无效)
-	 */
-	public static final String STATUS_INVALID = "WX";
 
 	//columns START
     /**
@@ -86,7 +78,7 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
      */	
 	private java.lang.String type;
     /**
-     * 处理状态(WCL:未处理、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、YJS:已结算)			db_column: STATUS 
+     * 处理状态(WCL:未处理、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、YQS:已清算)			db_column: STATUS
      */	
 	private java.lang.String status;
     /**

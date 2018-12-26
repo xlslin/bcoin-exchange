@@ -28,18 +28,6 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
 	 */
 	public static final String TX_RECEIPT_STATUS_FAIL = "F";
 
-	/**
-	 * 交易状态(WCL:未处理)
-	 */
-	public static final String TX_STATUS_UNTREATED = "WCL";
-	/**
-	 * 交易状态(QKQRYX:区块确认有效)
-	 */
-	public static final String TX_STATUS_BLOCK_CONFIRMED_VALID = "QKQRYX";
-	/**
-	 * 交易状态(QKQRWX:区块确认无效)
-	 */
-	public static final String TX_STATUS_BLOCK_CONFIRMED_INVALID = "QKQRWX";
 
 	//columns START
     /**
@@ -120,7 +108,7 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
 	 */
 	private Integer confirmBlockNumber;
 	/**
-	 * 交易状态(WCL:未处理、QKQRYX:区块确认有效、QKQRWX:区块确认无效)			db_column: TX_STATUS
+	 * 交易状态(WCL:未处理、QKYZYX:区块验证有效、QKYZWX:区块验证无效)			db_column: TX_STATUS
 	 */
 	private String txStatus;
 	/**
@@ -277,11 +265,11 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
 	}
 
 	public boolean isUntreated() {
-		return TX_STATUS_UNTREATED.equals(getTxStatus());
+		return BlockChain.STATUS_UNVERIFIED.equals(getTxStatus());
 	}
 
 	public boolean isBlockConfirmedValid() {
-		return TX_STATUS_BLOCK_CONFIRMED_VALID.equals(getTxStatus());
+		return BlockChain.STATUS_VERIFY_VALID.equals(getTxStatus());
 	}
 
 	public String toString() {
