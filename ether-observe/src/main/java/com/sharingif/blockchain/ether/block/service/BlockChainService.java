@@ -44,6 +44,17 @@ public interface BlockChainService extends IBaseService<BlockChain, java.lang.St
     void updateStatusToVerifyInvalid(String id, BigInteger verifyBlockNumber);
 
     /**
+     * 修改状态为清算中
+     * @param id
+     */
+    void updateStatusToSettling(String id);
+    /**
+     * 修改状态为已清算
+     * @param id
+     */
+    void updateStatusToSettled(String id);
+
+    /**
      * 准备块数据同步
      */
     void readySyncData();
@@ -58,4 +69,26 @@ public interface BlockChainService extends IBaseService<BlockChain, java.lang.St
      * 验证块是否有效
      */
     void validateBolck();
+
+    /**
+     * 准备清算成功块
+     */
+    void readySettleBolckSuccess();
+
+    /**
+     * 准备清算失败块
+     */
+    void readySettleBolckFailure();
+
+    /**
+     * 清算成功块
+     * @param blockChainId
+     */
+    void settleBolckSuccess(String blockChainId);
+
+    /**
+     * 清算失败块
+     * @param blockChainId
+     */
+    void settleBolckFailure(String blockChainId);
 }

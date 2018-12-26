@@ -17,4 +17,22 @@ public interface WithdrawalService {
      */
     void initDepositNotice(String id);
 
+    /**
+     * 取现处理中
+     * @param transactionBusiness
+     */
+    void processingWithdrawal(TransactionBusiness transactionBusiness);
+
+    /**
+     * 取现成功
+     * @param transactionBusiness
+     */
+    void withdrawalSuccess(TransactionBusiness transactionBusiness);
+
+    /**
+     * 取现失败
+     * @param transactionBusiness
+     */
+    void withdrawalFailure(TransactionBusiness transactionBusiness);
+
 }

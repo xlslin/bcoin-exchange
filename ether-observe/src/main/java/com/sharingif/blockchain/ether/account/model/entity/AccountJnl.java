@@ -2,13 +2,39 @@ package com.sharingif.blockchain.ether.account.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+import com.sharingif.cube.components.sequence.Sequence;
+
+import java.math.BigInteger;
+import java.util.Date;
 
 public class AccountJnl implements java.io.Serializable, IObjectDateOperationHistory {
-	
+
+	/**
+	 * 类型(00:充值)
+	 */
+	public static final String TYPE_DEPOSIT = "00";
+	/**
+	 * 类型(01:提现)
+	 */
+	public static final String TYPE_WITHDRAWAL = "01";
+	/**
+	 * 类型(02:提现冲正)
+	 */
+	public static final String TYPE_WITHDRAWAL_REBACK = "02";
+	/**
+	 * 类型(03:提现手续费)
+	 */
+	public static final String TYPE_WITHDRAWAL_FEE = "03";
+	/**
+	 * 类型(04:提现手续费冲正)
+	 */
+	public static final String TYPE_WITHDRAWAL_FEE_REBACK = "04";
+
 	//columns START
     /**
      * id			db_column: ID 
-     */	
+     */
+	@Sequence(ref="uuidSequenceGenerator")
 	private java.lang.String id;
     /**
      * from地址			db_column: ACCOUNT_FROM 
@@ -25,9 +51,9 @@ public class AccountJnl implements java.io.Serializable, IObjectDateOperationHis
     /**
      * 金额			db_column: BALANCE 
      */	
-	private BigDecimal balance;
+	private BigInteger balance;
     /**
-     * 类型(00:转入、01:转出)			db_column: TYPE 
+     * 类型(00:充值、01:提现、02:提现冲正、03:提现手续费、04:提现手续费冲正)			db_column: TYPE
      */	
 	private java.lang.String type;
     /**
@@ -72,10 +98,10 @@ public class AccountJnl implements java.io.Serializable, IObjectDateOperationHis
 	public java.lang.String getCoinType() {
 		return this.coinType;
 	}
-	public void setBalance(BigDecimal balance) {
+	public void setBalance(BigInteger balance) {
 		this.balance = balance;
 	}
-	public BigDecimal getBalance() {
+	public BigInteger getBalance() {
 		return this.balance;
 	}
 	public void setType(java.lang.String type) {

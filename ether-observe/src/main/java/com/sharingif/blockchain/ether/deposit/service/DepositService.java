@@ -22,4 +22,10 @@ public interface DepositService {
      */
     void initDepositNotice(String id);
 
+    /**
+     * 充值
+     * @param transactionBusiness
+     */
+    void deposit(TransactionBusiness transactionBusiness);
+
 }

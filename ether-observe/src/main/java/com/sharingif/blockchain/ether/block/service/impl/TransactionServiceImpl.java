@@ -35,10 +35,13 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	private EthereumBlockService ethereumBlockService;
 	private ContractService contractService;
 	private AddressListenerApiService addressListenerApiService;
-	private BlockChainService blockChainService;
+	private TransactionBusinessService transactionBusinessService;
 
 	public TransactionDAO getTransactionDAO() {
 		return transactionDAO;
+	}
+	public TransactionBusinessService getTransactionBusinessService() {
+		return transactionBusinessService;
 	}
 	@Resource
 	public void setTransactionDAO(TransactionDAO transactionDAO) {
@@ -66,8 +69,8 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		this.addressListenerApiService = addressListenerApiService;
 	}
 	@Resource
-	public void setBlockChainService(BlockChainService blockChainService) {
-		this.blockChainService = blockChainService;
+	public void setTransactionBusinessService(TransactionBusinessService transactionBusinessService) {
+		this.transactionBusinessService = transactionBusinessService;
 	}
 
 	public void addUntreatedTransaction(Transaction transaction) {
@@ -117,6 +120,8 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		transactionBusiness.setTxTo(transaction.getTxTo());
 		transactionBusiness.setAmount(transaction.getTxValue());
 		transactionBusiness.setFee(transaction.getActualFee());
+		transactionBusiness.setTxReceiptStatus(transaction.getTxReceiptStatus());
+		transactionBusiness.setTxTime(transaction.getTxTime());
 
 		if(isWatchFrom) {
 			withdrawalService.addUntreated(transactionBusiness);
@@ -246,7 +251,11 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		transaction.setConfirmBlockNumber(confirmBlockNumber);
 		transaction.setTxStatus(Transaction.TX_STATUS_BLOCK_CONFIRMED_VALID);
 
-		return transactionDAO.updateByBlockNumberBlockHash(transaction);
+		int updateNumber = transactionDAO.updateByBlockNumberBlockHash(transaction);
+
+		transactionBusinessService.updateTxStatusToValid(blockNumber, blockHash);
+
+		return updateNumber;
 	}
 
 	@Override
@@ -258,7 +267,11 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		transaction.setConfirmBlockNumber(confirmBlockNumber);
 		transaction.setTxStatus(Transaction.TX_STATUS_BLOCK_CONFIRMED_INVALID);
 
-		return transactionDAO.updateByBlockNumberBlockHash(transaction);
+		int updateNumber = transactionDAO.updateByBlockNumberBlockHash(transaction);
+
+		transactionBusinessService.updateTxStatusToInvalid(blockNumber, blockHash);
+
+		return updateNumber;
 	}
 
 }

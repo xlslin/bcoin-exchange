@@ -36,4 +36,20 @@ public class BlockChainScheduled {
         simpleDispatcherHandler.doDispatch(jobRequest);
     }
 
+    @Scheduled(fixedRate = 1000*1)
+    public synchronized void readySettleBolckSuccess() {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setLookupPath("/blockChain/readySettleBolckSuccess");
+
+        simpleDispatcherHandler.doDispatch(jobRequest);
+    }
+
+    @Scheduled(fixedRate = 1000*1)
+    public synchronized void readySettleBolckFailure() {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setLookupPath("/blockChain/readySettleBolckFailure");
+
+        simpleDispatcherHandler.doDispatch(jobRequest);
+    }
+
 }

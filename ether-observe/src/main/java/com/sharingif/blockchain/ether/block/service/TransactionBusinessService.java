@@ -4,6 +4,8 @@ package com.sharingif.blockchain.ether.block.service;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
 import com.sharingif.cube.support.service.base.IBaseService;
 
+import java.math.BigInteger;
+
 
 public interface TransactionBusinessService extends IBaseService<TransactionBusiness, java.lang.String> {
 
@@ -29,21 +31,32 @@ public interface TransactionBusinessService extends IBaseService<TransactionBusi
 
     /**
      * 修改状态为有效
-     * @param id
+     * @param blockNumber
+     * @param blockHash
      * @return
      */
-    int updateStatusToValid(String id);
+    int updateTxStatusToValid(BigInteger blockNumber, String blockHash);
 
     /**
      * 修改状态为无效
-     * @param id
+     * @param blockNumber
+     * @param blockHash
      * @return
      */
-    int updateStatusToInvalid(String id);
+    int updateTxStatusToInvalid(BigInteger blockNumber, String blockHash);
 
     /**
-     * 验证交易是否有效
+     * 清算成功交易
+     * @param blockNumber
+     * @param blockHash
      */
-    void validateTransaction();
+    void settleTransactionSuccess(BigInteger blockNumber, String blockHash);
+
+    /**
+     * 清算失败交易
+     * @param blockNumber
+     * @param blockHash
+     */
+    void settleTransactionFailure(BigInteger blockNumber, String blockHash);
 
 }

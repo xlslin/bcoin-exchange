@@ -14,6 +14,12 @@ import java.util.Date;
 public interface TransactionService extends IBaseService<Transaction, java.lang.String> {
 
     /**
+     * 返回交易业务服务
+     * @return
+     */
+    TransactionBusinessService getTransactionBusinessService();
+
+    /**
      * 区块交易同步
      * @param transaction
      * @param transactionReceipt

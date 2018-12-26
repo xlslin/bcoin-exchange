@@ -39,4 +39,24 @@ public class BlockChainController {
 		blockChainService.validateBolck();
 	}
 
+	@RequestMapping(value="readySettleBolckSuccess", method= RequestMethod.POST)
+	public void readySettleBolckSuccess() {
+		blockChainService.readySettleBolckSuccess();
+	}
+
+	@RequestMapping(value="readySettleBolckFailure", method= RequestMethod.POST)
+	public void readySettleBolckFailure() {
+		blockChainService.readySettleBolckFailure();
+	}
+
+	@RequestMapping(value="settleBolckSuccess", method= RequestMethod.POST)
+	public void settleBolckSuccess(JobRequest<String> jobRequest) {
+		blockChainService.settleBolckSuccess(jobRequest.getData());
+	}
+
+	@RequestMapping(value="settleBolckFailure", method= RequestMethod.POST)
+	public void settleBolckFailure(JobRequest<String> jobRequest) {
+		blockChainService.settleBolckFailure(jobRequest.getData());
+	}
+
 }

@@ -1,6 +1,9 @@
 package com.sharingif.blockchain.ether.deposit.service.impl;
 
 
+import com.sharingif.blockchain.ether.account.model.entity.AccountJnl;
+import com.sharingif.blockchain.ether.account.service.AccountService;
+import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.ether.block.service.TransactionBusinessService;
 import com.sharingif.blockchain.ether.deposit.service.DepositService;
@@ -21,6 +24,7 @@ public class DepositServiceImpl implements DepositService {
     private TransactionBusinessService transactionBusinessService;
     private JobConfig depositInitDepositNoticeJobConfig;
     private JobService jobService;
+    private AccountService accountService;
 
     @Resource
     public void setTransactionBusinessService(TransactionBusinessService transactionBusinessService) {
@@ -33,6 +37,10 @@ public class DepositServiceImpl implements DepositService {
     @Resource
     public void setJobService(JobService jobService) {
         this.jobService = jobService;
+    }
+    @Resource
+    public void setAccountService(AccountService accountService) {
+        this.accountService = accountService;
     }
 
     @Override
@@ -83,6 +91,24 @@ public class DepositServiceImpl implements DepositService {
         }
 
         transactionBusinessService.updateStatusToInitNoticed(id);
+    }
+
+    @Override
+    public void deposit(TransactionBusiness transactionBusiness) {
+        if(Transaction.TX_RECEIPT_STATUS_FAIL.equals(transactionBusiness.getTxReceiptStatus())) {
+            return;
+        }
+
+        accountService.addBalance(
+                transactionBusiness.getTxTo()
+                ,transactionBusiness.getCoinType()
+                ,transactionBusiness.getAmount()
+                ,transactionBusiness.getTxFrom()
+                ,transactionBusiness.getTxTo()
+                ,AccountJnl.TYPE_DEPOSIT
+                ,transactionBusiness.getId()
+                ,transactionBusiness.getTxTime()
+        );
     }
 
 }

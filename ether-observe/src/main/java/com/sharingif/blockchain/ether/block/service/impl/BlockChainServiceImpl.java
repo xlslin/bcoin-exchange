@@ -31,6 +31,8 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	private EthereumBlockService ethereumBlockService;
 	private String ethValidBlockNumber;
 	private JobConfig blockChainSynchingDataJobConfig;
+	private JobConfig blockChainSettleBolckSuccessDataJobConfig;
+	private JobConfig blockChainSettleBolckFailureDataJobConfig;
 	private JobService jobService;
 
 	public BlockChainDAO getBlockChainDAO() {
@@ -57,6 +59,14 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	@Resource
 	public void setBlockChainSynchingDataJobConfig(JobConfig blockChainSynchingDataJobConfig) {
 		this.blockChainSynchingDataJobConfig = blockChainSynchingDataJobConfig;
+	}
+	@Resource
+	public void setBlockChainSettleBolckSuccessDataJobConfig(JobConfig blockChainSettleBolckSuccessDataJobConfig) {
+		this.blockChainSettleBolckSuccessDataJobConfig = blockChainSettleBolckSuccessDataJobConfig;
+	}
+	@Resource
+	public void setBlockChainSettleBolckFailureDataJobConfig(JobConfig blockChainSettleBolckFailureDataJobConfig) {
+		this.blockChainSettleBolckFailureDataJobConfig = blockChainSettleBolckFailureDataJobConfig;
 	}
 	@Resource
 	public void setJobService(JobService jobService) {
@@ -112,9 +122,25 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		blockChainDAO.updateById(updateBlockChain);
 	}
 
+	@Override
+	public void updateStatusToSettling(String id) {
+		BlockChain updateBlockChain = new BlockChain();
+		updateBlockChain.setId(id);
+		updateBlockChain.setStatus(BlockChain.STATUS_SETTLING);
+		blockChainDAO.updateById(updateBlockChain);
+	}
+
+	@Override
+	public void updateStatusToSettled(String id) {
+		BlockChain updateBlockChain = new BlockChain();
+		updateBlockChain.setId(id);
+		updateBlockChain.setStatus(BlockChain.STATUS_SETTLED);
+		blockChainDAO.updateById(updateBlockChain);
+	}
+
 	@Transactional
 	protected void readySyncData(BlockChain blockChain) {
-		updateBlockSynching(blockChain.getId());
+		updateStatusToSettling(blockChain.getId());
 
 		JobModel jobModel = new JobModel();
 		jobModel.setLookupPath(blockChainSynchingDataJobConfig.getLookupPath());
@@ -226,6 +252,72 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 			EthBlock.Block block = ethereumBlockService.getBlock(unverifiedBlockChain.getBlockNumber(), false);
 			validateBolck(unverifiedBlockChain, block, currentBlockNumber);
 		}
+	}
+
+	@Transactional
+	protected void readySettle(BlockChain verifyValidBlockChain, JobConfig jobConfig) {
+		updateBlockSynching(verifyValidBlockChain.getId());
+
+		JobModel jobModel = new JobModel();
+		jobModel.setLookupPath(jobConfig.getLookupPath());
+		jobModel.setDataId(verifyValidBlockChain.getId());
+		jobModel.setPlanExecuteTime(verifyValidBlockChain.getBlockCreateTime());
+		jobService.add(null, jobModel);
+	}
+
+	protected void readySettleBolck(String status, JobConfig jobConfig) {
+		BlockChain queryBlockChain = new BlockChain();
+		queryBlockChain.setStatus(status);
+		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
+		blockChainPaginationCondition.setCondition(queryBlockChain);
+		blockChainPaginationCondition.setQueryCount(false);
+		blockChainPaginationCondition.setCurrentPage(1);
+		blockChainPaginationCondition.setPageSize(20);
+
+		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListByBlockNumberStatus(blockChainPaginationCondition);
+		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
+
+		if(blockChainList == null && blockChainList.isEmpty()) {
+			return;
+		}
+
+		for(BlockChain verifyValidBlockChain : blockChainList) {
+			readySettle(verifyValidBlockChain, jobConfig);
+		}
+	}
+
+	@Override
+	public void readySettleBolckSuccess() {
+		readySettleBolck(BlockChain.STATUS_VERIFY_VALID, blockChainSettleBolckSuccessDataJobConfig);
+	}
+
+	@Override
+	public void readySettleBolckFailure() {
+		readySettleBolck(BlockChain.STATUS_VERIFY_INVALID, blockChainSettleBolckFailureDataJobConfig);
+	}
+
+	@Override
+	public void settleBolckSuccess(String blockChainId) {
+		BlockChain settlingBlockChain = blockChainDAO.queryById(blockChainId);
+		if(BlockChain.STATUS_SETTLING.equals(settlingBlockChain.getStatus())) {
+			return;
+		}
+
+		transactionService.getTransactionBusinessService().settleTransactionSuccess(settlingBlockChain.getBlockNumber(), settlingBlockChain.getHash());
+
+		updateStatusToSettled(blockChainId);
+	}
+
+	@Override
+	public void settleBolckFailure(String blockChainId) {
+		BlockChain settlingBlockChain = blockChainDAO.queryById(blockChainId);
+		if(BlockChain.STATUS_SETTLING.equals(settlingBlockChain.getStatus())) {
+			return;
+		}
+
+		transactionService.getTransactionBusinessService().settleTransactionFailure(settlingBlockChain.getBlockNumber(), settlingBlockChain.getHash());
+
+		updateStatusToSettled(blockChainId);
 	}
 
 }

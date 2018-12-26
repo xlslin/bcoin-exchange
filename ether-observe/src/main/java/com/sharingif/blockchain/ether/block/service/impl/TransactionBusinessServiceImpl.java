@@ -2,23 +2,24 @@ package com.sharingif.blockchain.ether.block.service.impl;
 
 
 import com.sharingif.blockchain.ether.block.dao.TransactionBusinessDAO;
-import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.ether.block.service.TransactionBusinessService;
-import com.sharingif.blockchain.ether.block.service.TransactionService;
-import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
-import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
+import com.sharingif.blockchain.ether.deposit.service.DepositService;
+import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigInteger;
 import java.util.List;
 
 @Service
 public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionBusiness, java.lang.String> implements TransactionBusinessService {
 	
 	private TransactionBusinessDAO transactionBusinessDAO;
-	private TransactionService transactionService;
+	private DepositService depositService;
+	private WithdrawalService withdrawalService;
 
 	public TransactionBusinessDAO getTransactionBusinessDAO() {
 		return transactionBusinessDAO;
@@ -29,8 +30,12 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 		this.transactionBusinessDAO = transactionBusinessDAO;
 	}
 	@Resource
-	public void setTransactionService(TransactionService transactionService) {
-		this.transactionService = transactionService;
+	public void setDepositService(DepositService depositService) {
+		this.depositService = depositService;
+	}
+	@Resource
+	public void setWithdrawalService(WithdrawalService withdrawalService) {
+		this.withdrawalService = withdrawalService;
 	}
 
 	@Override
@@ -59,51 +64,61 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 	}
 
 	@Override
-	public int updateStatusToValid(String id) {
+	public int updateTxStatusToValid(BigInteger blockNumber, String blockHash) {
 		TransactionBusiness transactionBusiness = new TransactionBusiness();
-		transactionBusiness.setId(id);
-		transactionBusiness.setStatus(TransactionBusiness.STATUS_VALID);
+		transactionBusiness.setBlockNumber(blockNumber);
+		transactionBusiness.setBlockHash(blockHash);
+		transactionBusiness.setTxStatus(TransactionBusiness.STATUS_VALID);
 
 		return transactionBusinessDAO.updateById(transactionBusiness);
 	}
 
 	@Override
-	public int updateStatusToInvalid(String id) {
+	public int updateTxStatusToInvalid(BigInteger blockNumber, String blockHash) {
 		TransactionBusiness transactionBusiness = new TransactionBusiness();
-		transactionBusiness.setId(id);
-		transactionBusiness.setStatus(TransactionBusiness.STATUS_INVALID);
+		transactionBusiness.setBlockNumber(blockNumber);
+		transactionBusiness.setBlockHash(blockHash);
+		transactionBusiness.setTxStatus(TransactionBusiness.STATUS_INVALID);
 
 		return transactionBusinessDAO.updateById(transactionBusiness);
 	}
 
+	@Transactional
 	@Override
-	public void validateTransaction() {
+	public void settleTransactionSuccess(BigInteger blockNumber, String blockHash) {
 		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-		queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
-		PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
-		paginationCondition.setCondition(queryTransactionBusiness);
-		paginationCondition.setQueryCount(false);
-		paginationCondition.setCurrentPage(1);
-		paginationCondition.setPageSize(20);
+		queryTransactionBusiness.setBlockNumber(blockNumber);
+		queryTransactionBusiness.setBlockHash(blockHash);
 
-		PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessDAO.queryPagination(paginationCondition);
-		List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
-		if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
-			return;
-		}
-
+		List<TransactionBusiness> transactionBusinessList = transactionBusinessDAO.queryList(queryTransactionBusiness);
 		for(TransactionBusiness transactionBusiness : transactionBusinessList) {
-			Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
-			if(transaction.isUntreated()) {
+			if(TransactionBusiness.TYPE_DEPOSIT.equals(transactionBusiness.getType())) {
+				depositService.deposit(transactionBusiness);
 				continue;
 			}
-
-			if(transaction.isBlockConfirmedValid()) {
-				updateStatusToValid(transactionBusiness.getId());
-			} else {
-				updateStatusToInvalid(transactionBusiness.getId());
+			if(TransactionBusiness.TYPE_WITHDRAWAL.equals(transactionBusiness.getType())) {
+				withdrawalService.withdrawalSuccess(transactionBusiness);
+				continue;
 			}
 		}
+
+	}
+
+	@Override
+	public void settleTransactionFailure(BigInteger blockNumber, String blockHash) {
+		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
+		queryTransactionBusiness.setBlockNumber(blockNumber);
+		queryTransactionBusiness.setBlockHash(blockHash);
+
+		List<TransactionBusiness> transactionBusinessList = transactionBusinessDAO.queryList(queryTransactionBusiness);
+
+		for(TransactionBusiness transactionBusiness : transactionBusinessList) {
+			if(TransactionBusiness.TYPE_WITHDRAWAL.equals(transactionBusiness.getType())) {
+				withdrawalService.withdrawalFailure(transactionBusiness);
+				continue;
+			}
+		}
+
 	}
 
 }

@@ -18,6 +18,22 @@ public class JobConfigComponentsAutoconfigure {
         return jobConfig;
     }
 
+    @Bean("blockChainSettleBolckSuccessDataJobConfig")
+    public JobConfig createBlockChainSettleBolckSuccessDataJobConfig() {
+        JobConfig jobConfig = new JobConfig(null,"/blockChain/settleBolckSuccess", null);
+        jobConfig.setIntervalPlanExecuteTime(1000*60*5);
+        jobConfig.setMaxExecuteCount(5);
+        return jobConfig;
+    }
+
+    @Bean("blockChainSettleBolckFailureDataJobConfig")
+    public JobConfig createBlockChainSettleBolckFailureDataJobConfig() {
+        JobConfig jobConfig = new JobConfig(null,"/blockChain/settleBolckFailure", null);
+        jobConfig.setIntervalPlanExecuteTime(1000*60*5);
+        jobConfig.setMaxExecuteCount(5);
+        return jobConfig;
+    }
+
     @Bean("depositInitDepositNoticeJobConfig")
     public JobConfig createDepositInitDepositNoticeJobConfigJobConfig() {
         JobConfig jobConfig = new JobConfig(null,"/deposit/initDepositNotice", null);

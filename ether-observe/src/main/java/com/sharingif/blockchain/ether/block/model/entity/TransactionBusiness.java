@@ -39,7 +39,6 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	 */
 	public static final String STATUS_INVALID = "WX";
 
-	
 	//columns START
     /**
      * id			db_column: ID 
@@ -50,6 +49,10 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
      * 区块数			db_column: BLOCK_NUMBER 
      */	
 	private BigInteger blockNumber;
+    /**
+     * 区块hash			db_column: BLOCK_HASH 
+     */	
+	private java.lang.String blockHash;
     /**
      * ETH交易id			db_column: TRANSACTION_ID 
      */	
@@ -83,9 +86,21 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
      */	
 	private java.lang.String type;
     /**
-     * 处理状态(WCL:未处理、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、YX:有效、WX:无效)			db_column: STATUS
+     * 处理状态(WCL:未处理、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、YJS:已结算)			db_column: STATUS 
      */	
 	private java.lang.String status;
+    /**
+     * 合约交易状态(S:成功、F:失败)			db_column: TX_RECEIPT_STATUS 
+     */	
+	private java.lang.String txReceiptStatus;
+    /**
+     * 交易状态(WCL:未处理、QKQRYX:区块确认有效、QKQRWX:区块确认无效)			db_column: TX_STATUS 
+     */	
+	private java.lang.String txStatus;
+    /**
+     * 交易时间			db_column: TX_TIME 
+     */	
+	private Date txTime;
     /**
      * 创建时间			db_column: CREATE_TIME 
      */	
@@ -107,6 +122,12 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	}
 	public BigInteger getBlockNumber() {
 		return this.blockNumber;
+	}
+	public void setBlockHash(java.lang.String blockHash) {
+		this.blockHash = blockHash;
+	}
+	public java.lang.String getBlockHash() {
+		return this.blockHash;
 	}
 	public void setTransactionId(java.lang.String transactionId) {
 		this.transactionId = transactionId;
@@ -162,6 +183,24 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	public java.lang.String getStatus() {
 		return this.status;
 	}
+	public void setTxReceiptStatus(java.lang.String txReceiptStatus) {
+		this.txReceiptStatus = txReceiptStatus;
+	}
+	public java.lang.String getTxReceiptStatus() {
+		return this.txReceiptStatus;
+	}
+	public void setTxStatus(java.lang.String txStatus) {
+		this.txStatus = txStatus;
+	}
+	public java.lang.String getTxStatus() {
+		return this.txStatus;
+	}
+	public void setTxTime(Date txTime) {
+		this.txTime = txTime;
+	}
+	public Date getTxTime() {
+		return this.txTime;
+	}
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
@@ -179,6 +218,7 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 		return new StringBuilder("TransactionBusiness [")
 			.append("Id=").append(getId()).append(", ")
 					.append("BlockNumber=").append(getBlockNumber()).append(", ")
+					.append("BlockHash=").append(getBlockHash()).append(", ")
 					.append("TransactionId=").append(getTransactionId()).append(", ")
 					.append("TxHash=").append(getTxHash()).append(", ")
 					.append("CoinType=").append(getCoinType()).append(", ")
@@ -188,6 +228,9 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 					.append("Fee=").append(getFee()).append(", ")
 					.append("Type=").append(getType()).append(", ")
 					.append("Status=").append(getStatus()).append(", ")
+					.append("TxReceiptStatus=").append(getTxReceiptStatus()).append(", ")
+					.append("TxStatus=").append(getTxStatus()).append(", ")
+					.append("TxTime=").append(getTxTime()).append(", ")
 					.append("CreateTime=").append(getCreateTime()).append(", ")
 					.append("ModifyTime=").append(getModifyTime())
 		.append("]").toString();

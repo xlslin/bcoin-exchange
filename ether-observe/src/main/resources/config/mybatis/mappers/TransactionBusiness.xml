@@ -15,6 +15,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=blockNumber">
     		and BLOCK_NUMBER = #{blockNumber}
     	</if>
+    	<if test="null!=blockHash">
+    		and BLOCK_HASH = #{blockHash}
+    	</if>
     	<if test="null!=transactionId">
     		and TRANSACTION_ID = #{transactionId}
     	</if>
@@ -42,6 +45,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=status">
     		and STATUS = #{status}
     	</if>
+    	<if test="null!=txReceiptStatus">
+    		and TX_RECEIPT_STATUS = #{txReceiptStatus}
+    	</if>
+    	<if test="null!=txStatus">
+    		and TX_STATUS = #{txStatus}
+    	</if>
+    	<if test="null!=txTime">
+    		and TX_TIME = #{txTime}
+    	</if>
     	<if test="null!=createTime">
     		and CREATE_TIME = #{createTime}
     	</if>
@@ -56,6 +68,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    </if>
 		    <if test="null!=blockNumber">
 		    BLOCK_NUMBER = #{blockNumber},
+		    </if>
+		    <if test="null!=blockHash">
+		    BLOCK_HASH = #{blockHash},
 		    </if>
 		    <if test="null!=transactionId">
 		    TRANSACTION_ID = #{transactionId},
@@ -84,6 +99,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=status">
 		    STATUS = #{status},
 		    </if>
+		    <if test="null!=txReceiptStatus">
+		    TX_RECEIPT_STATUS = #{txReceiptStatus},
+		    </if>
+		    <if test="null!=txStatus">
+		    TX_STATUS = #{txStatus},
+		    </if>
+		    <if test="null!=txTime">
+		    TX_TIME = #{txTime},
+		    </if>
 		    <if test="null!=createTime">
 		    CREATE_TIME = #{createTime},
 		    </if>
@@ -95,6 +119,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<resultMap id="transactionBusinessResultMap" type="com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness">
         <result property="id" column="ID"/>
         <result property="blockNumber" column="BLOCK_NUMBER"/>
+        <result property="blockHash" column="BLOCK_HASH"/>
         <result property="transactionId" column="TRANSACTION_ID"/>
         <result property="txHash" column="TX_HASH"/>
         <result property="coinType" column="COIN_TYPE"/>
@@ -104,6 +129,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         <result property="fee" column="FEE"/>
         <result property="type" column="TYPE"/>
         <result property="status" column="STATUS"/>
+        <result property="txReceiptStatus" column="TX_RECEIPT_STATUS"/>
+        <result property="txStatus" column="TX_STATUS"/>
+        <result property="txTime" column="TX_TIME"/>
         <result property="createTime" column="CREATE_TIME"/>
         <result property="modifyTime" column="MODIFY_TIME"/>
 	</resultMap>
@@ -113,6 +141,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         INSERT INTO TRANSACTION_BUSINESS (
         	ID
         	,BLOCK_NUMBER
+        	,BLOCK_HASH
         	,TRANSACTION_ID
         	,TX_HASH
         	,COIN_TYPE
@@ -122,11 +151,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,FEE
         	,TYPE
         	,STATUS
+        	,TX_RECEIPT_STATUS
+        	,TX_STATUS
+        	,TX_TIME
         	,CREATE_TIME
         	,MODIFY_TIME
         ) VALUES (
         	#{id}
         	,#{blockNumber}
+        	,#{blockHash}
         	,#{transactionId}
         	,#{txHash}
         	,#{coinType}
@@ -136,6 +169,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,#{fee}
         	,#{type}
         	,#{status}
+        	,#{txReceiptStatus}
+        	,#{txStatus}
+        	,#{txTime}
         	,#{createTime}
         	,#{modifyTime}
         )
@@ -170,6 +206,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		SELECT
 			ID
 			,BLOCK_NUMBER
+			,BLOCK_HASH
 			,TRANSACTION_ID
 			,TX_HASH
 			,COIN_TYPE
@@ -179,6 +216,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,FEE
 			,TYPE
 			,STATUS
+			,TX_RECEIPT_STATUS
+			,TX_STATUS
+			,TX_TIME
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -191,6 +231,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		SELECT
 			ID
 			,BLOCK_NUMBER
+			,BLOCK_HASH
 			,TRANSACTION_ID
 			,TX_HASH
 			,COIN_TYPE
@@ -200,6 +241,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,FEE
 			,TYPE
 			,STATUS
+			,TX_RECEIPT_STATUS
+			,TX_STATUS
+			,TX_TIME
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -215,6 +259,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		SELECT
 			ID
 			,BLOCK_NUMBER
+			,BLOCK_HASH
 			,TRANSACTION_ID
 			,TX_HASH
 			,COIN_TYPE
@@ -224,6 +269,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,FEE
 			,TYPE
 			,STATUS
+			,TX_RECEIPT_STATUS
+			,TX_STATUS
+			,TX_TIME
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -246,6 +294,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		SELECT
 			ID
 			,BLOCK_NUMBER
+			,BLOCK_HASH
 			,TRANSACTION_ID
 			,TX_HASH
 			,COIN_TYPE
@@ -255,6 +304,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,FEE
 			,TYPE
 			,STATUS
+			,TX_RECEIPT_STATUS
+			,TX_STATUS
+			,TX_TIME
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -265,6 +317,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		ORDER BY
 			ID
 	</select>
+
+	<update id="updateByBlockNumberBlockHash">
+		UPDATE
+		TRANSACTION_BUSINESS
+		<set>
+			<include refid="transactionBusinessSetColumns" />
+		</set>
+		WHERE
+		BLOCK_NUMBER = #{blockNumber}
+		AND
+		BLOCK_HASH = #{blockHash}
+	</update>
 	
 </mapper>
 

@@ -2,13 +2,27 @@ package com.sharingif.blockchain.ether.account.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+import com.sharingif.cube.components.sequence.Sequence;
+
+import java.math.BigInteger;
+import java.util.Date;
 
 public class AccountFrozenJnl implements java.io.Serializable, IObjectDateOperationHistory {
-	
+
+	/**
+	 * 类型(00:冻结)
+	 */
+	public static final String TYPE_FROZEN = "00";
+	/**
+	 * 类型(01:解冻)
+	 */
+	public static final String TYPE_UNFROZEN = "01";
+
 	//columns START
     /**
      * id			db_column: ID 
-     */	
+     */
+	@Sequence(ref="uuidSequenceGenerator")
 	private java.lang.String id;
     /**
      * from地址			db_column: ACCOUNT_FROM 
@@ -25,9 +39,9 @@ public class AccountFrozenJnl implements java.io.Serializable, IObjectDateOperat
     /**
      * 金额			db_column: BALANCE 
      */	
-	private BigDecimal balance;
+	private BigInteger balance;
     /**
-     * 类型(10:冻结、11:解冻)			db_column: TYPE 
+     * 类型(00:冻结、01:解冻)			db_column: TYPE
      */	
 	private java.lang.String type;
     /**
@@ -72,10 +86,10 @@ public class AccountFrozenJnl implements java.io.Serializable, IObjectDateOperat
 	public java.lang.String getCoinType() {
 		return this.coinType;
 	}
-	public void setBalance(BigDecimal balance) {
+	public void setBalance(BigInteger balance) {
 		this.balance = balance;
 	}
-	public BigDecimal getBalance() {
+	public BigInteger getBalance() {
 		return this.balance;
 	}
 	public void setType(java.lang.String type) {

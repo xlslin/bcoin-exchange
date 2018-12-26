@@ -2,13 +2,28 @@ package com.sharingif.blockchain.ether.account.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+import com.sharingif.cube.components.sequence.Sequence;
+
+import java.math.BigInteger;
+import java.util.Date;
 
 public class Account implements java.io.Serializable, IObjectDateOperationHistory {
-	
+
+	/**
+	 * 账户状态(NORMAL:正常)
+	 */
+	public static final String STATUS_NORMAL = "NORMAL";
+
+	/**
+	 * 账户状态(LOCK:锁定)
+	 */
+	public static final String STATUS_LOCK = "LOCK";
+
 	//columns START
     /**
      * id			db_column: ID 
-     */	
+     */
+	@Sequence(ref="uuidSequenceGenerator")
 	private java.lang.String id;
     /**
      * 地址			db_column: ADDRESS 
@@ -21,19 +36,19 @@ public class Account implements java.io.Serializable, IObjectDateOperationHistor
     /**
      * 入账总额			db_column: TOTAL_IN 
      */	
-	private BigDecimal totalIn;
+	private BigInteger totalIn;
     /**
      * 出账总额			db_column: TOTAL_OUT 
      */	
-	private BigDecimal totalOut;
+	private BigInteger totalOut;
     /**
      * 余额			db_column: BALANCE 
      */	
-	private BigDecimal balance;
+	private BigInteger balance;
     /**
      * 冻结金额			db_column: FROZEN_AMOUNT 
      */	
-	private BigDecimal frozenAmount;
+	private BigInteger frozenAmount;
     /**
      * 账户状态(NORMAL:正常、LOCK:锁定)			db_column: STATUS 
      */	
@@ -66,28 +81,28 @@ public class Account implements java.io.Serializable, IObjectDateOperationHistor
 	public java.lang.String getCoinType() {
 		return this.coinType;
 	}
-	public void setTotalIn(BigDecimal totalIn) {
+	public void setTotalIn(BigInteger totalIn) {
 		this.totalIn = totalIn;
 	}
-	public BigDecimal getTotalIn() {
+	public BigInteger getTotalIn() {
 		return this.totalIn;
 	}
-	public void setTotalOut(BigDecimal totalOut) {
+	public void setTotalOut(BigInteger totalOut) {
 		this.totalOut = totalOut;
 	}
-	public BigDecimal getTotalOut() {
+	public BigInteger getTotalOut() {
 		return this.totalOut;
 	}
-	public void setBalance(BigDecimal balance) {
+	public void setBalance(BigInteger balance) {
 		this.balance = balance;
 	}
-	public BigDecimal getBalance() {
+	public BigInteger getBalance() {
 		return this.balance;
 	}
-	public void setFrozenAmount(BigDecimal frozenAmount) {
+	public void setFrozenAmount(BigInteger frozenAmount) {
 		this.frozenAmount = frozenAmount;
 	}
-	public BigDecimal getFrozenAmount() {
+	public BigInteger getFrozenAmount() {
 		return this.frozenAmount;
 	}
 	public void setStatus(java.lang.String status) {

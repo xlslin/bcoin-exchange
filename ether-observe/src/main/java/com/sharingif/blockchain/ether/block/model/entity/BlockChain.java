@@ -30,6 +30,14 @@ public class BlockChain implements java.io.Serializable, IObjectDateOperationHis
 	 * 状态(QKYZWX:区块验证无效)
 	 */
 	public static final String STATUS_VERIFY_INVALID = "QKYZWX";
+	/**
+	 * 状态(QSZ:清算中)
+	 */
+	public static final String STATUS_SETTLING = "QSZ";
+	/**
+	 * 状态(YQS:已清算)
+	 */
+	public static final String STATUS_SETTLED = "YQS";
 	
 	//columns START
     /**
@@ -54,7 +62,7 @@ public class BlockChain implements java.io.Serializable, IObjectDateOperationHis
      */	
 	private Date blockCreateTime;
     /**
-     * 状态(WCL:未处理、QKTBZ:区块同步中、WYZ:未验证、QKYZYX:区块验证有效、QKYZWX:区块验证无效)			db_column: STATUS
+     * 状态(WCL:未处理、QKTBZ:区块同步中、WYZ:未验证、QKYZYX:区块验证有效、QKYZWX:区块验证无效、QSZ:清算中、YQS:已清算)			db_column: STATUS
      */	
 	private java.lang.String status;
     /**

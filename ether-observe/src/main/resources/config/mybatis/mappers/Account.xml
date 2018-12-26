@@ -226,6 +226,82 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		ORDER BY
 			ID
 	</select>
+
+	<select id="queryForUpdate" resultMap="accountResultMap">
+		SELECT
+		ID
+		,ADDRESS
+		,COIN_TYPE
+		,TOTAL_IN
+		,TOTAL_OUT
+		,BALANCE
+		,FROZEN_AMOUNT
+		,STATUS
+		,CREATE_TIME
+		,MODIFY_TIME
+		FROM
+		ACCOUNT
+		WHERE
+		1=1
+		<include refid="accountColumns" />
+		ORDER BY
+		ID
+		FOR UPDATE
+	</select>
+
+	<update id="updateAddTotalInBalanceByAddressCoinType">
+		UPDATE
+		ACCOUNT
+		SET
+		TOTAL_IN = TOTAL_IN + #{totalIn}
+		,BALANCE = BALANCE + #{balance}
+		WHERE
+			ADDRESS = #{address}
+		AND
+			COIN_TYPE = #{coinType}
+	</update>
+
+	<update id="updateSubBalanceFrozenAmountByAddressCoinType">
+		UPDATE
+		ACCOUNT
+		SET
+		BALANCE = BALANCE - #{balance}
+		,FROZEN_AMOUNT = FROZEN_AMOUNT + #{balance}
+		WHERE
+			ADDRESS = #{address}
+		AND
+			COIN_TYPE = #{coinType}
+		AND
+			BALANCE > #{balance}
+	</update>
+
+	<update id="updateAddBalanceFrozenAmountByAddressCoinType">
+		UPDATE
+		ACCOUNT
+		SET
+		BALANCE = BALANCE + #{balance}
+		,FROZEN_AMOUNT = FROZEN_AMOUNT - #{balance}
+		WHERE
+			ADDRESS = #{address}
+		AND
+			COIN_TYPE = #{coinType}
+		AND
+			FROZEN_AMOUNT > #{balance}
+	</update>
+
+	<update id="updateSubFrozenAmountTotalOutByAddressCoinType">
+		UPDATE
+		ACCOUNT
+		SET
+		FROZEN_AMOUNT = FROZEN_AMOUNT - #{frozenAmount}
+		,TOTAL_OUT = TOTAL_OUT + #{frozenAmount},
+		WHERE
+			ADDRESS = #{address}
+		AND
+			COIN_TYPE = #{coinType}
+		AND
+			FROZEN_AMOUNT > #{frozenAmount}
+	</update>
 	
 </mapper>
 
