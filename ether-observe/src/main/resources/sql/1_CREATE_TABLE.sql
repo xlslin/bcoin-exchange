@@ -44,7 +44,7 @@ CREATE TABLE BLOCK_CHAIN_SYNC
 (
   ID                    CHAR(32) NOT NULL COMMENT 'id',
   BLOCK_NUMBER          BIGINT NOT NULL COMMENT '区块数',
-  TYPE                  CHAR(2) NOT NULL COMMENT '类型(00:区块同步、01:余额确认)',
+  TYPE                  CHAR(2) NOT NULL COMMENT '类型(00:区块同步)',
   CREATE_TIME           TIMESTAMP NULL COMMENT '创建时间',
   MODIFY_TIME           TIMESTAMP NULL COMMENT '修改时间',
   PRIMARY KEY (ID)

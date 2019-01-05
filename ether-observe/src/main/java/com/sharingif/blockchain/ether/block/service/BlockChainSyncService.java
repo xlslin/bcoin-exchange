@@ -14,12 +14,6 @@ public interface BlockChainSyncService extends IBaseService<BlockChainSync, java
     BlockChainSync getSyncType();
 
     /**
-     * 获取区块确认类型
-     * @return
-     */
-    BlockChainSync getBalanceConfirmationType();
-
-    /**
      * 区块同步
      */
     void sync();
