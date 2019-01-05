@@ -31,38 +31,16 @@ public interface TransactionBusinessService extends IBaseService<TransactionBusi
 
     /**
      * 修改状态为有效
-     * @param blockNumber
-     * @param blockHash
+     * @param transactionId
      * @return
      */
-    int updateTxStatusToValid(BigInteger blockNumber, String blockHash);
+    void updateTxStatusToBlockConfirmedValid(String transactionId);
 
     /**
      * 修改状态为无效
-     * @param blockNumber
-     * @param blockHash
+     * @param transactionId
      * @return
      */
-    int updateTxStatusToInvalid(BigInteger blockNumber, String blockHash);
-
-    /**
-     * 修改状态为已清算
-     * @param id
-     */
-    int updateTxStatusToSettled(String id);
-
-    /**
-     * 清算成功交易
-     * @param blockNumber
-     * @param blockHash
-     */
-    void settleTransactionSuccess(BigInteger blockNumber, String blockHash);
-
-    /**
-     * 清算失败交易
-     * @param blockNumber
-     * @param blockHash
-     */
-    void settleTransactionFailure(BigInteger blockNumber, String blockHash);
+    void updateTxStatusToBlockConfirmedInvalid(String transactionId);
 
 }

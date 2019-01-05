@@ -67,73 +67,56 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 	}
 
 	@Override
-	public int updateTxStatusToValid(BigInteger blockNumber, String blockHash) {
-		TransactionBusiness transactionBusiness = new TransactionBusiness();
-		transactionBusiness.setBlockNumber(blockNumber);
-		transactionBusiness.setBlockHash(blockHash);
-		transactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
-
-		return transactionBusinessDAO.updateByBlockNumberBlockHash(transactionBusiness);
-	}
-
-	@Override
-	public int updateTxStatusToInvalid(BigInteger blockNumber, String blockHash) {
-		TransactionBusiness transactionBusiness = new TransactionBusiness();
-		transactionBusiness.setBlockNumber(blockNumber);
-		transactionBusiness.setBlockHash(blockHash);
-		transactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_INVALID);
-
-		return transactionBusinessDAO.updateByBlockNumberBlockHash(transactionBusiness);
-	}
-
-	@Override
-	public int updateTxStatusToSettled(String id) {
-		TransactionBusiness transactionBusiness = new TransactionBusiness();
-		transactionBusiness.setId(id);
-		transactionBusiness.setTxStatus(BlockChain.STATUS_SETTLED);
-
-		return transactionBusinessDAO.updateById(transactionBusiness);
-	}
-
-	@Transactional
-	@Override
-	public void settleTransactionSuccess(BigInteger blockNumber, String blockHash) {
+	public void updateTxStatusToBlockConfirmedValid(String transactionId) {
 		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-		queryTransactionBusiness.setBlockNumber(blockNumber);
-		queryTransactionBusiness.setBlockHash(blockHash);
+		queryTransactionBusiness.setTransactionId(transactionId);
+		queryTransactionBusiness.setTxStatus(BlockChain.STATUS_UNVERIFIED);
 
 		List<TransactionBusiness> transactionBusinessList = transactionBusinessDAO.queryList(queryTransactionBusiness);
+		if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
+			return;
+		}
+
 		for(TransactionBusiness transactionBusiness : transactionBusinessList) {
+			TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
+			updateTransactionBusiness.setId(transactionBusiness.getId());
+			updateTransactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
+			transactionBusinessDAO.updateById(updateTransactionBusiness);
+
 			if(TransactionBusiness.TYPE_DEPOSIT.equals(transactionBusiness.getType())) {
-				updateTxStatusToSettled(transactionBusiness.getId());
 				continue;
 			}
+
 			if(TransactionBusiness.TYPE_WITHDRAWAL.equals(transactionBusiness.getType())) {
 				withdrawalService.withdrawalSuccess(transactionBusiness);
-				updateTxStatusToSettled(transactionBusiness.getId());
 				continue;
 			}
 		}
-
 	}
 
 	@Override
-	public void settleTransactionFailure(BigInteger blockNumber, String blockHash) {
+	public void updateTxStatusToBlockConfirmedInvalid(String transactionId) {
 		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-		queryTransactionBusiness.setBlockNumber(blockNumber);
-		queryTransactionBusiness.setBlockHash(blockHash);
+		queryTransactionBusiness.setTransactionId(transactionId);
+		queryTransactionBusiness.setTxStatus(BlockChain.STATUS_UNVERIFIED);
 
 		List<TransactionBusiness> transactionBusinessList = transactionBusinessDAO.queryList(queryTransactionBusiness);
+		if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
+			return;
+		}
 
 		for(TransactionBusiness transactionBusiness : transactionBusinessList) {
+			TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
+			updateTransactionBusiness.setId(transactionBusiness.getId());
+			updateTransactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
+			transactionBusinessDAO.updateById(updateTransactionBusiness);
+
 			if(TransactionBusiness.TYPE_DEPOSIT.equals(transactionBusiness.getType())) {
 				depositService.depositReback(transactionBusiness);
-				updateTxStatusToSettled(transactionBusiness.getId());
 				continue;
 			}
 			if(TransactionBusiness.TYPE_WITHDRAWAL.equals(transactionBusiness.getType())) {
 				withdrawalService.withdrawalFailure(transactionBusiness);
-				updateTxStatusToSettled(transactionBusiness.getId());
 				continue;
 			}
 		}

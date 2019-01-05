@@ -108,7 +108,7 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
 	 */
 	private Integer confirmBlockNumber;
 	/**
-	 * 交易状态(WCL:未处理、QKYZYX:区块验证有效、QKYZWX:区块验证无效)			db_column: TX_STATUS
+	 * 交易状态(WYZ:未验证、QKYZYX:区块验证有效、QKYZWX:区块验证无效)			db_column: TX_STATUS
 	 */
 	private String txStatus;
 	/**

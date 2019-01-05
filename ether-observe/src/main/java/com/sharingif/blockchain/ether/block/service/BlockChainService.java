@@ -30,6 +30,12 @@ public interface BlockChainService extends IBaseService<BlockChain, java.lang.St
     void updateStatusToUnverified(String id);
 
     /**
+     * 修改状态为区块验证中
+     * @param id
+     */
+    void updateStatusToVerifying(String id);
+
+    /**
      * 修改状态为区块验证有效
      * @param id
      * @param verifyBlockNumber
@@ -44,17 +50,6 @@ public interface BlockChainService extends IBaseService<BlockChain, java.lang.St
     void updateStatusToVerifyInvalid(String id, BigInteger verifyBlockNumber);
 
     /**
-     * 修改状态为清算中
-     * @param id
-     */
-    void updateStatusToSettling(String id);
-    /**
-     * 修改状态为已清算
-     * @param id
-     */
-    void updateStatusToSettled(String id);
-
-    /**
      * 准备块数据同步
      */
     void readySyncData();
@@ -66,29 +61,14 @@ public interface BlockChainService extends IBaseService<BlockChain, java.lang.St
     void synchingData(String blockChainId);
 
     /**
+     * 准备验证块是否有效
+     */
+    void readyValidateBolck();
+
+    /**
      * 验证块是否有效
-     */
-    void validateBolck();
-
-    /**
-     * 准备清算成功块
-     */
-    void readySettleBolckSuccess();
-
-    /**
-     * 准备清算失败块
-     */
-    void readySettleBolckFailure();
-
-    /**
-     * 清算成功块
      * @param blockChainId
      */
-    void settleBolckSuccess(String blockChainId);
+    void validateBolck(String blockChainId);
 
-    /**
-     * 清算失败块
-     * @param blockChainId
-     */
-    void settleBolckFailure(String blockChainId);
 }

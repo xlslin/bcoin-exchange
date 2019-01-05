@@ -2,8 +2,6 @@ package com.sharingif.blockchain.ether.block.service;
 
 
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
-import com.sharingif.blockchain.ether.deposit.service.DepositService;
-import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
 import com.sharingif.cube.support.service.base.IBaseService;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
@@ -12,12 +10,6 @@ import java.util.Date;
 
 
 public interface TransactionService extends IBaseService<Transaction, java.lang.String> {
-
-    /**
-     * 返回交易业务服务
-     * @return
-     */
-    TransactionBusinessService getTransactionBusinessService();
 
     /**
      * 区块交易同步
@@ -33,7 +25,7 @@ public interface TransactionService extends IBaseService<Transaction, java.lang.
      * @param blockHash
      * @param confirmBlockNumber
      */
-    int updateStatusToBlockConfirmedValid(BigInteger blockNumber, String blockHash, int confirmBlockNumber);
+    void updateTxStatusToBlockConfirmedValid(BigInteger blockNumber, String blockHash, int confirmBlockNumber);
 
     /**
      * 修改指定区块的交易为无效
@@ -41,6 +33,6 @@ public interface TransactionService extends IBaseService<Transaction, java.lang.
      * @param blockHash
      * @param confirmBlockNumber
      */
-    int updateStatusToBlockConfirmedInvalid(BigInteger blockNumber, String blockHash, int confirmBlockNumber);
+    void updateTxStatusToBlockConfirmedInvalid(BigInteger blockNumber, String blockHash, int confirmBlockNumber);
 
 }

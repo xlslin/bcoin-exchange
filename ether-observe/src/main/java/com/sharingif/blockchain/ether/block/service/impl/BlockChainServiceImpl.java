@@ -31,8 +31,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	private EthereumBlockService ethereumBlockService;
 	private String ethValidBlockNumber;
 	private JobConfig blockChainSynchingDataJobConfig;
-	private JobConfig blockChainSettleBolckSuccessDataJobConfig;
-	private JobConfig blockChainSettleBolckFailureDataJobConfig;
+	private JobConfig blockChainValidateBolckJobConfig;
 	private JobService jobService;
 
 	public BlockChainDAO getBlockChainDAO() {
@@ -61,12 +60,8 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		this.blockChainSynchingDataJobConfig = blockChainSynchingDataJobConfig;
 	}
 	@Resource
-	public void setBlockChainSettleBolckSuccessDataJobConfig(JobConfig blockChainSettleBolckSuccessDataJobConfig) {
-		this.blockChainSettleBolckSuccessDataJobConfig = blockChainSettleBolckSuccessDataJobConfig;
-	}
-	@Resource
-	public void setBlockChainSettleBolckFailureDataJobConfig(JobConfig blockChainSettleBolckFailureDataJobConfig) {
-		this.blockChainSettleBolckFailureDataJobConfig = blockChainSettleBolckFailureDataJobConfig;
+	public void setBlockChainValidateBolckJobConfig(JobConfig blockChainValidateBolckJobConfig) {
+		this.blockChainValidateBolckJobConfig = blockChainValidateBolckJobConfig;
 	}
 	@Resource
 	public void setJobService(JobService jobService) {
@@ -104,6 +99,15 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	}
 
 	@Override
+	public void updateStatusToVerifying(String id) {
+		BlockChain updateBlockChain = new BlockChain();
+		updateBlockChain.setId(id);
+		updateBlockChain.setStatus(BlockChain.STATUS_VERIFYING);
+
+		blockChainDAO.updateById(updateBlockChain);
+	}
+
+	@Override
 	public void updateStatusToVerifyValid(String id, BigInteger verifyBlockNumber) {
 		BlockChain updateBlockChain = new BlockChain();
 		updateBlockChain.setId(id);
@@ -119,22 +123,6 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		updateBlockChain.setId(id);
 		updateBlockChain.setVerifyBlockNumber(verifyBlockNumber);
 		updateBlockChain.setStatus(BlockChain.STATUS_VERIFY_INVALID);
-		blockChainDAO.updateById(updateBlockChain);
-	}
-
-	@Override
-	public void updateStatusToSettling(String id) {
-		BlockChain updateBlockChain = new BlockChain();
-		updateBlockChain.setId(id);
-		updateBlockChain.setStatus(BlockChain.STATUS_SETTLING);
-		blockChainDAO.updateById(updateBlockChain);
-	}
-
-	@Override
-	public void updateStatusToSettled(String id) {
-		BlockChain updateBlockChain = new BlockChain();
-		updateBlockChain.setId(id);
-		updateBlockChain.setStatus(BlockChain.STATUS_SETTLED);
 		blockChainDAO.updateById(updateBlockChain);
 	}
 
@@ -203,33 +191,18 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	}
 
 	@Transactional
-	protected void validateBolck(BlockChain unverifiedBlockChain, EthBlock.Block block, BigInteger currentBlockNumber) {
-		if(unverifiedBlockChain.getHash().equals(block.getHash())) {
-			// 修改块有效、交易有效
-			updateStatusToVerifyValid(unverifiedBlockChain.getId(), currentBlockNumber);
+	protected void readyValidateBolck(BlockChain unverifiedBlockChain) {
+		updateStatusToVerifying(unverifiedBlockChain.getId());
 
-			transactionService.updateStatusToBlockConfirmedValid(
-					unverifiedBlockChain.getBlockNumber()
-					, unverifiedBlockChain.getHash()
-					, currentBlockNumber.subtract(unverifiedBlockChain.getBlockNumber()).intValue()
-			);
-		} else {
-			// 修改块无效、交易无效、添加新的块同步数据
-
-			updateStatusToVerifyInvalid(unverifiedBlockChain.getId(), currentBlockNumber);
-
-			transactionService.updateStatusToBlockConfirmedInvalid(
-					unverifiedBlockChain.getBlockNumber()
-					, unverifiedBlockChain.getHash()
-					, currentBlockNumber.subtract(unverifiedBlockChain.getBlockNumber()).intValue()
-			);
-
-			addUntreatedStatus(block.getNumber(), block.getHash(), block.getTimestamp());
-		}
+		JobModel jobModel = new JobModel();
+		jobModel.setLookupPath(blockChainValidateBolckJobConfig.getLookupPath());
+		jobModel.setDataId(unverifiedBlockChain.getId());
+		jobModel.setPlanExecuteTime(unverifiedBlockChain.getBlockCreateTime());
+		jobService.add(null, jobModel);
 	}
 
 	@Override
-	public void validateBolck() {
+	public void readyValidateBolck() {
 		BigInteger currentBlockNumber = ethereumBlockService.getBlockNumber();
 
 		BlockChain queryBlockChain = new BlockChain();
@@ -249,75 +222,43 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		}
 
 		for(BlockChain unverifiedBlockChain : blockChainList) {
-			EthBlock.Block block = ethereumBlockService.getBlock(unverifiedBlockChain.getBlockNumber(), false);
-			validateBolck(unverifiedBlockChain, block, currentBlockNumber);
+			readyValidateBolck(unverifiedBlockChain);
 		}
 	}
 
 	@Transactional
-	protected void readySettle(BlockChain verifyValidBlockChain, JobConfig jobConfig) {
-		updateStatusToSettling(verifyValidBlockChain.getId());
+	protected void validateBolck(BlockChain unverifiedBlockChain, EthBlock.Block block, BigInteger currentBlockNumber) {
+		if(unverifiedBlockChain.getHash().equals(block.getHash())) {
+			// 修改块有效、交易有效
+			updateStatusToVerifyValid(unverifiedBlockChain.getId(), currentBlockNumber);
 
-		JobModel jobModel = new JobModel();
-		jobModel.setLookupPath(jobConfig.getLookupPath());
-		jobModel.setDataId(verifyValidBlockChain.getId());
-		jobModel.setPlanExecuteTime(verifyValidBlockChain.getBlockCreateTime());
-		jobService.add(null, jobModel);
-	}
+			transactionService.updateTxStatusToBlockConfirmedValid(
+					unverifiedBlockChain.getBlockNumber()
+					, unverifiedBlockChain.getHash()
+					, currentBlockNumber.subtract(unverifiedBlockChain.getBlockNumber()).intValue()
+			);
+		} else {
+			// 修改块无效、交易无效、添加新的块同步数据
 
-	protected void readySettleBolck(String status, JobConfig jobConfig) {
-		BlockChain queryBlockChain = new BlockChain();
-		queryBlockChain.setStatus(status);
-		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
-		blockChainPaginationCondition.setCondition(queryBlockChain);
-		blockChainPaginationCondition.setQueryCount(false);
-		blockChainPaginationCondition.setCurrentPage(1);
-		blockChainPaginationCondition.setPageSize(20);
+			updateStatusToVerifyInvalid(unverifiedBlockChain.getId(), currentBlockNumber);
 
-		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListByBlockNumberStatus(blockChainPaginationCondition);
-		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
+			transactionService.updateTxStatusToBlockConfirmedInvalid(
+					unverifiedBlockChain.getBlockNumber()
+					, unverifiedBlockChain.getHash()
+					, currentBlockNumber.subtract(unverifiedBlockChain.getBlockNumber()).intValue()
+			);
 
-		if(blockChainList == null || blockChainList.isEmpty()) {
-			return;
-		}
-
-		for(BlockChain verifyValidBlockChain : blockChainList) {
-			readySettle(verifyValidBlockChain, jobConfig);
+			addUntreatedStatus(block.getNumber(), block.getHash(), block.getTimestamp());
 		}
 	}
 
 	@Override
-	public void readySettleBolckSuccess() {
-		readySettleBolck(BlockChain.STATUS_VERIFY_VALID, blockChainSettleBolckSuccessDataJobConfig);
-	}
+	public void validateBolck(String blockChainId) {
+		BlockChain unverifiedBlockChain = blockChainDAO.queryById(blockChainId);
+		BigInteger currentBlockNumber = ethereumBlockService.getBlockNumber();
 
-	@Override
-	public void readySettleBolckFailure() {
-		readySettleBolck(BlockChain.STATUS_VERIFY_INVALID, blockChainSettleBolckFailureDataJobConfig);
-	}
-
-	@Override
-	public void settleBolckSuccess(String blockChainId) {
-		BlockChain settlingBlockChain = blockChainDAO.queryById(blockChainId);
-		if(!BlockChain.STATUS_SETTLING.equals(settlingBlockChain.getStatus())) {
-			return;
-		}
-
-		transactionService.getTransactionBusinessService().settleTransactionSuccess(settlingBlockChain.getBlockNumber(), settlingBlockChain.getHash());
-
-		updateStatusToSettled(blockChainId);
-	}
-
-	@Override
-	public void settleBolckFailure(String blockChainId) {
-		BlockChain settlingBlockChain = blockChainDAO.queryById(blockChainId);
-		if(!BlockChain.STATUS_SETTLING.equals(settlingBlockChain.getStatus())) {
-			return;
-		}
-
-		transactionService.getTransactionBusinessService().settleTransactionFailure(settlingBlockChain.getBlockNumber(), settlingBlockChain.getHash());
-
-		updateStatusToSettled(blockChainId);
+		EthBlock.Block block = ethereumBlockService.getBlock(unverifiedBlockChain.getBlockNumber(), false);
+		validateBolck(unverifiedBlockChain, block, currentBlockNumber);
 	}
 
 }

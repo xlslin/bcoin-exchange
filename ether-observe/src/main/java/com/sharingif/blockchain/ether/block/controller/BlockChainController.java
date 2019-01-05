@@ -13,7 +13,7 @@ import javax.annotation.Resource;
 @Controller
 @RequestMapping(value="blockChain")
 public class BlockChainController {
-	
+
 	private BlockChainService blockChainService;
 
 	public BlockChainService getBlockChainService() {
@@ -34,29 +34,14 @@ public class BlockChainController {
 		blockChainService.synchingData(jobRequest.getData());
 	}
 
+	@RequestMapping(value="readyValidateBolck", method= RequestMethod.POST)
+	public void readyValidateBolck() {
+		blockChainService.readyValidateBolck();
+	}
+
 	@RequestMapping(value="validateBolck", method= RequestMethod.POST)
-	public void validateBolck() {
-		blockChainService.validateBolck();
-	}
-
-	@RequestMapping(value="readySettleBolckSuccess", method= RequestMethod.POST)
-	public void readySettleBolckSuccess() {
-		blockChainService.readySettleBolckSuccess();
-	}
-
-	@RequestMapping(value="readySettleBolckFailure", method= RequestMethod.POST)
-	public void readySettleBolckFailure() {
-		blockChainService.readySettleBolckFailure();
-	}
-
-	@RequestMapping(value="settleBolckSuccess", method= RequestMethod.POST)
-	public void settleBolckSuccess(JobRequest<String> jobRequest) {
-		blockChainService.settleBolckSuccess(jobRequest.getData());
-	}
-
-	@RequestMapping(value="settleBolckFailure", method= RequestMethod.POST)
-	public void settleBolckFailure(JobRequest<String> jobRequest) {
-		blockChainService.settleBolckFailure(jobRequest.getData());
+	public void validateBolck(JobRequest<String> jobRequest) {
+		blockChainService.validateBolck(jobRequest.getData());
 	}
 
 }

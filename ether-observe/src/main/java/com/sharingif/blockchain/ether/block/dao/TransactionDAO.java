@@ -7,11 +7,4 @@ import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 
 public interface TransactionDAO extends BaseDAO<Transaction, String> {
 
-    /**
-     * 根据区块数、区块hash修改区块信息
-     * @param transaction
-     * @return
-     */
-    int updateByBlockNumberBlockHash(Transaction transaction);
-
 }

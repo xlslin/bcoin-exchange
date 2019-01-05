@@ -86,7 +86,7 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
      */	
 	private java.lang.String txReceiptStatus;
     /**
-     * 交易状态(WCL:未处理、QKQRYX:区块确认有效、QKQRWX:区块确认无效)			db_column: TX_STATUS 
+     * 交易状态(WYZ:未验证、QKQRYX:区块确认有效、QKQRWX:区块确认无效)			db_column: TX_STATUS
      */	
 	private java.lang.String txStatus;
     /**

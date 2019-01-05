@@ -18,19 +18,10 @@ public class JobConfigComponentsAutoconfigure {
         return jobConfig;
     }
 
-    @Bean("blockChainSettleBolckSuccessDataJobConfig")
-    public JobConfig createBlockChainSettleBolckSuccessDataJobConfig() {
-        JobConfig jobConfig = new JobConfig(null,"/blockChain/settleBolckSuccess", null);
-        jobConfig.setIntervalPlanExecuteTime(1000*60*5);
-        jobConfig.setMaxExecuteCount(5);
-        return jobConfig;
-    }
-
-    @Bean("blockChainSettleBolckFailureDataJobConfig")
-    public JobConfig createBlockChainSettleBolckFailureDataJobConfig() {
-        JobConfig jobConfig = new JobConfig(null,"/blockChain/settleBolckFailure", null);
-        jobConfig.setIntervalPlanExecuteTime(1000*60*5);
-        jobConfig.setMaxExecuteCount(5);
+    @Bean("blockChainValidateBolckJobConfig")
+    public JobConfig createBlockChainValidateBolckJobConfig() {
+        JobConfig jobConfig = new JobConfig(null,"/blockChain/validateBolck", null);
+        jobConfig.setMaxExecuteCount(100);
         return jobConfig;
     }
 
