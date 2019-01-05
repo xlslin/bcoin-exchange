@@ -170,7 +170,10 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			handlerContractTransaction(transaction, isWatchFrom);
 		}
 
-		boolean isWatchTo = isWatch(transaction.getTxTo());
+		boolean isWatchTo = false;
+		if(StringUtils.isTrimEmpty(transaction.getTxTo())) {
+			isWatchTo = isWatch(transaction.getTxTo());
+		}
 
 		if(isWatchFrom == false && isWatchTo == false) {
 			return;
@@ -244,14 +247,14 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 	@Transactional
 	protected void updateTxStatusToBlockConfirmedValid(Transaction transaction, int confirmBlockNumber) {
+		transactionBusinessService.updateTxStatusToBlockConfirmedValid(transaction.getId());
+
 		Transaction updateTransaction = new Transaction();
 		updateTransaction.setId(transaction.getId());
 		updateTransaction.setConfirmBlockNumber(confirmBlockNumber);
 		updateTransaction.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
 
 		transactionDAO.updateById(updateTransaction);
-
-		transactionBusinessService.updateTxStatusToBlockConfirmedValid(transaction.getId());
 	}
 
 	@Override
@@ -275,14 +278,14 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 	@Transactional
 	protected void updateTxStatusToBlockConfirmedInvalid(Transaction transaction, int confirmBlockNumber) {
+		transactionBusinessService.updateTxStatusToBlockConfirmedInvalid(transaction.getId());
+
 		Transaction updateTransaction = new Transaction();
 		updateTransaction.setId(transaction.getId());
 		updateTransaction.setConfirmBlockNumber(confirmBlockNumber);
 		updateTransaction.setTxStatus(BlockChain.STATUS_VERIFY_INVALID);
 
 		transactionDAO.updateById(updateTransaction);
-
-		transactionBusinessService.updateTxStatusToBlockConfirmedInvalid(transaction.getId());
 	}
 
 	@Override

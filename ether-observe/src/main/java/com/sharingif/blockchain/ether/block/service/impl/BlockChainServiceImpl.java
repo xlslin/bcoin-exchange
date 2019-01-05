@@ -169,6 +169,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 			return;
 		}
 
+		// 如果同步块时发现块hash不匹配，跳过数据同步，状态改为"未验证"
 		EthBlock.Block block = ethereumBlockService.getBlock(blockChain.getBlockNumber(), true);
 		if(!blockChain.getHash().equals(block.getHash())) {
 			updateStatusToUnverified(blockChain.getId());
@@ -177,6 +178,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 
 		List<EthBlock.TransactionResult> transactionResultList = block.getTransactions();
 
+		// 块中没有交易数据状态改为"未验证"
 		if(transactionResultList == null || transactionResultList.isEmpty()) {
 			updateStatusToUnverified(blockChain.getId());
 		}
@@ -227,20 +229,23 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	}
 
 	@Transactional
+	protected void updateStatusToVerifyInvalid(BlockChain unverifiedBlockChain, EthBlock.Block block, BigInteger currentBlockNumber) {
+		// 修改块无效、交易无效、添加新的块同步数据
+		updateStatusToVerifyInvalid(unverifiedBlockChain.getId(), currentBlockNumber);
+		addUntreatedStatus(block.getNumber(), block.getHash(), block.getTimestamp());
+	}
+
 	protected void validateBolck(BlockChain unverifiedBlockChain, EthBlock.Block block, BigInteger currentBlockNumber) {
 		if(unverifiedBlockChain.getHash().equals(block.getHash())) {
-			// 修改块有效、交易有效
-			updateStatusToVerifyValid(unverifiedBlockChain.getId(), currentBlockNumber);
-
 			transactionService.updateTxStatusToBlockConfirmedValid(
 					unverifiedBlockChain.getBlockNumber()
 					, unverifiedBlockChain.getHash()
 					, currentBlockNumber.subtract(unverifiedBlockChain.getBlockNumber()).intValue()
 			);
-		} else {
-			// 修改块无效、交易无效、添加新的块同步数据
 
-			updateStatusToVerifyInvalid(unverifiedBlockChain.getId(), currentBlockNumber);
+			// 修改块有效、交易有效
+			updateStatusToVerifyValid(unverifiedBlockChain.getId(), currentBlockNumber);
+		} else {
 
 			transactionService.updateTxStatusToBlockConfirmedInvalid(
 					unverifiedBlockChain.getBlockNumber()
@@ -248,12 +253,19 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 					, currentBlockNumber.subtract(unverifiedBlockChain.getBlockNumber()).intValue()
 			);
 
-			addUntreatedStatus(block.getNumber(), block.getHash(), block.getTimestamp());
+			updateStatusToVerifyInvalid(unverifiedBlockChain, block, currentBlockNumber);
 		}
 	}
 
 	@Override
 	public void validateBolck(String blockChainId) {
+		BlockChain blockChain = blockChainDAO.queryById(blockChainId);
+
+		// job业务处理处理成功修改job状态失败导致交易重复调用
+		if(!BlockChain.STATUS_VERIFYING.equals(blockChain.getStatus())) {
+			return;
+		}
+
 		BlockChain unverifiedBlockChain = blockChainDAO.queryById(blockChainId);
 		BigInteger currentBlockNumber = ethereumBlockService.getBlockNumber();
 
