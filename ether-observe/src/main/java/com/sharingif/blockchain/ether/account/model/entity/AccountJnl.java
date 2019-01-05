@@ -18,17 +18,21 @@ public class AccountJnl implements java.io.Serializable, IObjectDateOperationHis
 	 */
 	public static final String TYPE_WITHDRAWAL = "01";
 	/**
-	 * 类型(02:提现冲正)
+	 * 类型(02:充值冲正)
 	 */
-	public static final String TYPE_WITHDRAWAL_REBACK = "02";
+	public static final String TYPE_DEPOSIT_REBACK = "02";
 	/**
-	 * 类型(03:提现手续费)
+	 * 类型(03:提现冲正)
 	 */
-	public static final String TYPE_WITHDRAWAL_FEE = "03";
+	public static final String TYPE_WITHDRAWAL_REBACK = "03";
 	/**
-	 * 类型(04:提现手续费冲正)
+	 * 类型(04:提现手续费)
 	 */
-	public static final String TYPE_WITHDRAWAL_FEE_REBACK = "04";
+	public static final String TYPE_WITHDRAWAL_FEE = "04";
+	/**
+	 * 类型(05:提现手续费冲正)
+	 */
+	public static final String TYPE_WITHDRAWAL_FEE_REBACK = "05";
 
 	//columns START
     /**
@@ -53,7 +57,7 @@ public class AccountJnl implements java.io.Serializable, IObjectDateOperationHis
      */	
 	private BigInteger balance;
     /**
-     * 类型(00:充值、01:提现、02:提现冲正、03:提现手续费、04:提现手续费冲正)			db_column: TYPE
+     * 类型(00:充值、01:提现、02:充值冲正、03:提现冲正、04:提现手续费、05:提现手续费冲正)			db_column: TYPE
      */	
 	private java.lang.String type;
     /**

@@ -253,12 +253,26 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		UPDATE
 		ACCOUNT
 		SET
-		TOTAL_IN = TOTAL_IN + #{totalIn}
+		TOTAL_IN = TOTAL_IN + #{balance}
 		,BALANCE = BALANCE + #{balance}
 		WHERE
 			ADDRESS = #{address}
 		AND
 			COIN_TYPE = #{coinType}
+	</update>
+
+	<update id="updateSubTotalOutBalanceByAddressCoinType">
+		UPDATE
+		ACCOUNT
+		SET
+		TOTAL_OUT = TOTAL_OUT + #{balance}
+		,BALANCE = BALANCE - #{balance}
+		WHERE
+			ADDRESS = #{address}
+		AND
+			COIN_TYPE = #{coinType}
+	   	AND
+	   		BALANCE >= #{balance}
 	</update>
 
 	<update id="updateSubBalanceFrozenAmountByAddressCoinType">
@@ -272,7 +286,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		AND
 			COIN_TYPE = #{coinType}
 		AND
-			BALANCE > #{balance}
+			BALANCE >= #{balance}
 	</update>
 
 	<update id="updateAddBalanceFrozenAmountByAddressCoinType">
@@ -286,7 +300,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		AND
 			COIN_TYPE = #{coinType}
 		AND
-			FROZEN_AMOUNT > #{balance}
+			FROZEN_AMOUNT >= #{balance}
 	</update>
 
 	<update id="updateSubFrozenAmountTotalOutByAddressCoinType">
@@ -300,7 +314,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		AND
 			COIN_TYPE = #{coinType}
 		AND
-			FROZEN_AMOUNT > #{frozenAmount}
+			FROZEN_AMOUNT >= #{frozenAmount}
 	</update>
 	
 </mapper>

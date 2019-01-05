@@ -22,10 +22,19 @@ public class AccountDAOImpl extends BaseDAOImpl<Account, String> implements Acco
         Account account = new Account();
         account.setAddress(address);
         account.setCoinType(coinType);
-        account.setTotalIn(balance);
         account.setBalance(balance);
 
         return update("updateAddTotalInBalanceByAddressCoinType", account);
+    }
+
+    @Override
+    public int updateSubTotalOutBalanceByAddressCoinType(String address, String coinType, BigInteger balance) {
+        Account account = new Account();
+        account.setAddress(address);
+        account.setCoinType(coinType);
+        account.setBalance(balance);
+
+        return update("updateSubTotalOutBalanceByAddressCoinType", account);
     }
 
     @Override

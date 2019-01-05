@@ -48,6 +48,8 @@ public class DepositServiceImpl implements DepositService {
         transactionBusiness.setType(TransactionBusiness.TYPE_DEPOSIT);
 
         transactionBusinessService.addUntreated(transactionBusiness);
+
+        deposit(transactionBusiness);
     }
 
     @Transactional
@@ -106,6 +108,24 @@ public class DepositServiceImpl implements DepositService {
                 ,transactionBusiness.getTxFrom()
                 ,transactionBusiness.getTxTo()
                 ,AccountJnl.TYPE_DEPOSIT
+                ,transactionBusiness.getId()
+                ,transactionBusiness.getTxTime()
+        );
+    }
+
+    @Override
+    public void depositReback(TransactionBusiness transactionBusiness) {
+        if(Transaction.TX_RECEIPT_STATUS_FAIL.equals(transactionBusiness.getTxReceiptStatus())) {
+            return;
+        }
+
+        accountService.subtractBalance(
+                transactionBusiness.getTxTo()
+                ,transactionBusiness.getCoinType()
+                ,transactionBusiness.getAmount()
+                ,transactionBusiness.getTxFrom()
+                ,transactionBusiness.getTxTo()
+                ,AccountJnl.TYPE_DEPOSIT_REBACK
                 ,transactionBusiness.getId()
                 ,transactionBusiness.getTxTime()
         );

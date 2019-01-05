@@ -24,6 +24,19 @@ public interface AccountService extends IBaseService<Account, java.lang.String> 
     void addBalance(String address, String coinType, BigInteger balance, String accountFrom, String accountTo, String type, String txId, Date transTime);
 
     /**
+     * 减少余额
+     * @param address
+     * @param coinType
+     * @param balance
+     * @param accountFrom
+     * @param accountTo
+     * @param type
+     * @param txId
+     * @param transTime
+     */
+    void subtractBalance(String address, String coinType, BigInteger balance, String accountFrom, String accountTo, String type, String txId, Date transTime);
+
+    /**
      * 冻结余额
      * @param address
      * @param coinType
@@ -56,7 +69,6 @@ public interface AccountService extends IBaseService<Account, java.lang.String> 
      * @param balance
      * @param accountFrom
      * @param accountTo
-     * @param type
      * @param txId
      * @param transTime
      */

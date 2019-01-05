@@ -138,7 +138,7 @@ CREATE TABLE ACCOUNT_JNL
   ACCOUNT_TO            VARCHAR(100) COMMENT 'to地址',
   COIN_TYPE             VARCHAR(20) COMMENT '币种',
   BALANCE               DECIMAL(65,0) NOT NULL COMMENT '金额',
-  TYPE                  CHAR(2) COMMENT '类型(00:充值、01:提现、02:提现冲正、03:提现手续费、04:提现手续费冲正)',
+  TYPE                  CHAR(2) COMMENT '类型(00:充值、01:提现、02:充值冲正、03:提现冲正、04:提现手续费、05:提现手续费冲正)',
   TX_ID                 VARCHAR(32) COMMENT '交易id',
   TRANS_TIME            TIMESTAMP NULL COMMENT '交易时间',
   CREATE_TIME           TIMESTAMP NULL COMMENT '创建时间',

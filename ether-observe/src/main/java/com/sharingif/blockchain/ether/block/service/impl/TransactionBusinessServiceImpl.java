@@ -105,7 +105,6 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 		List<TransactionBusiness> transactionBusinessList = transactionBusinessDAO.queryList(queryTransactionBusiness);
 		for(TransactionBusiness transactionBusiness : transactionBusinessList) {
 			if(TransactionBusiness.TYPE_DEPOSIT.equals(transactionBusiness.getType())) {
-				depositService.deposit(transactionBusiness);
 				updateTxStatusToSettled(transactionBusiness.getId());
 				continue;
 			}
@@ -127,6 +126,11 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 		List<TransactionBusiness> transactionBusinessList = transactionBusinessDAO.queryList(queryTransactionBusiness);
 
 		for(TransactionBusiness transactionBusiness : transactionBusinessList) {
+			if(TransactionBusiness.TYPE_DEPOSIT.equals(transactionBusiness.getType())) {
+				depositService.depositReback(transactionBusiness);
+				updateTxStatusToSettled(transactionBusiness.getId());
+				continue;
+			}
 			if(TransactionBusiness.TYPE_WITHDRAWAL.equals(transactionBusiness.getType())) {
 				withdrawalService.withdrawalFailure(transactionBusiness);
 				updateTxStatusToSettled(transactionBusiness.getId());

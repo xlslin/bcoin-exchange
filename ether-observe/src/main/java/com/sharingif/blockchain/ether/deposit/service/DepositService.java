@@ -28,4 +28,10 @@ public interface DepositService {
      */
     void deposit(TransactionBusiness transactionBusiness);
 
+    /**
+     * 充值冲正
+     * @param transactionBusiness
+     */
+    void depositReback(TransactionBusiness transactionBusiness);
+
 }

@@ -79,6 +79,25 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 	}
 
 	@Override
+	public void subtractBalance(String address, String coinType, BigInteger balance, String accountFrom, String accountTo, String type, String txId, Date transTime) {
+		initNormalAccount(address, coinType);
+
+		accountDAO.updateSubTotalOutBalanceByAddressCoinType(address, coinType, balance);
+
+		AccountJnl accountJnl = new AccountJnl();
+		accountJnl.setAccountFrom(accountFrom);
+		accountJnl.setAccountTo(accountTo);
+		accountJnl.setCoinType(coinType);
+		accountJnl.setBalance(balance);
+		accountJnl.setType(type);
+		accountJnl.setTxId(txId);
+		accountJnl.setTransTime(transTime);
+
+		accountJnlService.add(accountJnl);
+
+	}
+
+	@Override
 	public void frozenBalance(String address, String coinType, BigInteger balance, String accountFrom, String accountTo, String type, String txId, Date transTime) {
 		initNormalAccount(address, coinType);
 

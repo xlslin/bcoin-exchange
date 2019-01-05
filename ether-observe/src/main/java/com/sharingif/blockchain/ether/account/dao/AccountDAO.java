@@ -26,6 +26,15 @@ public interface AccountDAO extends BaseDAO<Account, String> {
     int updateAddTotalInBalanceByAddressCoinType(String address, String coinType, BigInteger balance);
 
     /**
+     * 增加总出账、减少余额
+     * @param address
+     * @param coinType
+     * @param balance
+     * @return
+     */
+    int updateSubTotalOutBalanceByAddressCoinType(String address, String coinType, BigInteger balance);
+
+    /**
      * 减去余额、增加冻结金额
      * @param address
      * @param coinType
