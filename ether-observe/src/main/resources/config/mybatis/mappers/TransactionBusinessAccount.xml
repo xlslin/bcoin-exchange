@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="transactionBusinessAccount">
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="transactionBusinessAccountColumns">
+    	<if test="null!=id">
+    		and ID = #{id}
+    	</if>
+    	<if test="null!=address">
+    		and ADDRESS = #{address}
+    	</if>
+    	<if test="null!=coinType">
+    		and COIN_TYPE = #{coinType}
+    	</if>
+    	<if test="null!=contractAddress">
+    		and CONTRACT_ADDRESS = #{contractAddress}
+    	</if>
+    	<if test="null!=createTime">
+    		and CREATE_TIME = #{createTime}
+    	</if>
+    	<if test="null!=modifyTime">
+    		and MODIFY_TIME = #{modifyTime}
+    	</if>
+	</sql>
+	
+	<sql id="transactionBusinessAccountSetColumns">
+		    <if test="null!=id">
+		    ID = #{id},
+		    </if>
+		    <if test="null!=address">
+		    ADDRESS = #{address},
+		    </if>
+		    <if test="null!=coinType">
+		    COIN_TYPE = #{coinType},
+		    </if>
+		    <if test="null!=contractAddress">
+		    CONTRACT_ADDRESS = #{contractAddress},
+		    </if>
+		    <if test="null!=createTime">
+		    CREATE_TIME = #{createTime},
+		    </if>
+		    <if test="null!=modifyTime">
+		    MODIFY_TIME = #{modifyTime},
+		    </if>
+	</sql>
+
+	<resultMap id="transactionBusinessAccountResultMap" type="com.sharingif.blockchain.ether.block.model.entity.TransactionBusinessAccount">
+        <result property="id" column="ID"/>
+        <result property="address" column="ADDRESS"/>
+        <result property="coinType" column="COIN_TYPE"/>
+        <result property="contractAddress" column="CONTRACT_ADDRESS"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+	</resultMap>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert">
+        INSERT INTO TRANSACTION_BUSINESS_ACCOUNT (
+        	ID
+        	,ADDRESS
+        	,COIN_TYPE
+        	,CONTRACT_ADDRESS
+        	,CREATE_TIME
+        	,MODIFY_TIME
+        ) VALUES (
+        	#{id}
+        	,#{address}
+        	,#{coinType}
+        	,#{contractAddress}
+        	,#{createTime}
+        	,#{modifyTime}
+        )
+	</insert>
+	
+	<delete id="deleteById">
+	    DELETE FROM
+	    	TRANSACTION_BUSINESS_ACCOUNT 
+	    WHERE
+	    ID = #{id} 
+    </delete>
+    
+    <delete id="deleteByCondition">
+	    DELETE FROM
+	    	TRANSACTION_BUSINESS_ACCOUNT 
+	    WHERE
+	    	1=1
+		    <include refid="transactionBusinessAccountColumns" />
+    </delete>
+    
+	<update id="updateById">
+	    UPDATE
+	    	TRANSACTION_BUSINESS_ACCOUNT 
+        <set>
+	        <include refid="transactionBusinessAccountSetColumns" />
+		</set>
+	    WHERE
+	    ID = #{id} 
+	</update>
+	
+    <select id="queryById" resultMap="transactionBusinessAccountResultMap">
+		SELECT
+			ID
+			,ADDRESS
+			,COIN_TYPE
+			,CONTRACT_ADDRESS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			TRANSACTION_BUSINESS_ACCOUNT 
+		WHERE 
+			ID = #{id} 
+	</select>
+	
+	<select id="queryList" resultMap="transactionBusinessAccountResultMap">
+		SELECT
+			ID
+			,ADDRESS
+			,COIN_TYPE
+			,CONTRACT_ADDRESS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			TRANSACTION_BUSINESS_ACCOUNT
+		WHERE
+			1=1
+			<include refid="transactionBusinessAccountColumns" />
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryAll" resultMap="transactionBusinessAccountResultMap">
+		SELECT
+			ID
+			,ADDRESS
+			,COIN_TYPE
+			,CONTRACT_ADDRESS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			TRANSACTION_BUSINESS_ACCOUNT 
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryPaginationListCount" resultType="Integer">
+		SELECT
+			COUNT(0)
+		FROM
+			TRANSACTION_BUSINESS_ACCOUNT 
+		WHERE
+			1=1 
+			<include refid="transactionBusinessAccountColumns" />
+	</select>
+	
+	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="transactionBusinessAccountResultMap">
+		SELECT
+			ID
+			,ADDRESS
+			,COIN_TYPE
+			,CONTRACT_ADDRESS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			TRANSACTION_BUSINESS_ACCOUNT
+		WHERE
+			1=1
+			<include refid="transactionBusinessAccountColumns" />
+		ORDER BY
+			ID
+	</select>
+
+	<select id="queryByAddressCoinTypeForUpdate" resultMap="transactionBusinessAccountResultMap">
+		SELECT
+			ID
+			,ADDRESS
+			,COIN_TYPE
+			,CONTRACT_ADDRESS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			TRANSACTION_BUSINESS_ACCOUNT
+		WHERE
+			ADDRESS = #{address}
+		AND
+			COIN_TYPE = #{coinType}
+		FOR UPDATE
+	</select>
+	
+</mapper>
+

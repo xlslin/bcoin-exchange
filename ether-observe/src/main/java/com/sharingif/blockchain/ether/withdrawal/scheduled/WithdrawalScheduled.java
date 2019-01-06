@@ -22,7 +22,7 @@ public class WithdrawalScheduled {
     @Scheduled(fixedRate = 1000*1)
     public synchronized void initDepositNotice() {
         JobRequest jobRequest = new JobRequest();
-        jobRequest.setLookupPath("/withdrawal/initDepositNotice");
+        jobRequest.setLookupPath("/withdrawal/initWithdrawalNotice");
 
         simpleDispatcherHandler.doDispatch(jobRequest);
     }

@@ -30,6 +30,13 @@ public interface TransactionBusinessService extends IBaseService<TransactionBusi
     int updateStatusToInitNoticed(String id);
 
     /**
+     * 修改状态为交易完成通知中
+     * @param id
+     * @return
+     */
+    int updateStatusToFinishNoticing(String id);
+
+    /**
      * 修改状态为有效
      * @param transactionId
      * @return
@@ -42,5 +49,10 @@ public interface TransactionBusinessService extends IBaseService<TransactionBusi
      * @return
      */
     void updateTxStatusToBlockConfirmedInvalid(String transactionId);
+
+    /**
+     * 添加需要处理的交易账号
+     */
+    void addTransactionBusinessAccount();
 
 }

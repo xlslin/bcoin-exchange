@@ -21,6 +21,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=transactionId">
     		and TRANSACTION_ID = #{transactionId}
     	</if>
+    	<if test="null!=contractAddress">
+    		and CONTRACT_ADDRESS = #{contractAddress}
+    	</if>
     	<if test="null!=txHash">
     		and TX_HASH = #{txHash}
     	</if>
@@ -75,6 +78,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=transactionId">
 		    TRANSACTION_ID = #{transactionId},
 		    </if>
+		    <if test="null!=contractAddress">
+		    CONTRACT_ADDRESS = #{contractAddress},
+		    </if>
 		    <if test="null!=txHash">
 		    TX_HASH = #{txHash},
 		    </if>
@@ -121,6 +127,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         <result property="blockNumber" column="BLOCK_NUMBER"/>
         <result property="blockHash" column="BLOCK_HASH"/>
         <result property="transactionId" column="TRANSACTION_ID"/>
+        <result property="contractAddress" column="CONTRACT_ADDRESS"/>
         <result property="txHash" column="TX_HASH"/>
         <result property="coinType" column="COIN_TYPE"/>
         <result property="txFrom" column="TX_FROM"/>
@@ -143,6 +150,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,BLOCK_NUMBER
         	,BLOCK_HASH
         	,TRANSACTION_ID
+        	,CONTRACT_ADDRESS
         	,TX_HASH
         	,COIN_TYPE
         	,TX_FROM
@@ -161,6 +169,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,#{blockNumber}
         	,#{blockHash}
         	,#{transactionId}
+        	,#{contractAddress}
         	,#{txHash}
         	,#{coinType}
         	,#{txFrom}
@@ -208,6 +217,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,BLOCK_NUMBER
 			,BLOCK_HASH
 			,TRANSACTION_ID
+			,CONTRACT_ADDRESS
 			,TX_HASH
 			,COIN_TYPE
 			,TX_FROM
@@ -233,6 +243,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,BLOCK_NUMBER
 			,BLOCK_HASH
 			,TRANSACTION_ID
+			,CONTRACT_ADDRESS
 			,TX_HASH
 			,COIN_TYPE
 			,TX_FROM
@@ -261,6 +272,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,BLOCK_NUMBER
 			,BLOCK_HASH
 			,TRANSACTION_ID
+			,CONTRACT_ADDRESS
 			,TX_HASH
 			,COIN_TYPE
 			,TX_FROM
@@ -296,6 +308,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,BLOCK_NUMBER
 			,BLOCK_HASH
 			,TRANSACTION_ID
+			,CONTRACT_ADDRESS
 			,TX_HASH
 			,COIN_TYPE
 			,TX_FROM

@@ -30,13 +30,17 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	 * 处理状态(CSHTZCG:初始化通知成功)
 	 */
 	public static final String STATUS_INIT_NOTICED = "CSHTZCG";
-
+	/**
+	 * 处理状态(JYWCTZZ:交易完成通知中)
+	 */
+	public static final String STATUS_FINISH_NOTICING = "JYWCTZZ";
+	
 	//columns START
     /**
      * id			db_column: ID 
      */
 	@Sequence(ref="uuidSequenceGenerator")
-	private java.lang.String id;
+	private String id;
     /**
      * 区块数			db_column: BLOCK_NUMBER 
      */	
@@ -44,27 +48,31 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
     /**
      * 区块hash			db_column: BLOCK_HASH 
      */	
-	private java.lang.String blockHash;
+	private String blockHash;
     /**
      * ETH交易id			db_column: TRANSACTION_ID 
      */	
-	private java.lang.String transactionId;
+	private String transactionId;
+    /**
+     * 合约地址			db_column: CONTRACT_ADDRESS 
+     */	
+	private String contractAddress;
     /**
      * 交易hash			db_column: TX_HASH 
      */	
-	private java.lang.String txHash;
+	private String txHash;
     /**
      * 币种			db_column: COIN_TYPE 
      */	
-	private java.lang.String coinType;
+	private String coinType;
     /**
      * FORM地址			db_column: TX_FROM 
      */	
-	private java.lang.String txFrom;
+	private String txFrom;
     /**
      * TO地址			db_column: TX_TO 
      */	
-	private java.lang.String txTo;
+	private String txTo;
     /**
      * 金额			db_column: AMOUNT 
      */	
@@ -76,19 +84,19 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
     /**
      * 交易类型(DEPOSIT:充值、WITHDRAWAL:提现)			db_column: TYPE 
      */	
-	private java.lang.String type;
+	private String type;
     /**
-     * 处理状态(WCL:未处理、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、YQS:已清算)			db_column: STATUS
+     * 处理状态(WCL:未处理、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、JYWCTZZ:交易完成通知中、JYWCTZCG:交易完成通知成功)			db_column: STATUS 
      */	
-	private java.lang.String status;
+	private String status;
     /**
      * 合约交易状态(S:成功、F:失败)			db_column: TX_RECEIPT_STATUS 
      */	
-	private java.lang.String txReceiptStatus;
+	private String txReceiptStatus;
     /**
-     * 交易状态(WYZ:未验证、QKQRYX:区块确认有效、QKQRWX:区块确认无效)			db_column: TX_STATUS
+     * 交易状态(WYZ:未验证、QKYZYX:区块验证有效、QKYZWX:区块验证无效)			db_column: TX_STATUS 
      */	
-	private java.lang.String txStatus;
+	private String txStatus;
     /**
      * 交易时间			db_column: TX_TIME 
      */	
@@ -103,10 +111,10 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	private Date modifyTime;
 	//columns END
 
-	public void setId(java.lang.String id) {
+	public void setId(String id) {
 		this.id = id;
 	}
-	public java.lang.String getId() {
+	public String getId() {
 		return this.id;
 	}
 	public void setBlockNumber(BigInteger blockNumber) {
@@ -115,40 +123,46 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	public BigInteger getBlockNumber() {
 		return this.blockNumber;
 	}
-	public void setBlockHash(java.lang.String blockHash) {
+	public void setBlockHash(String blockHash) {
 		this.blockHash = blockHash;
 	}
-	public java.lang.String getBlockHash() {
+	public String getBlockHash() {
 		return this.blockHash;
 	}
-	public void setTransactionId(java.lang.String transactionId) {
+	public void setTransactionId(String transactionId) {
 		this.transactionId = transactionId;
 	}
-	public java.lang.String getTransactionId() {
+	public String getTransactionId() {
 		return this.transactionId;
 	}
-	public void setTxHash(java.lang.String txHash) {
+	public void setContractAddress(String contractAddress) {
+		this.contractAddress = contractAddress;
+	}
+	public String getContractAddress() {
+		return this.contractAddress;
+	}
+	public void setTxHash(String txHash) {
 		this.txHash = txHash;
 	}
-	public java.lang.String getTxHash() {
+	public String getTxHash() {
 		return this.txHash;
 	}
-	public void setCoinType(java.lang.String coinType) {
+	public void setCoinType(String coinType) {
 		this.coinType = coinType;
 	}
-	public java.lang.String getCoinType() {
+	public String getCoinType() {
 		return this.coinType;
 	}
-	public void setTxFrom(java.lang.String txFrom) {
+	public void setTxFrom(String txFrom) {
 		this.txFrom = txFrom;
 	}
-	public java.lang.String getTxFrom() {
+	public String getTxFrom() {
 		return this.txFrom;
 	}
-	public void setTxTo(java.lang.String txTo) {
+	public void setTxTo(String txTo) {
 		this.txTo = txTo;
 	}
-	public java.lang.String getTxTo() {
+	public String getTxTo() {
 		return this.txTo;
 	}
 	public void setAmount(BigInteger amount) {
@@ -163,28 +177,28 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	public BigInteger getFee() {
 		return this.fee;
 	}
-	public void setType(java.lang.String type) {
+	public void setType(String type) {
 		this.type = type;
 	}
-	public java.lang.String getType() {
+	public String getType() {
 		return this.type;
 	}
-	public void setStatus(java.lang.String status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
-	public java.lang.String getStatus() {
+	public String getStatus() {
 		return this.status;
 	}
-	public void setTxReceiptStatus(java.lang.String txReceiptStatus) {
+	public void setTxReceiptStatus(String txReceiptStatus) {
 		this.txReceiptStatus = txReceiptStatus;
 	}
-	public java.lang.String getTxReceiptStatus() {
+	public String getTxReceiptStatus() {
 		return this.txReceiptStatus;
 	}
-	public void setTxStatus(java.lang.String txStatus) {
+	public void setTxStatus(String txStatus) {
 		this.txStatus = txStatus;
 	}
-	public java.lang.String getTxStatus() {
+	public String getTxStatus() {
 		return this.txStatus;
 	}
 	public void setTxTime(Date txTime) {
@@ -212,6 +226,7 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 					.append("BlockNumber=").append(getBlockNumber()).append(", ")
 					.append("BlockHash=").append(getBlockHash()).append(", ")
 					.append("TransactionId=").append(getTransactionId()).append(", ")
+					.append("ContractAddress=").append(getContractAddress()).append(", ")
 					.append("TxHash=").append(getTxHash()).append(", ")
 					.append("CoinType=").append(getCoinType()).append(", ")
 					.append("TxFrom=").append(getTxFrom()).append(", ")

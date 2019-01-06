@@ -15,7 +15,7 @@ public interface WithdrawalService {
      * 初始化提现通知
      * @param id
      */
-    void initDepositNotice(String id);
+    void initWithdrawalNotice(String id);
 
     /**
      * 取现处理中

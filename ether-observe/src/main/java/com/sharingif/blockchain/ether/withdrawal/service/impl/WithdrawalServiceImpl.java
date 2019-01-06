@@ -40,7 +40,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     }
 
     @Override
-    public void initDepositNotice(String id) {
+    public void initWithdrawalNotice(String id) {
         TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
         queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
         queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
