@@ -20,9 +20,9 @@ public class DepositScheduled {
     }
 
     @Scheduled(fixedRate = 1000*1)
-    public synchronized void readyDepositNotice() {
+    public synchronized void readyInitNotice() {
         JobRequest jobRequest = new JobRequest();
-        jobRequest.setLookupPath("/deposit/readyDepositNotice");
+        jobRequest.setLookupPath("/deposit/readyInitNotice");
 
         simpleDispatcherHandler.doDispatch(jobRequest);
     }

@@ -25,9 +25,25 @@ public class JobConfigComponentsAutoconfigure {
         return jobConfig;
     }
 
-    @Bean("depositInitDepositNoticeJobConfig")
+    @Bean("depositInitNoticeJobConfig")
     public JobConfig createDepositInitDepositNoticeJobConfigJobConfig() {
-        JobConfig jobConfig = new JobConfig(null,"/deposit/initDepositNotice", null);
+        JobConfig jobConfig = new JobConfig(null,"/deposit/initNotice", null);
+        jobConfig.setIntervalPlanExecuteTime(1000*60*5);
+        jobConfig.setMaxExecuteCount(5);
+        return jobConfig;
+    }
+
+    @Bean("depositFinishNoticeJobConfig")
+    public JobConfig createDepositFinishNoticeJobConfig() {
+        JobConfig jobConfig = new JobConfig(null,"/deposit/finishNotice", null);
+        jobConfig.setIntervalPlanExecuteTime(1000*60*5);
+        jobConfig.setMaxExecuteCount(5);
+        return jobConfig;
+    }
+
+    @Bean("withdrawalFinishNoticeJobConfig")
+    public JobConfig createWithdrawalFinishNoticeJobConfig() {
+        JobConfig jobConfig = new JobConfig(null,"/withdrawal/finishNotice", null);
         jobConfig.setIntervalPlanExecuteTime(1000*60*5);
         jobConfig.setMaxExecuteCount(5);
         return jobConfig;

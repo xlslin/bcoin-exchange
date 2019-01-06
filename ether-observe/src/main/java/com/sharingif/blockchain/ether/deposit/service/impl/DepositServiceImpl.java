@@ -22,17 +22,18 @@ import java.util.List;
 public class DepositServiceImpl implements DepositService {
 
     private TransactionBusinessService transactionBusinessService;
-    private JobConfig depositInitDepositNoticeJobConfig;
+    private JobConfig depositInitNoticeJobConfig;
     private JobService jobService;
     private AccountService accountService;
+    private JobConfig depositFinishNoticeJobConfig;
 
     @Resource
     public void setTransactionBusinessService(TransactionBusinessService transactionBusinessService) {
         this.transactionBusinessService = transactionBusinessService;
     }
     @Resource
-    public void setDepositInitDepositNoticeJobConfig(JobConfig depositInitDepositNoticeJobConfig) {
-        this.depositInitDepositNoticeJobConfig = depositInitDepositNoticeJobConfig;
+    public void setDepositInitNoticeJobConfig(JobConfig depositInitNoticeJobConfig) {
+        this.depositInitNoticeJobConfig = depositInitNoticeJobConfig;
     }
     @Resource
     public void setJobService(JobService jobService) {
@@ -41,6 +42,10 @@ public class DepositServiceImpl implements DepositService {
     @Resource
     public void setAccountService(AccountService accountService) {
         this.accountService = accountService;
+    }
+    @Resource
+    public void setDepositFinishNoticeJobConfig(JobConfig depositFinishNoticeJobConfig) {
+        this.depositFinishNoticeJobConfig = depositFinishNoticeJobConfig;
     }
 
     @Override
@@ -53,18 +58,18 @@ public class DepositServiceImpl implements DepositService {
     }
 
     @Transactional
-    protected void readyDepositNotice(TransactionBusiness transactionBusiness) {
+    protected void readyInitDepositNotice(TransactionBusiness transactionBusiness) {
         transactionBusinessService.updateStatusToInitNotice(transactionBusiness.getId());
 
         JobModel jobModel = new JobModel();
-        jobModel.setLookupPath(depositInitDepositNoticeJobConfig.getLookupPath());
+        jobModel.setLookupPath(depositInitNoticeJobConfig.getLookupPath());
         jobModel.setDataId(transactionBusiness.getId());
-        jobModel.setPlanExecuteTime(transactionBusiness.getCreateTime());
+        jobModel.setPlanExecuteTime(transactionBusiness.getTxTime());
         jobService.add(null, jobModel);
     }
 
     @Override
-    public void readyDepositNotice() {
+    public void readyInitNotice() {
         TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
         queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
         queryTransactionBusiness.setType(TransactionBusiness.TYPE_DEPOSIT);
@@ -81,12 +86,12 @@ public class DepositServiceImpl implements DepositService {
         }
 
         for (TransactionBusiness transactionBusiness : transactionBusinessList) {
-            readyDepositNotice(transactionBusiness);
+            readyInitDepositNotice(transactionBusiness);
         }
     }
 
     @Override
-    public void initDepositNotice(String id) {
+    public void initNotice(String id) {
         TransactionBusiness transactionBusiness = transactionBusinessService.getById(id);
         if(!TransactionBusiness.STATUS_INIT_NOTICE.equals(transactionBusiness.getStatus())) {
             return;
@@ -129,6 +134,49 @@ public class DepositServiceImpl implements DepositService {
                 ,transactionBusiness.getId()
                 ,transactionBusiness.getTxTime()
         );
+    }
+
+    @Transactional
+    protected void readyFinishNotice(TransactionBusiness transactionBusiness) {
+        transactionBusinessService.updateStatusToFinishNoticing(transactionBusiness.getId());
+
+        JobModel jobModel = new JobModel();
+        jobModel.setLookupPath(depositFinishNoticeJobConfig.getLookupPath());
+        jobModel.setDataId(transactionBusiness.getId());
+        jobModel.setPlanExecuteTime(transactionBusiness.getTxTime());
+        jobService.add(null, jobModel);
+    }
+
+    @Override
+    public void readyFinishNotice() {
+        TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
+        queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_SETTLED);
+        queryTransactionBusiness.setType(TransactionBusiness.TYPE_DEPOSIT);
+        PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
+        paginationCondition.setCondition(queryTransactionBusiness);
+        paginationCondition.setQueryCount(false);
+        paginationCondition.setCurrentPage(1);
+        paginationCondition.setPageSize(20);
+
+        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessService.getPagination(paginationCondition);
+        List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
+        if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
+            return;
+        }
+
+        for (TransactionBusiness transactionBusiness : transactionBusinessList) {
+            readyFinishNotice(transactionBusiness);
+        }
+    }
+
+    @Override
+    public void finishNotice(String id) {
+        TransactionBusiness transactionBusiness = transactionBusinessService.getById(id);
+        if(!TransactionBusiness.STATUS_FINISH_NOTICING.equals(transactionBusiness.getStatus())) {
+            return;
+        }
+
+        transactionBusinessService.updateStatusToFinishNoticed(id);
     }
 
 }

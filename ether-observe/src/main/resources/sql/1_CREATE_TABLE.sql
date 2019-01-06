@@ -107,7 +107,7 @@ CREATE TABLE TRANSACTION_BUSINESS
   AMOUNT                DECIMAL(65,0) NOT NULL COMMENT '金额',
   FEE                   DECIMAL(65,0) NOT NULL COMMENT '手续费',
   TYPE                  VARCHAR(100) NOT NULL COMMENT '交易类型(DEPOSIT:充值、WITHDRAWAL:提现)',
-  STATUS                VARCHAR(20) NOT NULL COMMENT '处理状态(WCL:未处理、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、QSZ:清算中、JYWCTZZ:交易完成通知中、JYWCTZCG:交易完成通知成功)',
+  STATUS                VARCHAR(20) NOT NULL COMMENT '处理状态(WCL:未处理、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、QSZ:清算中、QSWC:清算完成、JYWCTZZ:交易完成通知中、JYWCTZCG:交易完成通知成功)',
   TX_RECEIPT_STATUS     CHAR(1) NOT NULL COMMENT '合约交易状态(S:成功、F:失败)',
   TX_STATUS             VARCHAR(20) NOT NULL COMMENT '交易状态(WYZ:未验证、QKYZYX:区块验证有效、QKYZWX:区块验证无效)',
   TX_TIME               TIMESTAMP NULL COMMENT '交易时间',

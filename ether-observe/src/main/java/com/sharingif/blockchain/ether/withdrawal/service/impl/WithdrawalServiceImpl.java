@@ -8,9 +8,13 @@ import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.ether.block.service.TransactionBusinessService;
 import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
+import com.sharingif.cube.batch.core.JobConfig;
+import com.sharingif.cube.batch.core.JobModel;
+import com.sharingif.cube.batch.core.JobService;
 import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
 import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -20,6 +24,8 @@ public class WithdrawalServiceImpl implements WithdrawalService {
 
     private TransactionBusinessService transactionBusinessService;
     private AccountService accountService;
+    private JobConfig withdrawalFinishNoticeJobConfig;
+    private JobService jobService;
 
     @Resource
     public void setTransactionBusinessService(TransactionBusinessService transactionBusinessService) {
@@ -28,6 +34,14 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     @Resource
     public void setAccountService(AccountService accountService) {
         this.accountService = accountService;
+    }
+    @Resource
+    public void setWithdrawalFinishNoticeJobConfig(JobConfig withdrawalFinishNoticeJobConfig) {
+        this.withdrawalFinishNoticeJobConfig = withdrawalFinishNoticeJobConfig;
+    }
+    @Resource
+    public void setJobService(JobService jobService) {
+        this.jobService = jobService;
     }
 
     @Override
@@ -160,5 +174,48 @@ public class WithdrawalServiceImpl implements WithdrawalService {
                 ,transactionBusiness.getId()
                 ,transactionBusiness.getTxTime()
         );
+    }
+
+    @Transactional
+    protected void readyFinishNotice(TransactionBusiness transactionBusiness) {
+        transactionBusinessService.updateStatusToFinishNoticing(transactionBusiness.getId());
+
+        JobModel jobModel = new JobModel();
+        jobModel.setLookupPath(withdrawalFinishNoticeJobConfig.getLookupPath());
+        jobModel.setDataId(transactionBusiness.getId());
+        jobModel.setPlanExecuteTime(transactionBusiness.getTxTime());
+        jobService.add(null, jobModel);
+    }
+
+    @Override
+    public void readyFinishNotice() {
+        TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
+        queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_SETTLED);
+        queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
+        PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
+        paginationCondition.setCondition(queryTransactionBusiness);
+        paginationCondition.setQueryCount(false);
+        paginationCondition.setCurrentPage(1);
+        paginationCondition.setPageSize(20);
+
+        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessService.getPagination(paginationCondition);
+        List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
+        if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
+            return;
+        }
+
+        for (TransactionBusiness transactionBusiness : transactionBusinessList) {
+            readyFinishNotice(transactionBusiness);
+        }
+    }
+
+    @Override
+    public void finishNotice(String id) {
+        TransactionBusiness transactionBusiness = transactionBusinessService.getById(id);
+        if(!TransactionBusiness.STATUS_FINISH_NOTICING.equals(transactionBusiness.getStatus())) {
+            return;
+        }
+
+        transactionBusinessService.updateStatusToFinishNoticed(id);
     }
 }

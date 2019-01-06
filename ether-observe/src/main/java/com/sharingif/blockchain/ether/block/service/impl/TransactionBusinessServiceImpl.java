@@ -81,15 +81,33 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 	}
 
 	@Override
-	public int updateStatusToFinishNoticing(String address, String coinType, BigInteger blockNumber) {
+	public int updateStatusToSettled(String address, String coinType, BigInteger blockNumber) {
 
 		return transactionBusinessDAO.updateStatusByAddressCoinTypeBlockNumberTxStatus(
-				TransactionBusiness.STATUS_FINISH_NOTICING
+				TransactionBusiness.STATUS_SETTLED
 				,address
 				,coinType
 				,blockNumber
 				,BlockChain.STATUS_UNVERIFIED
 		);
+	}
+
+	@Override
+	public int updateStatusToFinishNoticing(String id) {
+		TransactionBusiness transactionBusiness = new TransactionBusiness();
+		transactionBusiness.setId(id);
+		transactionBusiness.setStatus(TransactionBusiness.STATUS_FINISH_NOTICING);
+
+		return transactionBusinessDAO.updateById(transactionBusiness);
+	}
+
+	@Override
+	public int updateStatusToFinishNoticed(String id) {
+		TransactionBusiness transactionBusiness = new TransactionBusiness();
+		transactionBusiness.setId(id);
+		transactionBusiness.setStatus(TransactionBusiness.STATUS_FINISH_NOTICED);
+
+		return transactionBusinessDAO.updateById(transactionBusiness);
 	}
 
 	@Override

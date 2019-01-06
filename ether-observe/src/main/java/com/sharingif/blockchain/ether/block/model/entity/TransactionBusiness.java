@@ -35,9 +35,17 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	 */
 	public static final String STATUS_SETTLING = "QSZ";
 	/**
+	 * 处理状态(QSWC:清算完成)
+	 */
+	public static final String STATUS_SETTLED = "QSWC";
+	/**
 	 * 处理状态(JYWCTZZ:交易完成通知中)
 	 */
 	public static final String STATUS_FINISH_NOTICING = "JYWCTZZ";
+	/**
+	 * 处理状态(JYWCTZCG:交易完成通知成功)
+	 */
+	public static final String STATUS_FINISH_NOTICED = "JYWCTZCG";
 	
 	//columns START
     /**
@@ -90,7 +98,7 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
      */	
 	private String type;
     /**
-     * 处理状态(WCL:未处理、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、QSZ:清算中、JYWCTZZ:交易完成通知中、JYWCTZCG:交易完成通知成功)			db_column: STATUS
+     * 处理状态(WCL:未处理、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、QSZ:清算中、QSWC:清算完成、JYWCTZZ:交易完成通知中、JYWCTZCG:交易完成通知成功)			db_column: STATUS
      */	
 	private String status;
     /**

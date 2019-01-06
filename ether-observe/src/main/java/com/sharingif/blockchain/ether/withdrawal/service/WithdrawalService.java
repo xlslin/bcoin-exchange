@@ -35,4 +35,17 @@ public interface WithdrawalService {
      */
     void withdrawalFailure(TransactionBusiness transactionBusiness);
 
+    /**
+     * 准备提现完成通知
+     * @return
+     */
+    void readyFinishNotice();
+
+    /**
+     * 提现完成通知
+     * @param id
+     * @return
+     */
+    void finishNotice(String id);
+
 }

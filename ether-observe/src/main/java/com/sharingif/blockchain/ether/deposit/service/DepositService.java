@@ -14,13 +14,13 @@ public interface DepositService {
     /**
      * 准备充值通知
      */
-    void readyDepositNotice();
+    void readyInitNotice();
 
     /**
      * 初始化充值通知中
      * @param id
      */
-    void initDepositNotice(String id);
+    void initNotice(String id);
 
     /**
      * 充值
@@ -33,5 +33,18 @@ public interface DepositService {
      * @param transactionBusiness
      */
     void depositReback(TransactionBusiness transactionBusiness);
+
+    /**
+     * 准备充值完成通知
+     * @return
+     */
+    void readyFinishNotice();
+
+    /**
+     * 充值完成通知
+     * @param id
+     * @return
+     */
+    void finishNotice(String id);
 
 }

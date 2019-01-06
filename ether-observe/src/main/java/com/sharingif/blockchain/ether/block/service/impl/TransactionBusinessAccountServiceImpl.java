@@ -94,7 +94,7 @@ public class TransactionBusinessAccountServiceImpl extends BaseServiceImpl<Trans
 					,blockNumber
 			) == 0;
 
-			transactionBusinessService.updateStatusToFinishNoticing(transactionBusinessAccount.getAddress(), transactionBusinessAccount.getCoinType(), blockNumber);
+			transactionBusinessService.updateStatusToSettled(transactionBusinessAccount.getAddress(), transactionBusinessAccount.getCoinType(), blockNumber);
 
 			if(deleteTransactionBusinessAccount) {
 				transactionBusinessAccountDAO.deleteById(transactionBusinessAccount.getId());

@@ -37,13 +37,27 @@ public interface TransactionBusinessService extends IBaseService<TransactionBusi
     int updateStatusToSettling(String id);
 
     /**
-     * 修改状态为交易完成通知中
+     * 修改状态为清算完成
      * @param address
      * @param coinType
      * @param blockNumber
      * @return
      */
-    int updateStatusToFinishNoticing(String address, String coinType, BigInteger blockNumber);
+    int updateStatusToSettled(String address, String coinType, BigInteger blockNumber);
+
+    /**
+     * 修改状态为交易完成通知中
+     * @param id
+     * @return
+     */
+    int updateStatusToFinishNoticing(String id);
+
+    /**
+     * 修改状态为交易完成通知成功
+     * @param id
+     * @return
+     */
+    int updateStatusToFinishNoticed(String id);
 
     /**
      * 根据地址、币种、大于区块号查询数据条数

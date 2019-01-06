@@ -24,14 +24,24 @@ public class DepositController {
 		this.depositService = depositService;
 	}
 
-	@RequestMapping(value="readyDepositNotice", method= RequestMethod.POST)
-	public void readyDepositNotice() {
-		depositService.readyDepositNotice();
+	@RequestMapping(value="readyInitNotice", method= RequestMethod.POST)
+	public void readyInitNotice() {
+		depositService.readyInitNotice();
 	}
 
-	@RequestMapping(value="initDepositNotice", method= RequestMethod.POST)
-	public void initDepositNotice(JobRequest<String> jobRequest) {
-		depositService.initDepositNotice(jobRequest.getData());
+	@RequestMapping(value="initNotice", method= RequestMethod.POST)
+	public void initNotice(JobRequest<String> jobRequest) {
+		depositService.initNotice(jobRequest.getData());
+	}
+
+	@RequestMapping(value="readyFinishNotice", method= RequestMethod.POST)
+	public void readyFinishNotice() {
+		depositService.readyFinishNotice();
+	}
+
+	@RequestMapping(value="finishNotice", method= RequestMethod.POST)
+	public void finishNotice(JobRequest<String> jobRequest) {
+		depositService.finishNotice(jobRequest.getData());
 	}
 	
 }
