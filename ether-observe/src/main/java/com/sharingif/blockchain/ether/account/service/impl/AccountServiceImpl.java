@@ -60,6 +60,17 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 	}
 
 	@Override
+	public BigInteger getBalance(String address, String coinType) {
+		Account account = new Account();
+		account.setAddress(address);
+		account.setCoinType(coinType);
+
+		Account queryAccount = accountDAO.query(account);
+
+		return queryAccount.getBalance();
+	}
+
+	@Override
 	public void addBalance(String address, String coinType, BigInteger balance, String accountFrom, String accountTo, String type, String txId, Date transTime) {
 		initNormalAccount(address, coinType);
 

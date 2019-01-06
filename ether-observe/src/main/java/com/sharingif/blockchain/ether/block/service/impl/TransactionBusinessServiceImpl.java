@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigInteger;
 import java.util.List;
 
 @Service
@@ -71,12 +72,29 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 	}
 
 	@Override
-	public int updateStatusToFinishNoticing(String id) {
+	public int updateStatusToSettling(String id) {
 		TransactionBusiness transactionBusiness = new TransactionBusiness();
 		transactionBusiness.setId(id);
-		transactionBusiness.setStatus(TransactionBusiness.STATUS_FINISH_NOTICING);
+		transactionBusiness.setStatus(TransactionBusiness.STATUS_SETTLING);
 
 		return transactionBusinessDAO.updateById(transactionBusiness);
+	}
+
+	@Override
+	public int updateStatusToFinishNoticing(String address, String coinType, BigInteger blockNumber) {
+
+		return transactionBusinessDAO.updateStatusByAddressCoinTypeBlockNumberTxStatus(
+				TransactionBusiness.STATUS_FINISH_NOTICING
+				,address
+				,coinType
+				,blockNumber
+				,BlockChain.STATUS_UNVERIFIED
+		);
+	}
+
+	@Override
+	public int getCountByAddressCoinTypeBlockNumber(String address, String coinType, BigInteger blockNumber) {
+		return transactionBusinessDAO.queryCountByAddressCoinTypeBlockNumber(address, coinType, blockNumber);
 	}
 
 	@Override
@@ -140,7 +158,7 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 	protected void addTransactionBusinessAccount(String transactionBusinessId, String address, String coinType, String contractAddress) {
 		transactionBusinessAccountService.addTransactionBusinessAccount(address, coinType, contractAddress);
 
-		updateStatusToFinishNoticing(transactionBusinessId);
+		updateStatusToSettling(transactionBusinessId);
 	}
 
 	protected void addTransactionBusinessAccount(List<TransactionBusiness> transactionBusinessList) {

@@ -11,6 +11,14 @@ import java.util.Date;
 public interface AccountService extends IBaseService<Account, java.lang.String> {
 
     /**
+     * 根据地址、币种查询余额
+     * @param address
+     * @param coinType
+     * @return
+     */
+    BigInteger getBalance(String address, String coinType);
+
+    /**
      * 增加余额
      * @param address
      * @param coinType

@@ -16,4 +16,9 @@ public interface TransactionBusinessAccountService extends IBaseService<Transact
      */
     boolean addTransactionBusinessAccount(String address, String coinType, String contractAddress);
 
+    /**
+     * 清算账户
+     */
+    void settleAccounts();
+
 }

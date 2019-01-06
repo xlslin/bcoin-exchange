@@ -127,6 +127,20 @@ public class Erc20ContractServiceImpl implements Erc20ContractService {
         }
     }
 
+    @Override
+    public BigInteger balanceOf(String address, String contractAddress) {
+        final Function function = new Function("balanceOf",
+                Arrays.<Type>asList(new Address(address)),
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
+        RemoteCall<BigInteger> remoteCall = executeRemoteCallSingleValueReturn(function, BigInteger.class, contractAddress);
+
+        try {
+            return remoteCall.send();
+        } catch (Exception e) {
+            throw new ValidationCubeException("get balanceOf error");
+        }
+    }
+
     protected <T> RemoteCall<T> executeRemoteCallSingleValueReturn(
             Function function, Class<T> returnType, String contractAddress) {
         return new RemoteCall<>(() -> executeCallSingleValueReturn(function, returnType, contractAddress));

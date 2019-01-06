@@ -42,4 +42,12 @@ public interface Erc20ContractService {
      */
     BigInteger totalSupply(String contractAddress);
 
+    /**
+     * 根据地址、合约地址查询余额
+     * @param address
+     * @param contractAddress
+     * @return
+     */
+    BigInteger balanceOf(String address, String contractAddress);
+
 }
