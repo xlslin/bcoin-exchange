@@ -1,14 +1,18 @@
 package com.sharingif.blockchain.ether.withdrawal.service.impl;
 
 
+import com.sharingif.blockchain.api.ether.service.EtherApiService;
+import com.sharingif.blockchain.ether.account.model.entity.Account;
 import com.sharingif.blockchain.ether.account.model.entity.AccountJnl;
 import com.sharingif.blockchain.ether.account.service.AccountService;
 import com.sharingif.blockchain.ether.api.withdrawal.entity.WithdrawalEtherReq;
 import com.sharingif.blockchain.ether.api.withdrawal.entity.WithdrawalEtherRsp;
 import com.sharingif.blockchain.ether.app.autoconfigure.constants.CoinType;
+import com.sharingif.blockchain.ether.app.constants.Constants;
 import com.sharingif.blockchain.ether.app.exception.InvalidAddressException;
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
+import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
 import com.sharingif.blockchain.ether.block.service.TransactionBusinessService;
 import com.sharingif.blockchain.ether.withdrawal.dao.WithdrawalDAO;
 import com.sharingif.blockchain.ether.withdrawal.model.entity.Withdrawal;
@@ -25,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.web3j.utils.Numeric;
 
 import javax.annotation.Resource;
+import java.math.BigInteger;
 import java.util.List;
 
 @Service
@@ -35,6 +40,8 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     private AccountService accountService;
     private JobConfig withdrawalFinishNoticeJobConfig;
     private JobService jobService;
+    private EthereumBlockService ethereumBlockService;
+    private EtherApiService etherApiService;
 
     public void setWithdrawalDAO(WithdrawalDAO withdrawalDAO) {
         super.setBaseDAO(withdrawalDAO);
@@ -56,6 +63,10 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     @Resource
     public void setJobService(JobService jobService) {
         this.jobService = jobService;
+    }
+    @Resource
+    public void setEthereumBlockService(EthereumBlockService ethereumBlockService) {
+        this.ethereumBlockService = ethereumBlockService;
     }
 
     @Override
@@ -250,7 +261,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         }
 
         Withdrawal withdrawal = Withdrawal.convertWithdrawalEtherReqToWithdrawal(req);
-        withdrawal.setStatus(Withdrawal.STATUS_PROCESSING);
+        withdrawal.setStatus(Withdrawal.STATUS_UNTREATED);
 
         withdrawalDAO.insert(withdrawal);
 
@@ -258,5 +269,45 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         withdrawalEtherRsp.setId(withdrawal.getId());
 
         return withdrawalEtherRsp;
+    }
+
+    protected void withdrawalEther(Withdrawal withdrawal) {
+        // 计算手续费
+        BigInteger gasLimit = withdrawal.getGasLimit();
+        if(gasLimit == null) {
+            gasLimit = new BigInteger(Constants.ETH_TRANSFOR_GAS_LIMIT);
+        }
+        BigInteger gasPrice = withdrawal.getGasPrice();
+        if(gasPrice == null) {
+            gasPrice = ethereumBlockService.getGasPrice().add(new BigInteger(Constants.ETH_TRANSFOR_GAS_PRICE_ADD));
+        }
+        BigInteger fee = gasLimit.multiply(gasPrice);
+
+        BigInteger withdrawalAmount = withdrawal.getAmount();
+
+        Account account = accountService.getAccount(withdrawal.getCoinType(), withdrawalAmount, fee, withdrawal.getContractAddress());
+
+
+    }
+
+    @Override
+    public void withdrawalEther() {
+        Withdrawal queryWithdrawal = new Withdrawal();
+        queryWithdrawal.setStatus(Withdrawal.STATUS_UNTREATED);
+        PaginationCondition<Withdrawal> paginationCondition = new PaginationCondition<Withdrawal>();
+        paginationCondition.setCondition(queryWithdrawal);
+        paginationCondition.setQueryCount(false);
+        paginationCondition.setCurrentPage(1);
+        paginationCondition.setPageSize(20);
+
+        PaginationRepertory<Withdrawal> withdrawalPaginationRepertory = withdrawalDAO.queryPagination(paginationCondition);
+        List<Withdrawal> withdrawalList = withdrawalPaginationRepertory.getPageItems();
+        if(withdrawalList == null || withdrawalList.isEmpty()) {
+            return;
+        }
+
+        for(Withdrawal withdrawal : withdrawalList) {
+            withdrawalEther(withdrawal);
+        }
     }
 }

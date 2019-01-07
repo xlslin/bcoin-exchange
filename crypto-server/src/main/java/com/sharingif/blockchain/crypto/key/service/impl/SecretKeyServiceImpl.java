@@ -6,11 +6,13 @@ import javax.annotation.Resource;
 import com.sharingif.blockchain.crypto.api.key.entity.BIP44AddressIndexReq;
 import com.sharingif.blockchain.crypto.api.key.entity.BIP44AddressIndexRsp;
 import com.sharingif.blockchain.crypto.app.components.Keystore;
+import com.sharingif.blockchain.crypto.app.constants.ErrorConstants;
 import com.sharingif.blockchain.crypto.btc.service.BtcService;
 import com.sharingif.blockchain.crypto.key.model.entity.ExtendedKey;
 import com.sharingif.blockchain.crypto.key.model.entity.Bip44KeyPath;
 import com.sharingif.blockchain.crypto.key.service.BIP44IndexService;
 import com.sharingif.blockchain.crypto.key.service.ExtendedKeyService;
+import com.sharingif.cube.core.exception.validation.ValidationCubeException;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
@@ -23,6 +25,8 @@ import com.sharingif.blockchain.crypto.key.model.entity.SecretKey;
 import com.sharingif.blockchain.crypto.key.dao.SecretKeyDAO;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import com.sharingif.blockchain.crypto.key.service.SecretKeyService;
+import org.web3j.crypto.Credentials;
+import org.web3j.crypto.WalletUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -93,5 +97,27 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, java.lang.S
 		rsp.setKeyPath(secretKey.getKeyPath());
 
 		return rsp;
+	}
+
+	@Override
+	public Credentials getCredentials(String secretKeyId, String password) {
+		SecretKey secretKey = secretKeyDAO.queryById(secretKeyId);
+
+		return getCredentials(secretKey, password);
+	}
+
+	@Override
+	public Credentials getCredentials(SecretKey secretKey, String password) {
+		try {
+			Credentials credentials = WalletUtils.loadCredentials(
+					password
+					,secretKey.getFilePath()
+			);
+
+			return credentials;
+		} catch (Exception e) {
+			logger.error("load credentials error", e);
+			throw new ValidationCubeException(ErrorConstants.PASSWORD_ERROR);
+		}
 	}
 }

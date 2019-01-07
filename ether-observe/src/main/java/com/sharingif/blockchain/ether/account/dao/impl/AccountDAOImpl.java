@@ -4,6 +4,8 @@ package com.sharingif.blockchain.ether.account.dao.impl;
 import com.sharingif.blockchain.ether.account.dao.AccountDAO;
 import com.sharingif.blockchain.ether.account.model.entity.Account;
 import com.sharingif.blockchain.ether.app.dao.impl.BaseDAOImpl;
+import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
+import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -68,5 +70,10 @@ public class AccountDAOImpl extends BaseDAOImpl<Account, String> implements Acco
         account.setFrozenAmount(frozenAmount);
 
         return update("updateSubFrozenAmountTotalOutByAddressCoinType", account);
+    }
+
+    @Override
+    public PaginationRepertory<Account> queryPaginationListByCoinTypeBalance(PaginationCondition<Account> paginationCondition) {
+        return queryPagination("queryPaginationListByCoinTypeBalance", paginationCondition);
     }
 }

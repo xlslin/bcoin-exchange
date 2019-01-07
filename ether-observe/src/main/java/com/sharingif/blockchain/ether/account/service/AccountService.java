@@ -84,12 +84,13 @@ public interface AccountService extends IBaseService<Account, java.lang.String> 
     void subtractFrozenBalance(String address, String coinType, BigInteger balance, String accountFrom, String accountTo, String txId, Date transTime);
 
     /**
-     * 根据地址、币种、大于等于余额查询
-     * @param address
+     * 根据币种、大于等于余额查询
      * @param coinType
      * @param balance
+     * @param fee
+     * @param contractAddress
      * @return
      */
-    List<Account> getAccount(String address, String coinType, BigInteger balance);
+    Account getAccount(String coinType, BigInteger balance, BigInteger fee, String contractAddress);
 	
 }

@@ -20,6 +20,10 @@ public class WithdrawalEtherReq {
      */
     private String address;
     /**
+     * 合约地址
+     */
+    private String contractAddress;
+    /**
      * 金额
      */
     private BigInteger amount;
@@ -56,6 +60,14 @@ public class WithdrawalEtherReq {
         this.address = address;
     }
 
+    public String getContractAddress() {
+        return contractAddress;
+    }
+
+    public void setContractAddress(String contractAddress) {
+        this.contractAddress = contractAddress;
+    }
+
     public BigInteger getAmount() {
         return amount;
     }
@@ -69,7 +81,6 @@ public class WithdrawalEtherReq {
     }
 
     public void setGasLimit(BigInteger gasLimit) {
-        this.gasLimit = gasLimit;
     }
 
     public BigInteger getGasPrice() {
@@ -86,6 +97,7 @@ public class WithdrawalEtherReq {
         sb.append("withdrawalId='").append(withdrawalId).append('\'');
         sb.append(", coinType='").append(coinType).append('\'');
         sb.append(", address='").append(address).append('\'');
+        sb.append(", contractAddress='").append(contractAddress).append('\'');
         sb.append(", amount=").append(amount);
         sb.append(", gasLimit=").append(gasLimit);
         sb.append(", gasPrice=").append(gasPrice);

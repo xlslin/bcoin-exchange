@@ -11,6 +11,10 @@ import java.util.Date;
 public class Withdrawal implements java.io.Serializable, IObjectDateOperationHistory {
 
 	/**
+	 * 处理状态(TXWCL:提现未处理)
+	 */
+	public static final String STATUS_UNTREATED = "TXWCL";
+	/**
 	 * 处理状态(TXCLZ:提现处理中)
 	 */
 	public static final String STATUS_PROCESSING = "TXCLZ";
@@ -42,9 +46,25 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
      */	
 	private String txTo;
     /**
+     * 合约地址			db_column: CONTRACT_ADDRESS 
+     */	
+	private String contractAddress;
+    /**
      * 金额			db_column: AMOUNT 
      */	
 	private BigInteger amount;
+    /**
+     * gas limit			db_column: GAS_LIMIT 
+     */	
+	private BigInteger gasLimit;
+    /**
+     * gas used			db_column: GAS_USED 
+     */	
+	private BigInteger gasUsed;
+    /**
+     * gas price			db_column: GAS_PRICE 
+     */	
+	private BigInteger gasPrice;
     /**
      * 手续费			db_column: FEE 
      */	
@@ -99,11 +119,35 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 	public String getTxTo() {
 		return this.txTo;
 	}
+	public void setContractAddress(String contractAddress) {
+		this.contractAddress = contractAddress;
+	}
+	public String getContractAddress() {
+		return this.contractAddress;
+	}
 	public void setAmount(BigInteger amount) {
 		this.amount = amount;
 	}
 	public BigInteger getAmount() {
 		return this.amount;
+	}
+	public void setGasLimit(BigInteger gasLimit) {
+		this.gasLimit = gasLimit;
+	}
+	public BigInteger getGasLimit() {
+		return this.gasLimit;
+	}
+	public void setGasUsed(BigInteger gasUsed) {
+		this.gasUsed = gasUsed;
+	}
+	public BigInteger getGasUsed() {
+		return this.gasUsed;
+	}
+	public void setGasPrice(BigInteger gasPrice) {
+		this.gasPrice = gasPrice;
+	}
+	public BigInteger getGasPrice() {
+		return this.gasPrice;
 	}
 	public void setFee(BigInteger fee) {
 		this.fee = fee;
@@ -135,7 +179,10 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 		withdrawal.setWithdrawalId(req.getWithdrawalId());
 		withdrawal.setCoinType(req.getCoinType());
 		withdrawal.setTxTo(req.getAddress());
+		withdrawal.setContractAddress(req.getContractAddress());
 		withdrawal.setAmount(req.getAmount());
+		withdrawal.setGasLimit(req.getGasLimit());
+		withdrawal.setGasPrice(req.getGasPrice());
 		return withdrawal;
 	}
 
@@ -147,7 +194,11 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 					.append("CoinType=").append(getCoinType()).append(", ")
 					.append("TxFrom=").append(getTxFrom()).append(", ")
 					.append("TxTo=").append(getTxTo()).append(", ")
+					.append("ContractAddress=").append(getContractAddress()).append(", ")
 					.append("Amount=").append(getAmount()).append(", ")
+					.append("GasLimit=").append(getGasLimit()).append(", ")
+					.append("GasUsed=").append(getGasUsed()).append(", ")
+					.append("GasPrice=").append(getGasPrice()).append(", ")
 					.append("Fee=").append(getFee()).append(", ")
 					.append("Status=").append(getStatus()).append(", ")
 					.append("CreateTime=").append(getCreateTime()).append(", ")

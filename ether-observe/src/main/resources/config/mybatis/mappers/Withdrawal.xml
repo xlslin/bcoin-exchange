@@ -27,8 +27,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=txTo">
     		and TX_TO = #{txTo}
     	</if>
+    	<if test="null!=contractAddress">
+    		and CONTRACT_ADDRESS = #{contractAddress}
+    	</if>
     	<if test="null!=amount">
     		and AMOUNT = #{amount}
+    	</if>
+    	<if test="null!=gasLimit">
+    		and GAS_LIMIT = #{gasLimit}
+    	</if>
+    	<if test="null!=gasUsed">
+    		and GAS_USED = #{gasUsed}
+    	</if>
+    	<if test="null!=gasPrice">
+    		and GAS_PRICE = #{gasPrice}
     	</if>
     	<if test="null!=fee">
     		and FEE = #{fee}
@@ -63,8 +75,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=txTo">
 		    TX_TO = #{txTo},
 		    </if>
+		    <if test="null!=contractAddress">
+		    CONTRACT_ADDRESS = #{contractAddress},
+		    </if>
 		    <if test="null!=amount">
 		    AMOUNT = #{amount},
+		    </if>
+		    <if test="null!=gasLimit">
+		    GAS_LIMIT = #{gasLimit},
+		    </if>
+		    <if test="null!=gasUsed">
+		    GAS_USED = #{gasUsed},
+		    </if>
+		    <if test="null!=gasPrice">
+		    GAS_PRICE = #{gasPrice},
 		    </if>
 		    <if test="null!=fee">
 		    FEE = #{fee},
@@ -87,7 +111,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         <result property="coinType" column="COIN_TYPE"/>
         <result property="txFrom" column="TX_FROM"/>
         <result property="txTo" column="TX_TO"/>
+        <result property="contractAddress" column="CONTRACT_ADDRESS"/>
         <result property="amount" column="AMOUNT"/>
+        <result property="gasLimit" column="GAS_LIMIT"/>
+        <result property="gasUsed" column="GAS_USED"/>
+        <result property="gasPrice" column="GAS_PRICE"/>
         <result property="fee" column="FEE"/>
         <result property="status" column="STATUS"/>
         <result property="createTime" column="CREATE_TIME"/>
@@ -103,7 +131,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,COIN_TYPE
         	,TX_FROM
         	,TX_TO
+        	,CONTRACT_ADDRESS
         	,AMOUNT
+        	,GAS_LIMIT
+        	,GAS_USED
+        	,GAS_PRICE
         	,FEE
         	,STATUS
         	,CREATE_TIME
@@ -115,7 +147,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,#{coinType}
         	,#{txFrom}
         	,#{txTo}
+        	,#{contractAddress}
         	,#{amount}
+        	,#{gasLimit}
+        	,#{gasUsed}
+        	,#{gasPrice}
         	,#{fee}
         	,#{status}
         	,#{createTime}
@@ -156,7 +192,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
+			,CONTRACT_ADDRESS
 			,AMOUNT
+			,GAS_LIMIT
+			,GAS_USED
+			,GAS_PRICE
 			,FEE
 			,STATUS
 			,CREATE_TIME
@@ -175,7 +215,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
+			,CONTRACT_ADDRESS
 			,AMOUNT
+			,GAS_LIMIT
+			,GAS_USED
+			,GAS_PRICE
 			,FEE
 			,STATUS
 			,CREATE_TIME
@@ -197,7 +241,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
+			,CONTRACT_ADDRESS
 			,AMOUNT
+			,GAS_LIMIT
+			,GAS_USED
+			,GAS_PRICE
 			,FEE
 			,STATUS
 			,CREATE_TIME
@@ -226,7 +274,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
+			,CONTRACT_ADDRESS
 			,AMOUNT
+			,GAS_LIMIT
+			,GAS_USED
+			,GAS_PRICE
 			,FEE
 			,STATUS
 			,CREATE_TIME

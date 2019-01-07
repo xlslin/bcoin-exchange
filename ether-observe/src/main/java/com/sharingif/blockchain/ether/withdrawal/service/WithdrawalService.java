@@ -53,10 +53,15 @@ public interface WithdrawalService extends IBaseService<Withdrawal, String> {
     void finishNotice(String id);
 
     /**
-     * ether区块取现
+     * 添加ether取现
      * @param req
      * @return
      */
     WithdrawalEtherRsp ether(WithdrawalEtherReq req);
+
+    /**
+     * ether取现
+     */
+    void withdrawalEther();
 
 }

@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class WithdrawalDAOImpl extends BaseDAOImpl<Withdrawal, String> implements WithdrawalDAO {
-	
+
 }
