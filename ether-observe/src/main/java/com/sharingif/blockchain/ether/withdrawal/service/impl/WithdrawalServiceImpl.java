@@ -3,29 +3,43 @@ package com.sharingif.blockchain.ether.withdrawal.service.impl;
 
 import com.sharingif.blockchain.ether.account.model.entity.AccountJnl;
 import com.sharingif.blockchain.ether.account.service.AccountService;
+import com.sharingif.blockchain.ether.api.withdrawal.entity.WithdrawalEtherReq;
+import com.sharingif.blockchain.ether.api.withdrawal.entity.WithdrawalEtherRsp;
 import com.sharingif.blockchain.ether.app.autoconfigure.constants.CoinType;
+import com.sharingif.blockchain.ether.app.exception.InvalidAddressException;
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.ether.block.service.TransactionBusinessService;
+import com.sharingif.blockchain.ether.withdrawal.dao.WithdrawalDAO;
+import com.sharingif.blockchain.ether.withdrawal.model.entity.Withdrawal;
 import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
 import com.sharingif.cube.batch.core.JobConfig;
 import com.sharingif.cube.batch.core.JobModel;
 import com.sharingif.cube.batch.core.JobService;
+import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
 import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
+import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.web3j.utils.Numeric;
 
 import javax.annotation.Resource;
 import java.util.List;
 
 @Service
-public class WithdrawalServiceImpl implements WithdrawalService {
+public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> implements WithdrawalService {
 
+    private WithdrawalDAO withdrawalDAO;
     private TransactionBusinessService transactionBusinessService;
     private AccountService accountService;
     private JobConfig withdrawalFinishNoticeJobConfig;
     private JobService jobService;
+
+    public void setWithdrawalDAO(WithdrawalDAO withdrawalDAO) {
+        super.setBaseDAO(withdrawalDAO);
+        this.withdrawalDAO = withdrawalDAO;
+    }
 
     @Resource
     public void setTransactionBusinessService(TransactionBusinessService transactionBusinessService) {
@@ -217,5 +231,32 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         }
 
         transactionBusinessService.updateStatusToFinishNoticed(id);
+    }
+
+    @Override
+    public WithdrawalEtherRsp ether(WithdrawalEtherReq req) {
+        // 校验地址
+        String ethAddress = req.getAddress();
+        if (StringUtils.isTrimEmpty(ethAddress) || !ethAddress.startsWith("0x") || ethAddress.length() != 42) {
+            throw new InvalidAddressException();
+        }
+
+        try {
+            String cleanInput = Numeric.cleanHexPrefix(ethAddress);
+            // 校验不通过会报错
+            Numeric.toBigIntNoPrefix(cleanInput);
+        } catch (Exception e) {
+            throw new InvalidAddressException();
+        }
+
+        Withdrawal withdrawal = Withdrawal.convertWithdrawalEtherReqToWithdrawal(req);
+        withdrawal.setStatus(Withdrawal.STATUS_PROCESSING);
+
+        withdrawalDAO.insert(withdrawal);
+
+        WithdrawalEtherRsp withdrawalEtherRsp = new WithdrawalEtherRsp();
+        withdrawalEtherRsp.setId(withdrawal.getId());
+
+        return withdrawalEtherRsp;
     }
 }

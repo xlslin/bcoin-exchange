@@ -6,6 +6,7 @@ import com.sharingif.cube.support.service.base.IBaseService;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.List;
 
 
 public interface AccountService extends IBaseService<Account, java.lang.String> {
@@ -81,5 +82,14 @@ public interface AccountService extends IBaseService<Account, java.lang.String> 
      * @param transTime
      */
     void subtractFrozenBalance(String address, String coinType, BigInteger balance, String accountFrom, String accountTo, String txId, Date transTime);
+
+    /**
+     * 根据地址、币种、大于等于余额查询
+     * @param address
+     * @param coinType
+     * @param balance
+     * @return
+     */
+    List<Account> getAccount(String address, String coinType, BigInteger balance);
 	
 }

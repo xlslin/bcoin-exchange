@@ -1,9 +1,13 @@
 package com.sharingif.blockchain.ether.withdrawal.service;
 
 
+import com.sharingif.blockchain.ether.api.withdrawal.entity.WithdrawalEtherReq;
+import com.sharingif.blockchain.ether.api.withdrawal.entity.WithdrawalEtherRsp;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
+import com.sharingif.blockchain.ether.withdrawal.model.entity.Withdrawal;
+import com.sharingif.cube.support.service.base.IBaseService;
 
-public interface WithdrawalService {
+public interface WithdrawalService extends IBaseService<Withdrawal, String> {
 
     /**
      * 添加未处理提现
@@ -47,5 +51,12 @@ public interface WithdrawalService {
      * @return
      */
     void finishNotice(String id);
+
+    /**
+     * ether区块取现
+     * @param req
+     * @return
+     */
+    WithdrawalEtherRsp ether(WithdrawalEtherReq req);
 
 }

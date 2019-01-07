@@ -17,6 +17,7 @@ import com.sharingif.blockchain.ether.account.service.AccountService;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.String> implements AccountService {
@@ -186,5 +187,10 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 		accountFrozenJnl.setTransTime(transTime);
 		accountFrozenJnlService.addAccountUnFrozenJnl(accountFrozenJnl);
 
+	}
+
+	@Override
+	public List<Account> getAccount(String address, String coinType, BigInteger balance) {
+		return null;
 	}
 }
