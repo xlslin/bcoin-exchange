@@ -119,4 +119,17 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
         return bitCoinService.getBlockTypeByBip44CoinType(bip44KeyPath.getCoinType());
     }
 
+    @Override
+    public String decryptPassword(String password) {
+        return passwordTextEncryptor.decrypt(password);
+    }
+
+    @Override
+    public SecretKey getSecretKeyByAddress(String address) {
+        SecretKey secretKey = new SecretKey();
+        secretKey.setAddress(address);
+
+        return secretKeyDAO.query(secretKey);
+    }
+
 }

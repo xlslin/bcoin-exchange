@@ -30,4 +30,18 @@ public interface SecretKeyService extends IBaseService<SecretKey, String> {
      */
     String getBlockType(String address);
 
+    /**
+     * 密码解密
+     * @param password
+     * @return
+     */
+    String decryptPassword(String password);
+
+    /**
+     * 根据地址查询SecretKey
+     * @param address
+     * @return
+     */
+    SecretKey getSecretKeyByAddress(String address);
+
 }
