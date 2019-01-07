@@ -137,7 +137,7 @@ public class EthereumBlockServiceImpl implements EthereumBlockService {
     }
 
     @Override
-    public BigInteger ethGetTransactionCountPending(String address) {
+    public BigInteger ethGetTransactionCount(String address) {
         EthGetTransactionCount ethGetTransactionCountPending = null;
         EthGetTransactionCount ethGetTransactionCountLatest = null;
         try {

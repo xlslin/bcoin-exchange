@@ -10,6 +10,41 @@ import com.sharingif.cube.support.service.base.IBaseService;
 public interface WithdrawalService extends IBaseService<Withdrawal, String> {
 
     /**
+     * 修改状态为处理中
+     * @param id
+     * @return
+     */
+    int updateStatusToProcessing(String id);
+
+    /**
+     * 修改状态为提现通知中
+     * @param id
+     * @return
+     */
+    int updateStatusToNoticing(String id);
+
+    /**
+     * 修改状态为提现成功通知
+     * @param id
+     * @return
+     */
+    int updateStatusToSuccessNoticed(String id);
+
+    /**
+     * 修改状态为提现失败通知
+     * @param id
+     * @return
+     */
+    int updateStatusToFailureNoticed(String id);
+
+    /**
+     * 根据交易hash查询提现信息
+     * @param txHash
+     * @return
+     */
+    Withdrawal getWithdrawalByTxHash(String txHash);
+
+    /**
      * 添加未处理提现
      * @param transactionBusiness
      */
@@ -40,17 +75,10 @@ public interface WithdrawalService extends IBaseService<Withdrawal, String> {
     void withdrawalFailure(TransactionBusiness transactionBusiness);
 
     /**
-     * 准备提现完成通知
-     * @return
-     */
-    void readyFinishNotice();
-
-    /**
      * 提现完成通知
-     * @param id
      * @return
      */
-    void finishNotice(String id);
+    void finishNotice();
 
     /**
      * 添加ether取现
@@ -63,5 +91,27 @@ public interface WithdrawalService extends IBaseService<Withdrawal, String> {
      * ether取现
      */
     void withdrawalEther();
+
+    /**
+     * 准备提现成功通知
+     */
+    void readyWithdrawalSuccessNotice();
+
+    /**
+     * 提现成功通知
+     * @param id
+     */
+    void withdrawalSuccessNotice(String id);
+
+    /**
+     * 准备提现失败通知
+     */
+    void readyWithdrawalFailureNotice();
+
+    /**
+     * 提现失败通知
+     * @param id
+     */
+    void withdrawalFailureNotice(String id);
 
 }

@@ -41,9 +41,17 @@ public class JobConfigComponentsAutoconfigure {
         return jobConfig;
     }
 
-    @Bean("withdrawalFinishNoticeJobConfig")
-    public JobConfig createWithdrawalFinishNoticeJobConfig() {
-        JobConfig jobConfig = new JobConfig(null,"/withdrawal/finishNotice", null);
+    @Bean("withdrawalSuccessNoticeJobConfig")
+    public JobConfig createWithdrawalSuccessNoticeJobConfig() {
+        JobConfig jobConfig = new JobConfig(null,"/withdrawal/successNotice", null);
+        jobConfig.setIntervalPlanExecuteTime(1000*60*5);
+        jobConfig.setMaxExecuteCount(5);
+        return jobConfig;
+    }
+
+    @Bean("withdrawalFailureNoticeJobConfig")
+    public JobConfig createWithdrawalFailureNoticeJobConfig() {
+        JobConfig jobConfig = new JobConfig(null,"/withdrawal/failureNotice", null);
         jobConfig.setIntervalPlanExecuteTime(1000*60*5);
         jobConfig.setMaxExecuteCount(5);
         return jobConfig;

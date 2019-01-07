@@ -8,7 +8,7 @@ package com.sharingif.blockchain.api.ether.entity;
  * @since v1.0
  * 2018/7/26 下午1:01
  */
-public class EtherTransferRsp {
+public class SignMessageRsp {
 
     /**
      * 签名数据

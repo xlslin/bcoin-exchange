@@ -1,9 +1,9 @@
 package com.sharingif.blockchain.ether.controller;
 
-import com.sharingif.blockchain.crypto.api.ether.entity.Erc20TransferReq;
-import com.sharingif.blockchain.crypto.api.ether.entity.Erc20TransferRsp;
-import com.sharingif.blockchain.crypto.api.ether.entity.EtherTransferReq;
-import com.sharingif.blockchain.crypto.api.ether.entity.EtherTransferRsp;
+import com.sharingif.blockchain.crypto.api.ether.entity.Erc20SignMessageReq;
+import com.sharingif.blockchain.crypto.api.ether.entity.Erc20SignMessageRsp;
+import com.sharingif.blockchain.crypto.api.ether.entity.SignMessageReq;
+import com.sharingif.blockchain.crypto.api.ether.entity.SignMessageRsp;
 import com.sharingif.blockchain.ether.service.EtherService;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
@@ -34,20 +34,20 @@ public class EtherController {
      * 生成transfer交易
      * @return
      */
-    @RequestMapping(value="transfer", method= RequestMethod.POST)
-    public EtherTransferRsp transfer(EtherTransferReq req) {
+    @RequestMapping(value="signMessage", method= RequestMethod.POST)
+    public SignMessageRsp signMessage(SignMessageReq req) {
 
-        return etherService.transfer(req);
+        return etherService.signMessage(req);
     }
 
     /**
      * 生成erc20 transfer交易
      * @return
      */
-    @RequestMapping(value="erc20Transfer", method= RequestMethod.POST)
-    public Erc20TransferRsp erc20Transfer(Erc20TransferReq req) {
+    @RequestMapping(value="erc20SignMessage", method= RequestMethod.POST)
+    public Erc20SignMessageRsp erc20SignMessage(Erc20SignMessageReq req) {
 
-        return etherService.erc20Transfer(req);
+        return etherService.erc20SignMessage(req);
     }
 
 }

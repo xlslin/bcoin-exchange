@@ -1,9 +1,9 @@
 package com.sharingif.blockchain.ether.service.impl;
 
-import com.sharingif.blockchain.crypto.api.ether.entity.Erc20TransferReq;
-import com.sharingif.blockchain.crypto.api.ether.entity.Erc20TransferRsp;
-import com.sharingif.blockchain.crypto.api.ether.entity.EtherTransferReq;
-import com.sharingif.blockchain.crypto.api.ether.entity.EtherTransferRsp;
+import com.sharingif.blockchain.crypto.api.ether.entity.Erc20SignMessageReq;
+import com.sharingif.blockchain.crypto.api.ether.entity.Erc20SignMessageRsp;
+import com.sharingif.blockchain.crypto.api.ether.entity.SignMessageReq;
+import com.sharingif.blockchain.crypto.api.ether.entity.SignMessageRsp;
 import com.sharingif.blockchain.crypto.api.ether.service.EtherApiService;
 import com.sharingif.blockchain.ether.service.EtherService;
 import org.slf4j.Logger;
@@ -33,14 +33,14 @@ public class EtherServiceImpl implements EtherService {
     }
 
     @Override
-    public EtherTransferRsp transfer(EtherTransferReq req) {
-        return etherApiService.transfer(req);
+    public SignMessageRsp signMessage(SignMessageReq req) {
+        return etherApiService.signMessage(req);
     }
 
     @Override
-    public Erc20TransferRsp erc20Transfer(Erc20TransferReq req) {
+    public Erc20SignMessageRsp erc20SignMessage(Erc20SignMessageReq req) {
 
-        return etherApiService.erc20Transfer(req);
+        return etherApiService.erc20SignMessage(req);
     }
 
 }

@@ -18,6 +18,26 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 	 * 处理状态(TXCLZ:提现处理中)
 	 */
 	public static final String STATUS_PROCESSING = "TXCLZ";
+	/**
+	 * 处理状态(TXCG:提现成功)
+	 */
+	public static final String STATUS_SUCCESS = "TXCLZ";
+	/**
+	 * 处理状态(TXSB:提现失败)
+	 */
+	public static final String STATUS_FAILURE = "TXSB";
+	/**
+	 * 处理状态(TXTZZ:提现通知中)
+	 */
+	public static final String STATUS_NOTICING = "TXTZZ";
+	/**
+	 * 处理状态(TXCGTZ:提现成功通知)
+	 */
+	public static final String STATUS_SUCCESS_NOTICED = "TXCGTZ";
+	/**
+	 * 处理状态(TXSBTZ:提现失败通知)
+	 */
+	public static final String STATUS_FAILURE_NOTICED = "TXSBTZ";
 
 	//columns START
     /**
@@ -70,9 +90,13 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
      */	
 	private BigInteger fee;
     /**
-     * 处理状态(TXWCL:提现未处理、TXCLZ:提现处理中、TXCG:提现成功、TXSB:提现失败)			db_column: STATUS 
+     * 处理状态(TXWCL:提现未处理、TXCLZ:提现处理中、TXCG:提现成功、TXSB:提现失败、TXTZZ:提现通知中、TXCGTZ:提现成功通知、TXSBTZ:提现失败通知)			db_column: STATUS 
      */	
 	private String status;
+    /**
+     * 交易时间			db_column: TX_TIME 
+     */	
+	private Date txTime;
     /**
      * 创建时间			db_column: CREATE_TIME 
      */	
@@ -161,6 +185,12 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 	public String getStatus() {
 		return this.status;
 	}
+	public void setTxTime(Date txTime) {
+		this.txTime = txTime;
+	}
+	public Date getTxTime() {
+		return this.txTime;
+	}
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
@@ -201,6 +231,7 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 					.append("GasPrice=").append(getGasPrice()).append(", ")
 					.append("Fee=").append(getFee()).append(", ")
 					.append("Status=").append(getStatus()).append(", ")
+					.append("TxTime=").append(getTxTime()).append(", ")
 					.append("CreateTime=").append(getCreateTime()).append(", ")
 					.append("ModifyTime=").append(getModifyTime())
 		.append("]").toString();

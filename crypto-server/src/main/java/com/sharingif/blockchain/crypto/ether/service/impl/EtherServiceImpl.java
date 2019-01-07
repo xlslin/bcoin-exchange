@@ -1,9 +1,9 @@
 package com.sharingif.blockchain.crypto.ether.service.impl;
 
-import com.sharingif.blockchain.crypto.api.ether.entity.Erc20TransferReq;
-import com.sharingif.blockchain.crypto.api.ether.entity.Erc20TransferRsp;
-import com.sharingif.blockchain.crypto.api.ether.entity.EtherTransferReq;
-import com.sharingif.blockchain.crypto.api.ether.entity.EtherTransferRsp;
+import com.sharingif.blockchain.crypto.api.ether.entity.Erc20SignMessageReq;
+import com.sharingif.blockchain.crypto.api.ether.entity.Erc20SignMessageRsp;
+import com.sharingif.blockchain.crypto.api.ether.entity.SignMessageReq;
+import com.sharingif.blockchain.crypto.api.ether.entity.SignMessageRsp;
 import com.sharingif.blockchain.crypto.ether.service.EtherService;
 import com.sharingif.blockchain.crypto.key.service.SecretKeyService;
 import org.slf4j.Logger;
@@ -44,7 +44,7 @@ public class EtherServiceImpl implements EtherService {
     }
 
     @Override
-    public EtherTransferRsp transfer(EtherTransferReq req) {
+    public SignMessageRsp signMessage(SignMessageReq req) {
 
         Credentials credentials = secretKeyService.getCredentials(req.getSecretKeyId(), req.getPassword());
 
@@ -59,14 +59,14 @@ public class EtherServiceImpl implements EtherService {
         byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
         String hexValue = Numeric.toHexString(signedMessage);
 
-        EtherTransferRsp rsp = new EtherTransferRsp();
+        SignMessageRsp rsp = new SignMessageRsp();
         rsp.setHexValue(hexValue);
 
         return rsp;
     }
 
     @Override
-    public Erc20TransferRsp erc20Transfer(Erc20TransferReq req) {
+    public Erc20SignMessageRsp erc20SignMessage(Erc20SignMessageReq req) {
 
         Credentials credentials = secretKeyService.getCredentials(req.getSecretKeyId(), req.getPassword());
 
@@ -89,7 +89,7 @@ public class EtherServiceImpl implements EtherService {
         byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
         String hexValue = Numeric.toHexString(signedMessage);
 
-        Erc20TransferRsp rsp = new Erc20TransferRsp();
+        Erc20SignMessageRsp rsp = new Erc20SignMessageRsp();
         rsp.setHexValue(hexValue);
 
         return rsp;

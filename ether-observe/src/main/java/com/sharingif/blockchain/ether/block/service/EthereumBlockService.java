@@ -87,6 +87,6 @@ public interface EthereumBlockService {
      * 获取交易唯一编号
      * @return
      */
-    BigInteger ethGetTransactionCountPending(String address);
+    BigInteger ethGetTransactionCount(String address);
 
 }

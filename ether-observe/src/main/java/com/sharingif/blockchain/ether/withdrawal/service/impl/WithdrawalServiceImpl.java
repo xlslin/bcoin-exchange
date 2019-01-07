@@ -1,6 +1,10 @@
 package com.sharingif.blockchain.ether.withdrawal.service.impl;
 
 
+import com.sharingif.blockchain.api.ether.entity.Erc20SignMessageReq;
+import com.sharingif.blockchain.api.ether.entity.Erc20SignMessageRsp;
+import com.sharingif.blockchain.api.ether.entity.SignMessageReq;
+import com.sharingif.blockchain.api.ether.entity.SignMessageRsp;
 import com.sharingif.blockchain.api.ether.service.EtherApiService;
 import com.sharingif.blockchain.ether.account.model.entity.Account;
 import com.sharingif.blockchain.ether.account.model.entity.AccountJnl;
@@ -10,10 +14,12 @@ import com.sharingif.blockchain.ether.api.withdrawal.entity.WithdrawalEtherRsp;
 import com.sharingif.blockchain.ether.app.autoconfigure.constants.CoinType;
 import com.sharingif.blockchain.ether.app.constants.Constants;
 import com.sharingif.blockchain.ether.app.exception.InvalidAddressException;
+import com.sharingif.blockchain.ether.block.dao.TransactionBusinessDAO;
+import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
-import com.sharingif.blockchain.ether.block.service.TransactionBusinessService;
+import com.sharingif.blockchain.ether.block.service.TransactionService;
 import com.sharingif.blockchain.ether.withdrawal.dao.WithdrawalDAO;
 import com.sharingif.blockchain.ether.withdrawal.model.entity.Withdrawal;
 import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
@@ -26,6 +32,7 @@ import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.web3j.tx.Transfer;
 import org.web3j.utils.Numeric;
 
 import javax.annotation.Resource;
@@ -36,29 +43,34 @@ import java.util.List;
 public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> implements WithdrawalService {
 
     private WithdrawalDAO withdrawalDAO;
-    private TransactionBusinessService transactionBusinessService;
+    private TransactionBusinessDAO transactionBusinessDAO;
     private AccountService accountService;
-    private JobConfig withdrawalFinishNoticeJobConfig;
+    private JobConfig withdrawalSuccessNoticeJobConfig;
+    private JobConfig withdrawalFailureNoticeJobConfig;
     private JobService jobService;
     private EthereumBlockService ethereumBlockService;
     private EtherApiService etherApiService;
+    private TransactionService transactionService;
 
     public void setWithdrawalDAO(WithdrawalDAO withdrawalDAO) {
         super.setBaseDAO(withdrawalDAO);
         this.withdrawalDAO = withdrawalDAO;
     }
-
     @Resource
-    public void setTransactionBusinessService(TransactionBusinessService transactionBusinessService) {
-        this.transactionBusinessService = transactionBusinessService;
+    public void setTransactionBusinessDAO(TransactionBusinessDAO transactionBusinessDAO) {
+        this.transactionBusinessDAO = transactionBusinessDAO;
     }
     @Resource
     public void setAccountService(AccountService accountService) {
         this.accountService = accountService;
     }
     @Resource
-    public void setWithdrawalFinishNoticeJobConfig(JobConfig withdrawalFinishNoticeJobConfig) {
-        this.withdrawalFinishNoticeJobConfig = withdrawalFinishNoticeJobConfig;
+    public void setWithdrawalSuccessNoticeJobConfig(JobConfig withdrawalSuccessNoticeJobConfig) {
+        this.withdrawalSuccessNoticeJobConfig = withdrawalSuccessNoticeJobConfig;
+    }
+    @Resource
+    public void setWithdrawalFailureNoticeJobConfig(JobConfig withdrawalFailureNoticeJobConfig) {
+        this.withdrawalFailureNoticeJobConfig = withdrawalFailureNoticeJobConfig;
     }
     @Resource
     public void setJobService(JobService jobService) {
@@ -68,12 +80,70 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     public void setEthereumBlockService(EthereumBlockService ethereumBlockService) {
         this.ethereumBlockService = ethereumBlockService;
     }
+    @Resource
+    public void setEtherApiService(EtherApiService etherApiService) {
+        this.etherApiService = etherApiService;
+    }
+    @Resource
+    public void setTransactionService(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
+
+    @Override
+    public int updateStatusToProcessing(String id) {
+        Withdrawal withdrawal = new Withdrawal();
+        withdrawal.setId(id);
+
+        withdrawal.setStatus(Withdrawal.STATUS_PROCESSING);
+
+        return withdrawalDAO.updateById(withdrawal);
+    }
+
+    @Override
+    public int updateStatusToNoticing(String id) {
+        Withdrawal withdrawal = new Withdrawal();
+        withdrawal.setId(id);
+
+        withdrawal.setStatus(Withdrawal.STATUS_NOTICING);
+
+        return withdrawalDAO.updateById(withdrawal);
+    }
+
+    @Override
+    public int updateStatusToSuccessNoticed(String id) {
+        Withdrawal withdrawal = new Withdrawal();
+        withdrawal.setId(id);
+
+        withdrawal.setStatus(Withdrawal.STATUS_SUCCESS_NOTICED);
+
+        return withdrawalDAO.updateById(withdrawal);
+    }
+
+    @Override
+    public int updateStatusToFailureNoticed(String id) {
+        Withdrawal withdrawal = new Withdrawal();
+        withdrawal.setId(id);
+
+        withdrawal.setStatus(Withdrawal.STATUS_FAILURE_NOTICED);
+
+        return withdrawalDAO.updateById(withdrawal);
+    }
+
+    @Override
+    public Withdrawal getWithdrawalByTxHash(String txHash) {
+        Withdrawal withdrawal = new Withdrawal();
+        withdrawal.setTxHash(txHash);
+
+        return withdrawalDAO.query(withdrawal);
+    }
 
     @Override
     public void addUntreated(TransactionBusiness transactionBusiness) {
         transactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
+        transactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
+        transactionBusiness.setTxStatus(BlockChain.STATUS_UNVERIFIED);
 
-        transactionBusinessService.addUntreated(transactionBusiness);
+        transactionBusinessDAO.insert(transactionBusiness);
 
         processingWithdrawal(transactionBusiness);
     }
@@ -89,14 +159,18 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         paginationCondition.setCurrentPage(1);
         paginationCondition.setPageSize(20);
 
-        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessService.getPagination(paginationCondition);
+        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessDAO.queryPagination(paginationCondition);
         List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
         if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
             return;
         }
 
         for (TransactionBusiness transactionBusiness : transactionBusinessList) {
-            transactionBusinessService.updateStatusToInitNoticed(transactionBusiness.getId());
+            TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
+            updateTransactionBusiness.setId(transactionBusiness.getId());
+            updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
+
+            transactionBusinessDAO.updateById(updateTransactionBusiness);
         }
     }
 
@@ -202,18 +276,38 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     }
 
     @Transactional
-    protected void readyFinishNotice(TransactionBusiness transactionBusiness) {
-        transactionBusinessService.updateStatusToFinishNoticing(transactionBusiness.getId());
+    protected void finishNotice(TransactionBusiness transactionBusiness, Withdrawal withdrawal, Transaction transaction) {
+        TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
+        updateTransactionBusiness.setId(transactionBusiness.getTransactionId());
+        updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_FINISH_NOTICED);
 
-        JobModel jobModel = new JobModel();
-        jobModel.setLookupPath(withdrawalFinishNoticeJobConfig.getLookupPath());
-        jobModel.setDataId(transactionBusiness.getId());
-        jobModel.setPlanExecuteTime(transactionBusiness.getTxTime());
-        jobService.add(null, jobModel);
+        transactionBusinessDAO.updateById(updateTransactionBusiness);
+
+        if(withdrawal == null) {
+            return;
+        }
+
+        if(BlockChain.STATUS_VERIFY_INVALID.equals(transactionBusiness.getTxStatus())) {
+            return;
+        }
+
+        Withdrawal updateWithdrawal = new Withdrawal();
+        updateWithdrawal.setId(withdrawal.getId());
+        updateWithdrawal.setGasLimit(transaction.getGasLimit());
+        updateWithdrawal.setGasUsed(transaction.getGasUsed());
+        updateWithdrawal.setGasPrice(transaction.getGasPrice());
+        updateWithdrawal.setFee(transactionBusiness.getFee());
+        updateWithdrawal.setStatus(Withdrawal.STATUS_SUCCESS);
+        if(Transaction.TX_RECEIPT_STATUS_FAIL.equals(transactionBusiness.getTxReceiptStatus())) {
+            updateWithdrawal.setAmount(BigInteger.ZERO);
+        }
+
+        withdrawalDAO.updateById(updateWithdrawal);
+
     }
 
     @Override
-    public void readyFinishNotice() {
+    public void finishNotice() {
         TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
         queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_SETTLED);
         queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
@@ -223,25 +317,18 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         paginationCondition.setCurrentPage(1);
         paginationCondition.setPageSize(20);
 
-        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessService.getPagination(paginationCondition);
+        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessDAO.queryPagination(paginationCondition);
         List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
         if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
             return;
         }
 
         for (TransactionBusiness transactionBusiness : transactionBusinessList) {
-            readyFinishNotice(transactionBusiness);
-        }
-    }
+            Withdrawal withdrawal = getWithdrawalByTxHash(transactionBusiness.getTxHash());
+            Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
 
-    @Override
-    public void finishNotice(String id) {
-        TransactionBusiness transactionBusiness = transactionBusinessService.getById(id);
-        if(!TransactionBusiness.STATUS_FINISH_NOTICING.equals(transactionBusiness.getStatus())) {
-            return;
+            finishNotice(transactionBusiness,withdrawal,transaction);
         }
-
-        transactionBusinessService.updateStatusToFinishNoticed(id);
     }
 
     @Override
@@ -275,7 +362,11 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         // 计算手续费
         BigInteger gasLimit = withdrawal.getGasLimit();
         if(gasLimit == null) {
-            gasLimit = new BigInteger(Constants.ETH_TRANSFOR_GAS_LIMIT);
+            if(CoinType.ETH.name().equals(withdrawal.getCoinType())) {
+                gasLimit = Transfer.GAS_LIMIT;
+            } else {
+                gasLimit = new BigInteger(Constants.ETH_CONTRACT_TRANSFOR_GAS_LIMIT);
+            }
         }
         BigInteger gasPrice = withdrawal.getGasPrice();
         if(gasPrice == null) {
@@ -286,8 +377,49 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         BigInteger withdrawalAmount = withdrawal.getAmount();
 
         Account account = accountService.getAccount(withdrawal.getCoinType(), withdrawalAmount, fee, withdrawal.getContractAddress());
+        if(account == null) {
+            return;
+        }
+
+        BigInteger nonce = ethereumBlockService.ethGetTransactionCount(account.getAddress());
+
+        updateStatusToProcessing(withdrawal.getId());
+
+        String hexValue;
+        if(CoinType.ETH.name().equals(withdrawal.getCoinType())) {
+            SignMessageReq req = new SignMessageReq();
+            req.setNonce(nonce);
+            req.setFromAddress(account.getAddress());
+            req.setToAddress(withdrawal.getTxTo());
+            req.setAmount(withdrawal.getAmount());
+            req.setGasPrice(gasPrice);
+
+            SignMessageRsp rsp = etherApiService.signMessage(req);
+            hexValue = rsp.getHexValue();
+        } else {
+            Erc20SignMessageReq req = new Erc20SignMessageReq();
+            req.setNonce(nonce);
+            req.setFromAddress(account.getAddress());
+            req.setToAddress(withdrawal.getTxTo());
+            req.setContractAddress(withdrawal.getContractAddress());
+            req.setAmount(withdrawal.getAmount());
+            req.setGasPrice(gasPrice);
+            req.setGasLimit(gasLimit);
 
 
+            Erc20SignMessageRsp rsp = etherApiService.erc20SignMessage(req);
+            hexValue = rsp.getHexValue();
+        }
+
+        String txHash = ethereumBlockService.ethSendRawTransaction(hexValue);
+
+        Withdrawal updateWithdrawal = new Withdrawal();
+        updateWithdrawal.setId(withdrawal.getId());
+
+        updateWithdrawal.setTxFrom(account.getAddress());
+        updateWithdrawal.setTxHash(txHash);
+
+        withdrawalDAO.updateById(updateWithdrawal);
     }
 
     @Override
@@ -309,5 +441,60 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         for(Withdrawal withdrawal : withdrawalList) {
             withdrawalEther(withdrawal);
         }
+    }
+
+    @Transactional
+    protected void readyWithdrawalNotice(Withdrawal withdrawal, JobConfig jobConfig) {
+        updateStatusToNoticing(withdrawal.getId());
+
+        JobModel jobModel = new JobModel();
+        jobModel.setLookupPath(jobConfig.getLookupPath());
+        jobModel.setDataId(withdrawal.getId());
+        jobModel.setPlanExecuteTime(withdrawal.getTxTime());
+        jobService.add(null, jobModel);
+    }
+
+    protected void readyWithdrawalNotice(String status, JobConfig jobConfig) {
+        Withdrawal queryWithdrawal = new Withdrawal();
+        queryWithdrawal.setStatus(status);
+        PaginationCondition<Withdrawal> paginationCondition = new PaginationCondition<Withdrawal>();
+        paginationCondition.setCondition(queryWithdrawal);
+        paginationCondition.setQueryCount(false);
+        paginationCondition.setCurrentPage(1);
+        paginationCondition.setPageSize(20);
+
+        PaginationRepertory<Withdrawal> withdrawalPaginationRepertory = withdrawalDAO.queryPagination(paginationCondition);
+        List<Withdrawal> withdrawalList = withdrawalPaginationRepertory.getPageItems();
+        if(withdrawalList == null || withdrawalList.isEmpty()) {
+            return;
+        }
+
+        for(Withdrawal withdrawal : withdrawalList) {
+            readyWithdrawalNotice(withdrawal, jobConfig);
+        }
+    }
+
+    @Override
+    public void readyWithdrawalSuccessNotice() {
+        readyWithdrawalNotice(Withdrawal.STATUS_SUCCESS, withdrawalSuccessNoticeJobConfig);
+    }
+
+    @Override
+    public void withdrawalSuccessNotice(String id) {
+        Withdrawal withdrawal = getById(id);
+
+        updateStatusToSuccessNoticed(id);
+    }
+
+    @Override
+    public void readyWithdrawalFailureNotice() {
+        readyWithdrawalNotice(Withdrawal.STATUS_FAILURE, withdrawalFailureNoticeJobConfig);
+    }
+
+    @Override
+    public void withdrawalFailureNotice(String id) {
+        Withdrawal withdrawal = getById(id);
+
+        updateStatusToFailureNoticed(id);
     }
 }

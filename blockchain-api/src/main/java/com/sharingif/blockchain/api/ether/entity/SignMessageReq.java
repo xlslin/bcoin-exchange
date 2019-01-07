@@ -1,4 +1,4 @@
-package com.sharingif.blockchain.crypto.api.ether.entity;
+package com.sharingif.blockchain.api.ether.entity;
 
 import java.math.BigInteger;
 
@@ -10,12 +10,16 @@ import java.math.BigInteger;
  * @since v1.0
  * 2018/7/26 下午1:00
  */
-public class EtherTransferReq {
+public class SignMessageReq {
 
     /**
      * 交易唯一编号
      */
     private BigInteger nonce;
+    /**
+     * 发款人地址
+     */
+    private String fromAddress;
     /**
      * 收款人地址
      */
@@ -28,14 +32,6 @@ public class EtherTransferReq {
      * gas价格
      */
     private BigInteger gasPrice;
-    /**
-     * secret key id
-     */
-    private String secretKeyId;
-    /**
-     * 密码
-     */
-    private String password;
 
     public BigInteger getNonce() {
         return nonce;
@@ -43,6 +39,14 @@ public class EtherTransferReq {
 
     public void setNonce(BigInteger nonce) {
         this.nonce = nonce;
+    }
+
+    public String getFromAddress() {
+        return fromAddress;
+    }
+
+    public void setFromAddress(String fromAddress) {
+        this.fromAddress = fromAddress;
     }
 
     public String getToAddress() {
@@ -69,31 +73,14 @@ public class EtherTransferReq {
         this.gasPrice = gasPrice;
     }
 
-    public String getSecretKeyId() {
-        return secretKeyId;
-    }
-
-    public void setSecretKeyId(String secretKeyId) {
-        this.secretKeyId = secretKeyId;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("EthTransferReq{");
+        final StringBuilder sb = new StringBuilder("EtherTransferReq{");
         sb.append("nonce=").append(nonce);
+        sb.append(", fromAddress='").append(fromAddress).append('\'');
         sb.append(", toAddress='").append(toAddress).append('\'');
         sb.append(", amount=").append(amount);
         sb.append(", gasPrice=").append(gasPrice);
-        sb.append(", secretKeyId='").append(secretKeyId).append('\'');
-        sb.append(", password='").append(password).append('\'');
         sb.append('}');
         return sb.toString();
     }

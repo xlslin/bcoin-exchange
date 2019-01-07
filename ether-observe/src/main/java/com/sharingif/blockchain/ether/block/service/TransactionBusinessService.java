@@ -16,20 +16,6 @@ public interface TransactionBusinessService extends IBaseService<TransactionBusi
     void addUntreated(TransactionBusiness transactionBusiness);
 
     /**
-     * 修改状态为初始化通知中
-     * @param id
-     * @return
-     */
-    int updateStatusToInitNotice(String id);
-
-    /**
-     * 修改状态为初始化通知成功
-     * @param id
-     * @return
-     */
-    int updateStatusToInitNoticed(String id);
-
-    /**
      * 修改状态为清算中
      * @param id
      * @return
@@ -44,20 +30,6 @@ public interface TransactionBusinessService extends IBaseService<TransactionBusi
      * @return
      */
     int updateStatusToSettled(String address, String coinType, BigInteger blockNumber);
-
-    /**
-     * 修改状态为交易完成通知中
-     * @param id
-     * @return
-     */
-    int updateStatusToFinishNoticing(String id);
-
-    /**
-     * 修改状态为交易完成通知成功
-     * @param id
-     * @return
-     */
-    int updateStatusToFinishNoticed(String id);
 
     /**
      * 根据地址、币种、大于区块号查询数据条数

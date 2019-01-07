@@ -3,9 +3,10 @@ package com.sharingif.blockchain.ether.deposit.service.impl;
 
 import com.sharingif.blockchain.ether.account.model.entity.AccountJnl;
 import com.sharingif.blockchain.ether.account.service.AccountService;
+import com.sharingif.blockchain.ether.block.dao.TransactionBusinessDAO;
+import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
-import com.sharingif.blockchain.ether.block.service.TransactionBusinessService;
 import com.sharingif.blockchain.ether.deposit.service.DepositService;
 import com.sharingif.cube.batch.core.JobConfig;
 import com.sharingif.cube.batch.core.JobModel;
@@ -21,15 +22,15 @@ import java.util.List;
 @Service
 public class DepositServiceImpl implements DepositService {
 
-    private TransactionBusinessService transactionBusinessService;
+    private TransactionBusinessDAO transactionBusinessDAO;
     private JobConfig depositInitNoticeJobConfig;
     private JobService jobService;
     private AccountService accountService;
     private JobConfig depositFinishNoticeJobConfig;
 
     @Resource
-    public void setTransactionBusinessService(TransactionBusinessService transactionBusinessService) {
-        this.transactionBusinessService = transactionBusinessService;
+    public void setTransactionBusinessDAO(TransactionBusinessDAO transactionBusinessDAO) {
+        this.transactionBusinessDAO = transactionBusinessDAO;
     }
     @Resource
     public void setDepositInitNoticeJobConfig(JobConfig depositInitNoticeJobConfig) {
@@ -51,15 +52,21 @@ public class DepositServiceImpl implements DepositService {
     @Override
     public void addUntreated(TransactionBusiness transactionBusiness) {
         transactionBusiness.setType(TransactionBusiness.TYPE_DEPOSIT);
+        transactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
+        transactionBusiness.setTxStatus(BlockChain.STATUS_UNVERIFIED);
 
-        transactionBusinessService.addUntreated(transactionBusiness);
+        transactionBusinessDAO.insert(transactionBusiness);
 
         deposit(transactionBusiness);
     }
 
     @Transactional
     protected void readyInitDepositNotice(TransactionBusiness transactionBusiness) {
-        transactionBusinessService.updateStatusToInitNotice(transactionBusiness.getId());
+        TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
+        updateTransactionBusiness.setId(transactionBusiness.getId());
+        updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICE);
+
+        transactionBusinessDAO.updateById(updateTransactionBusiness);
 
         JobModel jobModel = new JobModel();
         jobModel.setLookupPath(depositInitNoticeJobConfig.getLookupPath());
@@ -79,7 +86,7 @@ public class DepositServiceImpl implements DepositService {
         paginationCondition.setCurrentPage(1);
         paginationCondition.setPageSize(20);
 
-        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessService.getPagination(paginationCondition);
+        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessDAO.queryPagination(paginationCondition);
         List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
         if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
             return;
@@ -92,12 +99,16 @@ public class DepositServiceImpl implements DepositService {
 
     @Override
     public void initNotice(String id) {
-        TransactionBusiness transactionBusiness = transactionBusinessService.getById(id);
+        TransactionBusiness transactionBusiness = transactionBusinessDAO.queryById(id);
         if(!TransactionBusiness.STATUS_INIT_NOTICE.equals(transactionBusiness.getStatus())) {
             return;
         }
 
-        transactionBusinessService.updateStatusToInitNoticed(id);
+        TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
+        updateTransactionBusiness.setId(id);
+        updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
+
+        transactionBusinessDAO.updateById(updateTransactionBusiness);
     }
 
     @Override
@@ -138,7 +149,11 @@ public class DepositServiceImpl implements DepositService {
 
     @Transactional
     protected void readyFinishNotice(TransactionBusiness transactionBusiness) {
-        transactionBusinessService.updateStatusToFinishNoticing(transactionBusiness.getId());
+        TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
+        updateTransactionBusiness.setId(transactionBusiness.getId());
+        updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_FINISH_NOTICING);
+
+        transactionBusinessDAO.updateById(updateTransactionBusiness);
 
         JobModel jobModel = new JobModel();
         jobModel.setLookupPath(depositFinishNoticeJobConfig.getLookupPath());
@@ -158,7 +173,7 @@ public class DepositServiceImpl implements DepositService {
         paginationCondition.setCurrentPage(1);
         paginationCondition.setPageSize(20);
 
-        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessService.getPagination(paginationCondition);
+        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessDAO.queryPagination(paginationCondition);
         List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
         if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
             return;
@@ -171,12 +186,16 @@ public class DepositServiceImpl implements DepositService {
 
     @Override
     public void finishNotice(String id) {
-        TransactionBusiness transactionBusiness = transactionBusinessService.getById(id);
+        TransactionBusiness transactionBusiness = transactionBusinessDAO.queryById(id);
         if(!TransactionBusiness.STATUS_FINISH_NOTICING.equals(transactionBusiness.getStatus())) {
             return;
         }
 
-        transactionBusinessService.updateStatusToFinishNoticed(id);
+        TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
+        updateTransactionBusiness.setId(id);
+        updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_FINISH_NOTICED);
+
+        transactionBusinessDAO.updateById(updateTransactionBusiness);
     }
 
 }

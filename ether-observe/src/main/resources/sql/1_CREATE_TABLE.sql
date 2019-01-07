@@ -192,7 +192,8 @@ CREATE TABLE WITHDRAWAL
   GAS_USED              BIGINT COMMENT 'gas used',
   GAS_PRICE             BIGINT COMMENT 'gas price',
   FEE                   DECIMAL(65,0) COMMENT '手续费',
-  STATUS                VARCHAR(20) NOT NULL COMMENT '处理状态(TXWCL:提现未处理、TXCLZ:提现处理中、TXCG:提现成功、TXSB:提现失败)',
+  STATUS                VARCHAR(20) NOT NULL COMMENT '处理状态(TXWCL:提现未处理、TXCLZ:提现处理中、TXCG:提现成功、TXSB:提现失败、TXTZZ:提现通知中、TXCGTZ:提现成功通知、TXSBTZ:提现失败通知)',
+  TX_TIME               TIMESTAMP NULL COMMENT '交易时间',
   CREATE_TIME           TIMESTAMP NULL COMMENT '创建时间',
   MODIFY_TIME           TIMESTAMP NULL COMMENT '修改时间',
   PRIMARY KEY (ID)

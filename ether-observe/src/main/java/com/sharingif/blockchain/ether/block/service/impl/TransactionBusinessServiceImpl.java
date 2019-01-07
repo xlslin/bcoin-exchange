@@ -6,6 +6,7 @@ import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.ether.block.service.TransactionBusinessAccountService;
 import com.sharingif.blockchain.ether.block.service.TransactionBusinessService;
+import com.sharingif.blockchain.ether.block.service.TransactionService;
 import com.sharingif.blockchain.ether.deposit.service.DepositService;
 import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
@@ -54,24 +55,6 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 	}
 
 	@Override
-	public int updateStatusToInitNotice(String id) {
-		TransactionBusiness transactionBusiness = new TransactionBusiness();
-		transactionBusiness.setId(id);
-		transactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICE);
-
-		return transactionBusinessDAO.updateById(transactionBusiness);
-	}
-
-	@Override
-	public int updateStatusToInitNoticed(String id) {
-		TransactionBusiness transactionBusiness = new TransactionBusiness();
-		transactionBusiness.setId(id);
-		transactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
-
-		return transactionBusinessDAO.updateById(transactionBusiness);
-	}
-
-	@Override
 	public int updateStatusToSettling(String id) {
 		TransactionBusiness transactionBusiness = new TransactionBusiness();
 		transactionBusiness.setId(id);
@@ -90,24 +73,6 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 				,blockNumber
 				,BlockChain.STATUS_UNVERIFIED
 		);
-	}
-
-	@Override
-	public int updateStatusToFinishNoticing(String id) {
-		TransactionBusiness transactionBusiness = new TransactionBusiness();
-		transactionBusiness.setId(id);
-		transactionBusiness.setStatus(TransactionBusiness.STATUS_FINISH_NOTICING);
-
-		return transactionBusinessDAO.updateById(transactionBusiness);
-	}
-
-	@Override
-	public int updateStatusToFinishNoticed(String id) {
-		TransactionBusiness transactionBusiness = new TransactionBusiness();
-		transactionBusiness.setId(id);
-		transactionBusiness.setStatus(TransactionBusiness.STATUS_FINISH_NOTICED);
-
-		return transactionBusinessDAO.updateById(transactionBusiness);
 	}
 
 	@Override

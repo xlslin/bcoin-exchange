@@ -31,19 +31,39 @@ public class WithdrawalController {
 		withdrawalService.initWithdrawalNotice(jobRequest.getData());
 	}
 
-	@RequestMapping(value="readyFinishNotice", method= RequestMethod.POST)
-	public void readyFinishNotice() {
-		withdrawalService.readyFinishNotice();
-	}
-
 	@RequestMapping(value="finishNotice", method= RequestMethod.POST)
-	public void finishNotice(JobRequest<String> jobRequest) {
-		withdrawalService.finishNotice(jobRequest.getData());
+	public void finishNotice() {
+		withdrawalService.finishNotice();
 	}
 
 	@RequestMapping(value="ether", method= RequestMethod.POST)
 	public WithdrawalEtherRsp ether(WithdrawalEtherReq req) {
 		return withdrawalService.ether(req);
+	}
+
+	@RequestMapping(value="withdrawalEther", method= RequestMethod.POST)
+	public void withdrawalEther() {
+		withdrawalService.withdrawalEther();
+	}
+
+	@RequestMapping(value="readySuccessNotice", method= RequestMethod.POST)
+	public void readySuccessNotice() {
+		withdrawalService.readyWithdrawalSuccessNotice();
+	}
+
+	@RequestMapping(value="successNotice", method= RequestMethod.POST)
+	public void successNotice(JobRequest<String> jobRequest) {
+		withdrawalService.withdrawalSuccessNotice(jobRequest.getData());
+	}
+
+	@RequestMapping(value="readyFailureNotice", method= RequestMethod.POST)
+	public void readyFailureNotice() {
+		withdrawalService.readyWithdrawalFailureNotice();
+	}
+
+	@RequestMapping(value="failureNotice", method= RequestMethod.POST)
+	public void failureNotice(JobRequest<String> jobRequest) {
+		withdrawalService.withdrawalFailureNotice(jobRequest.getData());
 	}
 
 }

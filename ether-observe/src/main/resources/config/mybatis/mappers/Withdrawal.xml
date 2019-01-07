@@ -48,6 +48,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=status">
     		and STATUS = #{status}
     	</if>
+    	<if test="null!=txTime">
+    		and TX_TIME = #{txTime}
+    	</if>
     	<if test="null!=createTime">
     		and CREATE_TIME = #{createTime}
     	</if>
@@ -96,6 +99,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=status">
 		    STATUS = #{status},
 		    </if>
+		    <if test="null!=txTime">
+		    TX_TIME = #{txTime},
+		    </if>
 		    <if test="null!=createTime">
 		    CREATE_TIME = #{createTime},
 		    </if>
@@ -118,6 +124,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         <result property="gasPrice" column="GAS_PRICE"/>
         <result property="fee" column="FEE"/>
         <result property="status" column="STATUS"/>
+        <result property="txTime" column="TX_TIME"/>
         <result property="createTime" column="CREATE_TIME"/>
         <result property="modifyTime" column="MODIFY_TIME"/>
 	</resultMap>
@@ -138,6 +145,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,GAS_PRICE
         	,FEE
         	,STATUS
+        	,TX_TIME
         	,CREATE_TIME
         	,MODIFY_TIME
         ) VALUES (
@@ -154,6 +162,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,#{gasPrice}
         	,#{fee}
         	,#{status}
+        	,#{txTime}
         	,#{createTime}
         	,#{modifyTime}
         )
@@ -199,6 +208,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,GAS_PRICE
 			,FEE
 			,STATUS
+			,TX_TIME
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -222,6 +232,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,GAS_PRICE
 			,FEE
 			,STATUS
+			,TX_TIME
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -248,6 +259,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,GAS_PRICE
 			,FEE
 			,STATUS
+			,TX_TIME
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -281,6 +293,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,GAS_PRICE
 			,FEE
 			,STATUS
+			,TX_TIME
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM

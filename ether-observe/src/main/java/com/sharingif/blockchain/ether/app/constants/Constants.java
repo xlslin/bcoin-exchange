@@ -13,10 +13,10 @@ public class Constants {
     /**
      * eth 合约转账最小gas
      */
-    public static final String ETH_TRANSFOR_GAS_LIMIT = "100000";
+    public static final String ETH_CONTRACT_TRANSFOR_GAS_LIMIT = "100000";
 
     /**
-     * eth 合约转账gas price 添加金额
+     * eth 转账gas price 添加金额
      */
     public static final String ETH_TRANSFOR_GAS_PRICE_ADD = "3000000000";
 

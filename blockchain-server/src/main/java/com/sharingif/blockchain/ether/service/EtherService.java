@@ -1,9 +1,9 @@
 package com.sharingif.blockchain.ether.service;
 
-import com.sharingif.blockchain.crypto.api.ether.entity.Erc20TransferReq;
-import com.sharingif.blockchain.crypto.api.ether.entity.Erc20TransferRsp;
-import com.sharingif.blockchain.crypto.api.ether.entity.EtherTransferReq;
-import com.sharingif.blockchain.crypto.api.ether.entity.EtherTransferRsp;
+import com.sharingif.blockchain.crypto.api.ether.entity.Erc20SignMessageReq;
+import com.sharingif.blockchain.crypto.api.ether.entity.Erc20SignMessageRsp;
+import com.sharingif.blockchain.crypto.api.ether.entity.SignMessageReq;
+import com.sharingif.blockchain.crypto.api.ether.entity.SignMessageRsp;
 
 /**
  * EthService
@@ -16,17 +16,17 @@ import com.sharingif.blockchain.crypto.api.ether.entity.EtherTransferRsp;
 public interface EtherService {
 
     /**
-     * 转账
+     * 转账签名
      * @param req
      * @return
      */
-    EtherTransferRsp transfer(EtherTransferReq req);
+    SignMessageRsp signMessage(SignMessageReq req);
 
     /**
-     * 转账
+     * Erc20转账签名
      * @param req
      * @return
      */
-    Erc20TransferRsp erc20Transfer(Erc20TransferReq req);
+    Erc20SignMessageRsp erc20SignMessage(Erc20SignMessageReq req);
 
 }
