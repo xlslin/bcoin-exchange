@@ -45,6 +45,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     private WithdrawalDAO withdrawalDAO;
     private TransactionBusinessDAO transactionBusinessDAO;
     private AccountService accountService;
+    private JobConfig withdrawalInitNoticeNoticeJobConfig;
     private JobConfig withdrawalSuccessNoticeJobConfig;
     private JobConfig withdrawalFailureNoticeJobConfig;
     private JobService jobService;
@@ -63,6 +64,10 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     @Resource
     public void setAccountService(AccountService accountService) {
         this.accountService = accountService;
+    }
+    @Resource
+    public void setWithdrawalInitNoticeNoticeJobConfig(JobConfig withdrawalInitNoticeNoticeJobConfig) {
+        this.withdrawalInitNoticeNoticeJobConfig = withdrawalInitNoticeNoticeJobConfig;
     }
     @Resource
     public void setWithdrawalSuccessNoticeJobConfig(JobConfig withdrawalSuccessNoticeJobConfig) {
@@ -148,8 +153,24 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         processingWithdrawal(transactionBusiness);
     }
 
+    @Transactional
+    protected void readyInitNotice(TransactionBusiness transactionBusiness) {
+
+        JobModel jobModel = new JobModel();
+        jobModel.setLookupPath(withdrawalInitNoticeNoticeJobConfig.getLookupPath());
+        jobModel.setDataId(transactionBusiness.getId());
+        jobModel.setPlanExecuteTime(transactionBusiness.getTxTime());
+        jobService.add(null, jobModel);
+
+        TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
+        updateTransactionBusiness.setId(transactionBusiness.getId());
+        updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICE);
+
+        transactionBusinessDAO.updateById(updateTransactionBusiness);
+    }
+
     @Override
-    public void initWithdrawalNotice(String id) {
+    public void readyInitNotice() {
         TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
         queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
         queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
@@ -166,12 +187,51 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         }
 
         for (TransactionBusiness transactionBusiness : transactionBusinessList) {
-            TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
-            updateTransactionBusiness.setId(transactionBusiness.getId());
-            updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
-
-            transactionBusinessDAO.updateById(updateTransactionBusiness);
+            readyInitNotice(transactionBusiness);
         }
+    }
+
+    @Transactional
+    protected void initNotice(TransactionBusiness transactionBusiness, Withdrawal withdrawal, Transaction transaction) {
+        TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
+        updateTransactionBusiness.setId(transactionBusiness.getId());
+        updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
+
+        transactionBusinessDAO.updateById(updateTransactionBusiness);
+
+        if(withdrawal == null) {
+            return;
+        }
+
+        if(BlockChain.STATUS_VERIFY_INVALID.equals(transactionBusiness.getTxStatus())) {
+            return;
+        }
+
+        Withdrawal updateWithdrawal = new Withdrawal();
+        updateWithdrawal.setId(withdrawal.getId());
+        updateWithdrawal.setGasLimit(transaction.getGasLimit());
+        updateWithdrawal.setGasUsed(transaction.getGasUsed());
+        updateWithdrawal.setGasPrice(transaction.getGasPrice());
+        updateWithdrawal.setFee(transactionBusiness.getFee());
+        if(Transaction.TX_RECEIPT_STATUS_FAIL.equals(transactionBusiness.getTxReceiptStatus())) {
+            updateWithdrawal.setAmount(BigInteger.ZERO);
+        }
+
+        withdrawalDAO.updateById(updateWithdrawal);
+
+    }
+
+    @Override
+    public void initNotice(String id) {
+        TransactionBusiness transactionBusiness = transactionBusinessDAO.queryById(id);
+        if(!TransactionBusiness.STATUS_INIT_NOTICE.equals(transactionBusiness.getStatus())) {
+            return;
+        }
+
+        Withdrawal withdrawal = getWithdrawalByTxHash(transactionBusiness.getTxHash());
+        Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
+        initNotice(transactionBusiness, withdrawal, transaction);
+
     }
 
     @Override
@@ -276,7 +336,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     }
 
     @Transactional
-    protected void finishNotice(TransactionBusiness transactionBusiness, Withdrawal withdrawal, Transaction transaction) {
+    protected void finishNotice(TransactionBusiness transactionBusiness, Withdrawal withdrawal) {
         TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
         updateTransactionBusiness.setId(transactionBusiness.getTransactionId());
         updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_FINISH_NOTICED);
@@ -293,14 +353,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
 
         Withdrawal updateWithdrawal = new Withdrawal();
         updateWithdrawal.setId(withdrawal.getId());
-        updateWithdrawal.setGasLimit(transaction.getGasLimit());
-        updateWithdrawal.setGasUsed(transaction.getGasUsed());
-        updateWithdrawal.setGasPrice(transaction.getGasPrice());
-        updateWithdrawal.setFee(transactionBusiness.getFee());
         updateWithdrawal.setStatus(Withdrawal.STATUS_SUCCESS);
-        if(Transaction.TX_RECEIPT_STATUS_FAIL.equals(transactionBusiness.getTxReceiptStatus())) {
-            updateWithdrawal.setAmount(BigInteger.ZERO);
-        }
 
         withdrawalDAO.updateById(updateWithdrawal);
 
@@ -325,9 +378,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
 
         for (TransactionBusiness transactionBusiness : transactionBusinessList) {
             Withdrawal withdrawal = getWithdrawalByTxHash(transactionBusiness.getTxHash());
-            Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
-
-            finishNotice(transactionBusiness,withdrawal,transaction);
+            finishNotice(transactionBusiness,withdrawal);
         }
     }
 

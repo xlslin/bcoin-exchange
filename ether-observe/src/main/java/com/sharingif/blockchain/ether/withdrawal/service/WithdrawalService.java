@@ -51,10 +51,15 @@ public interface WithdrawalService extends IBaseService<Withdrawal, String> {
     void addUntreated(TransactionBusiness transactionBusiness);
 
     /**
+     * 准备充值通知
+     */
+    void readyInitNotice();
+
+    /**
      * 初始化提现通知
      * @param id
      */
-    void initWithdrawalNotice(String id);
+    void initNotice(String id);
 
     /**
      * 取现处理中

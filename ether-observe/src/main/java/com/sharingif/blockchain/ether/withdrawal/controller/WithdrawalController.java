@@ -26,9 +26,14 @@ public class WithdrawalController {
 		this.withdrawalService = withdrawalService;
 	}
 
-	@RequestMapping(value="initWithdrawalNotice", method= RequestMethod.POST)
-	public void initDepositNotice(JobRequest<String> jobRequest) {
-		withdrawalService.initWithdrawalNotice(jobRequest.getData());
+	@RequestMapping(value="readyInitNotice", method= RequestMethod.POST)
+	public void readyInitNotice() {
+		withdrawalService.readyInitNotice();
+	}
+
+	@RequestMapping(value="initNotice", method= RequestMethod.POST)
+	public void initNotice(JobRequest<String> jobRequest) {
+		withdrawalService.initNotice(jobRequest.getData());
 	}
 
 	@RequestMapping(value="finishNotice", method= RequestMethod.POST)
