@@ -38,7 +38,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    </if>
 	</sql>
 
-	<resultMap id="addressListenerResultMap" type="com.sharingif.blockchain.account.model.entity.AddressListener">
+	<resultMap id="addressListenerResultMap" type="com.sharingif.blockchain.ether.account.model.entity.AddressListener">
         <result property="address" column="ADDRESS"/>
         <result property="blockType" column="BLOCK_TYPE"/>
         <result property="createTime" column="CREATE_TIME"/>

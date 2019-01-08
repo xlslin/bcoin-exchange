@@ -1,9 +1,7 @@
-package com.sharingif.blockchain.account.model.entity;
+package com.sharingif.blockchain.ether.account.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
-
-import java.util.Date;
 
 public class AddressListener implements java.io.Serializable, IObjectDateOperationHistory {
 	
@@ -13,7 +11,7 @@ public class AddressListener implements java.io.Serializable, IObjectDateOperati
      */	
 	private java.lang.String address;
     /**
-     * 区块类型(Ether、Bitcoin)			db_column: BLOCK_TYPE 
+     * 区块类型(Bitcoin、Ether)			db_column: BLOCK_TYPE 
      */	
 	private java.lang.String blockType;
     /**

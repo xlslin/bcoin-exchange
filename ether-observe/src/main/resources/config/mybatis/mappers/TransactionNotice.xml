@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="transactionNotice">
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="transactionNoticeColumns">
+    	<if test="null!=id">
+    		and ID = #{id}
+    	</if>
+    	<if test="null!=noticeAddress">
+    		and NOTICE_ADDRESS = #{noticeAddress}
+    	</if>
+    	<if test="null!=noticeType">
+    		and NOTICE_TYPE = #{noticeType}
+    	</if>
+    	<if test="null!=createTime">
+    		and CREATE_TIME = #{createTime}
+    	</if>
+    	<if test="null!=modifyTime">
+    		and MODIFY_TIME = #{modifyTime}
+    	</if>
+	</sql>
+	
+	<sql id="transactionNoticeSetColumns">
+		    <if test="null!=id">
+		    ID = #{id},
+		    </if>
+		    <if test="null!=noticeAddress">
+		    NOTICE_ADDRESS = #{noticeAddress},
+		    </if>
+		    <if test="null!=noticeType">
+		    NOTICE_TYPE = #{noticeType},
+		    </if>
+		    <if test="null!=createTime">
+		    CREATE_TIME = #{createTime},
+		    </if>
+		    <if test="null!=modifyTime">
+		    MODIFY_TIME = #{modifyTime},
+		    </if>
+	</sql>
+
+	<resultMap id="transactionNoticeResultMap" type="com.sharingif.blockchain.ether.block.model.entity.TransactionNotice">
+        <result property="id" column="ID"/>
+        <result property="noticeAddress" column="NOTICE_ADDRESS"/>
+        <result property="noticeType" column="NOTICE_TYPE"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+	</resultMap>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert">
+        INSERT INTO TRANSACTION_NOTICE (
+        	ID
+        	,NOTICE_ADDRESS
+        	,NOTICE_TYPE
+        	,CREATE_TIME
+        	,MODIFY_TIME
+        ) VALUES (
+        	#{id}
+        	,#{noticeAddress}
+        	,#{noticeType}
+        	,#{createTime}
+        	,#{modifyTime}
+        )
+	</insert>
+	
+	<delete id="deleteById">
+	    DELETE FROM
+	    	TRANSACTION_NOTICE 
+	    WHERE
+	    ID = #{id} 
+    </delete>
+    
+    <delete id="deleteByCondition">
+	    DELETE FROM
+	    	TRANSACTION_NOTICE 
+	    WHERE
+	    	1=1
+		    <include refid="transactionNoticeColumns" />
+    </delete>
+    
+	<update id="updateById">
+	    UPDATE
+	    	TRANSACTION_NOTICE 
+        <set>
+	        <include refid="transactionNoticeSetColumns" />
+		</set>
+	    WHERE
+	    ID = #{id} 
+	</update>
+	
+    <select id="queryById" resultMap="transactionNoticeResultMap">
+		SELECT
+			ID
+			,NOTICE_ADDRESS
+			,NOTICE_TYPE
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			TRANSACTION_NOTICE 
+		WHERE 
+			ID = #{id} 
+	</select>
+	
+	<select id="queryList" resultMap="transactionNoticeResultMap">
+		SELECT
+			ID
+			,NOTICE_ADDRESS
+			,NOTICE_TYPE
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			TRANSACTION_NOTICE
+		WHERE
+			1=1
+			<include refid="transactionNoticeColumns" />
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryAll" resultMap="transactionNoticeResultMap">
+		SELECT
+			ID
+			,NOTICE_ADDRESS
+			,NOTICE_TYPE
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			TRANSACTION_NOTICE 
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryPaginationListCount" resultType="Integer">
+		SELECT
+			COUNT(0)
+		FROM
+			TRANSACTION_NOTICE 
+		WHERE
+			1=1 
+			<include refid="transactionNoticeColumns" />
+	</select>
+	
+	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="transactionNoticeResultMap">
+		SELECT
+			ID
+			,NOTICE_ADDRESS
+			,NOTICE_TYPE
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			TRANSACTION_NOTICE
+		WHERE
+			1=1
+			<include refid="transactionNoticeColumns" />
+		ORDER BY
+			ID
+	</select>
+	
+</mapper>
+
