@@ -20,7 +20,7 @@ import javax.annotation.Resource;
  * 2018/7/26 下午12:58
  */
 @Controller
-@RequestMapping(value="eth")
+@RequestMapping(value="ether")
 public class EtherController {
 
     private EtherService etherService;

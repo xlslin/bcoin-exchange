@@ -15,7 +15,7 @@ import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
  * @since v1.0
  * 2018/7/26 下午12:57
  */
-@RequestMapping(value="eth")
+@RequestMapping(value="ether")
 public interface EtherApiService {
 
     /**
