@@ -101,7 +101,9 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
 
         // 注册地址监听
         if(req.isWatch()) {
-            addressListenerService.add(secretKey.getAddress());
+            Bip44KeyPath bip44KeyPath = new Bip44KeyPath(secretKey.getKeyPath());
+            String blockType = bitCoinService.getBlockTypeByBip44CoinType(bip44KeyPath.getCoinType());
+            addressListenerService.add(blockType, secretKey.getAddress());
         }
 
         return rsp;

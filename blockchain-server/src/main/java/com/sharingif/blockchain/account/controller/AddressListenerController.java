@@ -33,7 +33,7 @@ public class AddressListenerController {
 	 */
 	@RequestMapping(value="add", method= RequestMethod.POST)
 	public void add(AddressListenerAddReq req) {
-		addressListenerService.add(req);
+		addressListenerService.add(req.getBlockType(), req.getAddress());
 	}
 	
 }

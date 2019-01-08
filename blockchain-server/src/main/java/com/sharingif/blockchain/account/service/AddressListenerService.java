@@ -1,9 +1,6 @@
 package com.sharingif.blockchain.account.service;
 
 
-import com.sharingif.blockchain.api.account.entity.AddressListenerAddReq;
-
-
 public interface AddressListenerService {
 
     /**

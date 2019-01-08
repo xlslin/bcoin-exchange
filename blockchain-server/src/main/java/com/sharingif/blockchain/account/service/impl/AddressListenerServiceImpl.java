@@ -3,7 +3,6 @@ package com.sharingif.blockchain.account.service.impl;
 
 import com.sharingif.blockchain.account.model.entity.BitCoin;
 import com.sharingif.blockchain.account.service.AddressListenerService;
-import com.sharingif.blockchain.api.account.entity.AddressListenerAddReq;
 import com.sharingif.blockchain.ether.api.account.service.AddressListenerApiService;
 import org.springframework.stereotype.Service;
 
