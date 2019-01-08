@@ -275,17 +275,6 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
                     ,transactionBusiness.getId()
                     ,transactionBusiness.getTxTime()
             );
-        } else {
-            accountService.unFrozenBalance(
-                    transactionBusiness.getTxFrom()
-                    ,transactionBusiness.getCoinType()
-                    ,transactionBusiness.getAmount()
-                    ,transactionBusiness.getTxFrom()
-                    ,transactionBusiness.getTxTo()
-                    ,AccountJnl.TYPE_WITHDRAWAL_REBACK
-                    ,transactionBusiness.getId()
-                    ,transactionBusiness.getTxTime()
-            );
         }
 
         // 手续费
@@ -302,16 +291,18 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
 
     @Override
     public void withdrawalFailure(TransactionBusiness transactionBusiness) {
-        accountService.unFrozenBalance(
-                transactionBusiness.getTxFrom()
-                ,transactionBusiness.getCoinType()
-                ,transactionBusiness.getAmount()
-                ,transactionBusiness.getTxFrom()
-                ,transactionBusiness.getTxTo()
-                ,AccountJnl.TYPE_WITHDRAWAL_REBACK
-                ,transactionBusiness.getId()
-                ,transactionBusiness.getTxTime()
-        );
+        if(Transaction.TX_RECEIPT_STATUS_SUCCESS.equals(transactionBusiness.getTxReceiptStatus())) {
+            accountService.unFrozenBalance(
+                    transactionBusiness.getTxFrom()
+                    ,transactionBusiness.getCoinType()
+                    ,transactionBusiness.getAmount()
+                    ,transactionBusiness.getTxFrom()
+                    ,transactionBusiness.getTxTo()
+                    ,AccountJnl.TYPE_WITHDRAWAL_REBACK
+                    ,transactionBusiness.getId()
+                    ,transactionBusiness.getTxTime()
+            );
+        }
 
         accountService.unFrozenBalance(
                 transactionBusiness.getTxFrom()

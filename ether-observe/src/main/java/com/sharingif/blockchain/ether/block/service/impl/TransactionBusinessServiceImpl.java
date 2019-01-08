@@ -114,7 +114,7 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 		for(TransactionBusiness transactionBusiness : transactionBusinessList) {
 			TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
 			updateTransactionBusiness.setId(transactionBusiness.getId());
-			updateTransactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
+			updateTransactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_INVALID);
 			transactionBusinessDAO.updateById(updateTransactionBusiness);
 
 			if(TransactionBusiness.TYPE_DEPOSIT.equals(transactionBusiness.getType())) {

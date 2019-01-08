@@ -35,7 +35,7 @@ public interface TransactionBusinessService extends IBaseService<TransactionBusi
     int getCountByAddressCoinTypeBlockNumber(String address, String coinType, BigInteger blockNumber);
 
     /**
-     * 修改状态为有效
+     * 修改状态为有效,并且就
      * @param transactionId
      * @return
      */
