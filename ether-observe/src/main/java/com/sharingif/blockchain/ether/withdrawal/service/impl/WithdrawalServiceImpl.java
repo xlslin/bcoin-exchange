@@ -53,6 +53,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     private EtherApiService etherApiService;
     private TransactionService transactionService;
 
+    @Resource
     public void setWithdrawalDAO(WithdrawalDAO withdrawalDAO) {
         super.setBaseDAO(withdrawalDAO);
         this.withdrawalDAO = withdrawalDAO;
