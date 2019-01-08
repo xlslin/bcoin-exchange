@@ -36,18 +36,18 @@
             <version>${maven.project.com.sharingif.cube.spring.boot.version}</version>
         </dependency>
         <dependency>
-            <groupId>${maven.cube.boot.groupId}</groupId>
-            <artifactId>com.sharingif.cube.spring.boot.security</artifactId>
-            <version>${maven.project.com.sharingif.cube.spring.boot.version}</version>
-        </dependency>
-        <dependency>
             <groupId>${maven.cube.groupId}</groupId>
             <artifactId>com.sharingif.cube.communication.http.apache</artifactId>
             <version>${maven.project.com.sharingif.cube.spring.boot.version}</version>
         </dependency>
         <dependency>
             <groupId>${maven.cube.boot.groupId}</groupId>
-            <artifactId>com.sharingif.cube.spring.boot.communication.http</artifactId>
+            <artifactId>com.sharingif.cube.spring.boot.security</artifactId>
+            <version>${maven.project.com.sharingif.cube.spring.boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${maven.cube.boot.groupId}</groupId>
+            <artifactId>com.sharingif.cube.spring.boot.web.vert.x</artifactId>
             <version>${maven.project.com.sharingif.cube.spring.boot.version}</version>
         </dependency>
         <dependency>
@@ -55,7 +55,6 @@
             <artifactId>com.sharingif.cube.support</artifactId>
             <version>${maven.project.com.sharingif.cube.spring.boot.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.sharingif.cube.batch</groupId>
             <artifactId>com.sharingif.cube.batch.core</artifactId>
