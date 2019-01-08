@@ -328,6 +328,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
             return;
         }
 
+        // 分叉无效数据不做处理
         if(BlockChain.STATUS_VERIFY_INVALID.equals(transactionBusiness.getTxStatus())) {
             return;
         }
