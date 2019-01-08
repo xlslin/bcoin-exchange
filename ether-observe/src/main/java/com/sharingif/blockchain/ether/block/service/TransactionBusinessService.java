@@ -10,12 +10,6 @@ import java.math.BigInteger;
 public interface TransactionBusinessService extends IBaseService<TransactionBusiness, java.lang.String> {
 
     /**
-     * 添加未处理充值
-     * @param transactionBusiness
-     */
-    void addUntreated(TransactionBusiness transactionBusiness);
-
-    /**
      * 修改状态为清算中
      * @param id
      * @return
