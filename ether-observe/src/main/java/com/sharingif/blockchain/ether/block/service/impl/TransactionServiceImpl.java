@@ -122,11 +122,17 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		transactionBusiness.setTxTime(transaction.getTxTime());
 
 		if(isWatchFrom) {
+			if(Transaction.TX_RECEIPT_STATUS_FAIL.equals(transactionBusiness.getTxReceiptStatus())) {
+				transactionBusiness.setAmount(BigInteger.ZERO);
+			}
 			withdrawalService.addUntreated(transactionBusiness);
 		}
 
 		if(isWatchTo) {
 			transactionBusiness.setId(null);
+			if(Transaction.TX_RECEIPT_STATUS_FAIL.equals(transactionBusiness.getTxReceiptStatus())) {
+				transactionBusiness.setAmount(BigInteger.ZERO);
+			}
 			depositService.addUntreated(transactionBusiness);
 		}
 
