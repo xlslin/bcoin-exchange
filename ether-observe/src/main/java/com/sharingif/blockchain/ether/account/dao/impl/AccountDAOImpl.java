@@ -44,7 +44,6 @@ public class AccountDAOImpl extends BaseDAOImpl<Account, String> implements Acco
         Account account = new Account();
         account.setAddress(address);
         account.setCoinType(coinType);
-        account.setTotalIn(balance);
         account.setBalance(balance);
 
         return update("updateSubBalanceFrozenAmountByAddressCoinType", account);

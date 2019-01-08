@@ -177,7 +177,6 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		}
 
 		List<EthBlock.TransactionResult> transactionResultList = block.getTransactions();
-
 		// 块中没有交易数据状态改为"未验证"
 		if(transactionResultList == null || transactionResultList.isEmpty()) {
 			updateStatusToUnverified(blockChain.getId());

@@ -11,6 +11,11 @@ package com.sharingif.blockchain.ether.app.constants;
 public class Constants {
 
     /**
+     * 区块类型
+     */
+    public static final String BLOCK_TYPE_ETHER = "Ether";
+
+    /**
      * eth 合约转账最小gas
      */
     public static final String ETH_CONTRACT_TRANSFOR_GAS_LIMIT = "100000";

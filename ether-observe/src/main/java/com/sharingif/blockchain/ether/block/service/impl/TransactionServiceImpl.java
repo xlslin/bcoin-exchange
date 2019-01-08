@@ -5,6 +5,7 @@ import com.sharingif.blockchain.api.account.entity.AddressListenerIsWatchReq;
 import com.sharingif.blockchain.api.account.entity.AddressListenerIsWatchRsp;
 import com.sharingif.blockchain.api.account.service.AddressListenerApiService;
 import com.sharingif.blockchain.ether.app.autoconfigure.constants.CoinType;
+import com.sharingif.blockchain.ether.app.constants.Constants;
 import com.sharingif.blockchain.ether.block.dao.TransactionDAO;
 import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
 import com.sharingif.blockchain.ether.block.model.entity.Contract;
@@ -79,7 +80,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 	protected boolean isWatch(String address) {
 		AddressListenerIsWatchReq req = new AddressListenerIsWatchReq();
-		req.setBlockType("Ether");
+		req.setBlockType(Constants.BLOCK_TYPE_ETHER);
 		req.setAddress(address);
 
 		AddressListenerIsWatchRsp rsp = addressListenerApiService.isWatch(req);
@@ -88,14 +89,11 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	}
 
 
-	protected Boolean isDuplicationData(String blockHash, BigInteger txIndex, String txHash, BigInteger blockNumber, String from, String to) {
+	protected Boolean isDuplicationData(BigInteger blockNumber, String blockHash, String txHash) {
 		Transaction transaction = new Transaction();
-		transaction.setBlockHash(blockHash);
-		transaction.setTxIndex(txIndex);
-		transaction.setTxHash(txHash);
 		transaction.setBlockNumber(blockNumber);
-		transaction.setTxFrom(from);
-		transaction.setTxTo(to);
+		transaction.setBlockHash(blockHash);
+		transaction.setTxHash(txHash);
 
 		transaction = transactionDAO.query(transaction);
 
@@ -179,17 +177,6 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			return;
 		}
 
-		if(isDuplicationData(
-				transaction.getBlockHash()
-				,transaction.getTxIndex()
-				,transaction.getTxHash()
-				,transaction.getBlockNumber()
-				,transaction.getTxFrom(),
-				transaction.getTxTo())
-		) {
-			return;
-		}
-
 		if(!StringUtils.isTrimEmpty(transaction.getContractAddress())) {
 			Contract contract = contractService.getContractAndAdd(transaction.getContractAddress());
 			if(!contract.isErc20Contract()) {
@@ -200,40 +187,46 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		}
 
 		persistenceTransaction(transaction, isWatchFrom, isWatchTo);
-
-
 	}
 
 	@Override
 	public void analysis(org.web3j.protocol.core.methods.response.Transaction tx, TransactionReceipt transactionReceipt, Date blockCreateTime) {
 
-
 		Transaction transaction = null;
 		try {
+			// tx to 为空，交易类型为创建合约
 			if(StringUtils.isTrimEmpty(tx.getTo())) {
 				logger.info("tx to is null, txhash:{}", tx.getHash());
 				return;
 			}
 
-			transaction = new Transaction();
+			// 数据是否重复，如果重复不处理
+			if(isDuplicationData(
+					tx.getBlockNumber()
+					,tx.getBlockHash()
+					,tx.getHash()
+			)) {
+				return;
+			}
 
+			transaction = new Transaction();
+			transaction.setBlockHash(tx.getBlockHash());
 			transaction.setTxHash(tx.getHash());
 			transaction.setBlockNumber(tx.getBlockNumber());
 			transaction.setTxFrom(tx.getFrom());
 			transaction.setTxTo(tx.getTo());
+			transaction.setCoinType(CoinType.ETH.name());
 			transaction.setTxInput(tx.getInput());
+			transaction.setTxValue(tx.getValue());
 			transaction.setTxIndex(tx.getTransactionIndex());
 			transaction.setGasLimit(tx.getGas());
-			transaction.setGasPrice(tx.getGasPrice());
-			transaction.setNonce(tx.getNonce());
-			transaction.setTxValue(tx.getValue());
-			transaction.setCoinType(CoinType.ETH.name());
 			transaction.setGasUsed(transactionReceipt.getGasUsed());
+			transaction.setGasPrice(tx.getGasPrice());
+			transaction.setActualFee(transaction.getGasUsed().multiply(transaction.getGasPrice()));
+			transaction.setNonce(tx.getNonce());
 			transaction.setTxReceiptStatus(Transaction.convertTxReceiptStatus(transactionReceipt.getStatus()));
 			transaction.setTxTime(blockCreateTime);
 			transaction.setConfirmBlockNumber(0);
-			transaction.setActualFee(transaction.getGasUsed().multiply(transaction.getGasPrice()));
-			transaction.setBlockHash(tx.getBlockHash());
 
 			analysis(transaction);
 

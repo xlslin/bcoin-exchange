@@ -248,29 +248,16 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         );
 
         // 手续费
-        if(CoinType.ETH.name().equals(transactionBusiness.getCoinType())) {
-            accountService.frozenBalance(
-                    transactionBusiness.getTxFrom()
-                    ,transactionBusiness.getCoinType()
-                    ,transactionBusiness.getFee()
-                    ,transactionBusiness.getTxFrom()
-                    ,transactionBusiness.getTxTo()
-                    ,AccountJnl.TYPE_WITHDRAWAL_FEE
-                    ,transactionBusiness.getId()
-                    ,transactionBusiness.getTxTime()
-            );
-        } else {
-            accountService.frozenBalance(
-                    transactionBusiness.getTxFrom()
-                    ,CoinType.ETH.name()
-                    ,transactionBusiness.getFee()
-                    ,transactionBusiness.getTxFrom()
-                    ,transactionBusiness.getTxTo()
-                    ,AccountJnl.TYPE_WITHDRAWAL_FEE
-                    ,transactionBusiness.getId()
-                    ,transactionBusiness.getTxTime()
-            );
-        }
+        accountService.frozenBalance(
+                transactionBusiness.getTxFrom()
+                ,CoinType.ETH.name()
+                ,transactionBusiness.getFee()
+                ,transactionBusiness.getTxFrom()
+                ,transactionBusiness.getTxTo()
+                ,AccountJnl.TYPE_WITHDRAWAL_FEE
+                ,transactionBusiness.getId()
+                ,transactionBusiness.getTxTime()
+        );
     }
 
     @Override

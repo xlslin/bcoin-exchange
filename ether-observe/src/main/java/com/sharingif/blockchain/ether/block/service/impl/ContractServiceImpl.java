@@ -55,6 +55,9 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract, java.lang.Str
 	@Override
 	public Contract getContractAndAdd(String contractAddress) {
 		Contract queryContract = contractDAO.queryById(contractAddress);
+		if(queryContract != null) {
+			return queryContract;
+		}
 
 		String name = null;
 		String symbol = null;
@@ -62,9 +65,6 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract, java.lang.Str
 		BigInteger totalSupply = null;
 		try {
 			name = erc20ContractService.name(contractAddress);
-			if(name.length()>100) {
-				name = null;
-			}
 		} catch (Exception e) {
 			logger.error("get name error, contractAddress:{}", contractAddress);
 		}
@@ -90,14 +90,15 @@ public class ContractServiceImpl extends BaseServiceImpl<Contract, java.lang.Str
 			logger.error("get totalSupply error, contractAddress:{}", contractAddress);
 		}
 
-		if(queryContract == null) {
-			Contract insertContract = new Contract();
-			insertContract.setContractAddress(contractAddress);
-			insertContract.setName(name);
-			insertContract.setSymbol(symbol);
-			insertContract.setDecimals(decimals);
-			insertContract.setTotalsupply(totalSupply);
+		Contract insertContract = new Contract();
+		insertContract.setContractAddress(contractAddress);
+		insertContract.setName(name);
+		insertContract.setSymbol(symbol);
+		insertContract.setDecimals(decimals);
+		insertContract.setTotalsupply(totalSupply);
 
+		queryContract = contractDAO.queryById(contractAddress);
+		if(queryContract == null) {
 			addContract(insertContract);
 		}
 
