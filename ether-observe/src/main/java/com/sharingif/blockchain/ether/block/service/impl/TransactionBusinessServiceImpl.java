@@ -129,14 +129,19 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 
 	}
 
-	@Transactional
 	protected void addTransactionBusinessAccount(String transactionBusinessId, String address, String coinType, String contractAddress) {
 		transactionBusinessAccountService.addTransactionBusinessAccount(address, coinType, contractAddress);
 
 		updateStatusToSettling(transactionBusinessId);
 	}
 
-	protected void addTransactionBusinessAccount(List<TransactionBusiness> transactionBusinessList) {
+	protected void addTransactionBusinessAccount(String txStatus, String status) {
+		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
+		queryTransactionBusiness.setTxStatus(txStatus);
+		queryTransactionBusiness.setStatus(status);
+		List<TransactionBusiness> transactionBusinessList = transactionBusinessDAO.queryList(queryTransactionBusiness);
+
+
 		if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
 			return;
 		}
@@ -154,28 +159,10 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 		}
 	}
 
-	protected void addValidTransactionBusinessAccount() {
-		TransactionBusiness queryValidTransactionBusiness = new TransactionBusiness();
-		queryValidTransactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
-		queryValidTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
-		List<TransactionBusiness> validTransactionBusinessList = transactionBusinessDAO.queryList(queryValidTransactionBusiness);
-
-		addTransactionBusinessAccount(validTransactionBusinessList);
-	}
-
-	protected void addInvalidTransactionBusinessAccount() {
-		TransactionBusiness queryInvalidTransactionBusiness = new TransactionBusiness();
-		queryInvalidTransactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_INVALID);
-		queryInvalidTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
-		List<TransactionBusiness> invalidTransactionBusinessList = transactionBusinessDAO.queryList(queryInvalidTransactionBusiness);
-
-		addTransactionBusinessAccount(invalidTransactionBusinessList);
-	}
-
 	@Override
 	public void addTransactionBusinessAccount() {
-		addValidTransactionBusinessAccount();
-		addInvalidTransactionBusinessAccount();
+		addTransactionBusinessAccount(BlockChain.STATUS_VERIFY_VALID, TransactionBusiness.STATUS_INIT_NOTICED);
+		addTransactionBusinessAccount(BlockChain.STATUS_VERIFY_INVALID, TransactionBusiness.STATUS_INIT_NOTICED);
 	}
 
 }

@@ -47,6 +47,7 @@ public class TransactionBusinessAccountServiceImpl extends BaseServiceImpl<Trans
 		this.accountService = accountService;
 	}
 
+	@Transactional
 	@Override
 	public boolean addTransactionBusinessAccount(String address, String coinType, String contractAddress) {
 		TransactionBusinessAccount transactionBusinessAccount = transactionBusinessAccountDAO.queryByAddressCoinTypeForUpdate(address, coinType);
@@ -60,6 +61,7 @@ public class TransactionBusinessAccountServiceImpl extends BaseServiceImpl<Trans
 		transactionBusinessAccount.setCoinType(coinType);
 		transactionBusinessAccount.setContractAddress(contractAddress);
 
+		transactionBusinessAccountDAO.insert(transactionBusinessAccount);
 		return true;
 	}
 
