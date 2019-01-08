@@ -1,5 +1,6 @@
 package com.sharingif.blockchain.ether.app.autoconfigure.components;
 
+import com.sharingif.blockchain.api.ether.service.EtherApiService;
 import com.sharingif.cube.communication.JsonModel;
 import com.sharingif.cube.communication.exception.JsonModelBusinessCommunicationExceptionHandler;
 import com.sharingif.cube.communication.http.apache.transport.HttpJsonConnection;
@@ -60,6 +61,7 @@ public class BlockchainServerRemoteContextAutoconfigure {
         List<String> services = new ArrayList<String>();
 
         services.add("com.sharingif.blockchain.api.account.service.AddressListenerApiService");
+        services.add("com.sharingif.blockchain.api.ether.service.EtherApiService");
 
         RemoteServices remoteServices = new RemoteServices();
         remoteServices.setRequestContextResolver(handlerMethodCommunicationTransportRequestContextResolver);
