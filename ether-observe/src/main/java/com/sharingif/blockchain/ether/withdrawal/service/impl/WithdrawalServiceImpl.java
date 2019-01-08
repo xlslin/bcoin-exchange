@@ -236,16 +236,19 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
 
     @Override
     public void processingWithdrawal(TransactionBusiness transactionBusiness) {
-        accountService.frozenBalance(
-                transactionBusiness.getTxFrom()
-                ,transactionBusiness.getCoinType()
-                ,transactionBusiness.getAmount()
-                ,transactionBusiness.getTxFrom()
-                ,transactionBusiness.getTxTo()
-                ,AccountJnl.TYPE_WITHDRAWAL
-                ,transactionBusiness.getId()
-                ,transactionBusiness.getTxTime()
-        );
+        // 交易状态为失败，只冻结手续费
+        if(Transaction.TX_RECEIPT_STATUS_SUCCESS.equals(transactionBusiness.getTxReceiptStatus())) {
+            accountService.frozenBalance(
+                    transactionBusiness.getTxFrom()
+                    ,transactionBusiness.getCoinType()
+                    ,transactionBusiness.getAmount()
+                    ,transactionBusiness.getTxFrom()
+                    ,transactionBusiness.getTxTo()
+                    ,AccountJnl.TYPE_WITHDRAWAL
+                    ,transactionBusiness.getId()
+                    ,transactionBusiness.getTxTime()
+            );
+        }
 
         // 手续费
         accountService.frozenBalance(
