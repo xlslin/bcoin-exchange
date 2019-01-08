@@ -45,7 +45,7 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 	 * 添加区块信息
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	protected void addBlockChain(EthBlock.Block block) {
+	protected void addBlockChainSyncBlockChain(EthBlock.Block block) {
 		BlockChainSync syncBlockChainSync = new BlockChainSync();
 		syncBlockChainSync.setType(BlockChainSync.TYPE_SYNC);
 		syncBlockChainSync.setBlockNumber(block.getNumber());
@@ -58,7 +58,7 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 	 * 修改区块信息
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	protected void updateBlockChain(EthBlock.Block block) {
+	protected void updateBlockChainSyncBlockChain(EthBlock.Block block) {
 		BlockChainSync queryBlockChainSync = new BlockChainSync();
 		queryBlockChainSync.setType(BlockChainSync.TYPE_SYNC);
 		queryBlockChainSync = blockChainSyncDAO.query(queryBlockChainSync);
@@ -90,7 +90,7 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 		// 如果数据库区块同步信息为空，插入当前区块链信息到BlockChainSync表、BlockChain表并返回
 		if(blockChainSync == null) {
 			EthBlock.Block block = ethereumBlockService.getBlock(blockNumber, false);
-			addBlockChain(block);
+			addBlockChainSyncBlockChain(block);
 
 			return;
 		}
@@ -106,7 +106,7 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 		while (currentSyncBlockNumber.compareTo(blockNumber)< 0) {
 			currentSyncBlockNumber = currentSyncBlockNumber.add(BigInteger.ONE);
 			EthBlock.Block block = ethereumBlockService.getBlock(currentSyncBlockNumber, false);
-			updateBlockChain(block);
+			updateBlockChainSyncBlockChain(block);
 		}
 	}
 
