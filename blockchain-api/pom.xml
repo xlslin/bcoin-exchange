@@ -31,11 +31,13 @@
 	</properties>
 
 	<dependencies>
+
         <dependency>
             <groupId>${maven.cube.groupId}</groupId>
             <artifactId>com.sharingif.cube.core</artifactId>
             <version>${maven.project.com.sharingif.cube.spring.boot.version}</version>
         </dependency>
+
 	</dependencies>
 	
 	<build>

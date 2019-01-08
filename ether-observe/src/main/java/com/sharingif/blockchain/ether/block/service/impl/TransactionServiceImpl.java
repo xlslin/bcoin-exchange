@@ -1,20 +1,19 @@
 package com.sharingif.blockchain.ether.block.service.impl;
 
 
-import com.sharingif.blockchain.api.account.entity.AddressListenerIsWatchReq;
-import com.sharingif.blockchain.api.account.entity.AddressListenerIsWatchRsp;
-import com.sharingif.blockchain.api.account.service.AddressListenerApiService;
+import com.sharingif.blockchain.ether.account.service.AddressListenerService;
 import com.sharingif.blockchain.ether.app.autoconfigure.constants.CoinType;
-import com.sharingif.blockchain.ether.app.constants.Constants;
 import com.sharingif.blockchain.ether.block.dao.TransactionDAO;
 import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
 import com.sharingif.blockchain.ether.block.model.entity.Contract;
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
-import com.sharingif.blockchain.ether.block.service.*;
+import com.sharingif.blockchain.ether.block.service.ContractService;
+import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
+import com.sharingif.blockchain.ether.block.service.TransactionBusinessService;
+import com.sharingif.blockchain.ether.block.service.TransactionService;
 import com.sharingif.blockchain.ether.deposit.service.DepositService;
 import com.sharingif.blockchain.ether.withdrawal.service.WithdrawalService;
-import com.sharingif.cube.core.exception.UnknownCubeException;
 import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
@@ -37,7 +36,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	private WithdrawalService withdrawalService;
 	private EthereumBlockService ethereumBlockService;
 	private ContractService contractService;
-	private AddressListenerApiService addressListenerApiService;
+	private AddressListenerService addressListenerService;
 	private TransactionBusinessService transactionBusinessService;
 
 	public TransactionDAO getTransactionDAO() {
@@ -65,8 +64,8 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		this.contractService = contractService;
 	}
 	@Resource
-	public void setAddressListenerApiService(AddressListenerApiService addressListenerApiService) {
-		this.addressListenerApiService = addressListenerApiService;
+	public void setAddressListenerService(AddressListenerService addressListenerService) {
+		this.addressListenerService = addressListenerService;
 	}
 	@Resource
 	public void setTransactionBusinessService(TransactionBusinessService transactionBusinessService) {
@@ -76,16 +75,6 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	public void addUntreatedTransaction(Transaction transaction) {
 		transaction.setTxStatus(BlockChain.STATUS_UNVERIFIED);
 		add(transaction);
-	}
-
-	protected boolean isWatch(String address) {
-		AddressListenerIsWatchReq req = new AddressListenerIsWatchReq();
-		req.setBlockType(Constants.BLOCK_TYPE_ETHER);
-		req.setAddress(address);
-
-		AddressListenerIsWatchRsp rsp = addressListenerApiService.isWatch(req);
-
-		return rsp.isWatch();
 	}
 
 
@@ -167,7 +156,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 	protected void analysis(Transaction transaction) {
 
-		boolean isWatchFrom = isWatch(transaction.getTxFrom());
+		boolean isWatchFrom = addressListenerService.isWatch(transaction.getTxFrom());
 
 		Boolean isContractAddress = ethereumBlockService.isContractAddress(transaction.getTxTo());
 		if(isContractAddress) {
@@ -176,7 +165,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 		boolean isWatchTo = false;
 		if(StringUtils.isTrimEmpty(transaction.getTxTo())) {
-			isWatchTo = isWatch(transaction.getTxTo());
+			isWatchTo = addressListenerService.isWatch(transaction.getTxTo());
 		}
 
 		if(isWatchFrom == false && isWatchTo == false) {

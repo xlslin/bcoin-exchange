@@ -1,15 +1,13 @@
 package com.sharingif.blockchain.ether.block.dao.impl;
 
 
+import com.sharingif.blockchain.ether.app.dao.impl.BaseDAOImpl;
+import com.sharingif.blockchain.ether.block.dao.TransactionNoticeDAO;
+import com.sharingif.blockchain.ether.block.model.entity.TransactionNotice;
 import org.springframework.stereotype.Repository;
 
 
-import com.sharingif.blockchain.ether.block.model.entity.TransactionNotice;
-import com.sharingif.blockchain.ether.block.dao.TransactionNoticeDAO;
-import com.sharingif.blockchain.ether.common.dao.impl.BaseDAOImpl;
-
-
 @Repository
-public class TransactionNoticeDAOImpl extends BaseDAOImpl<TransactionNotice,java.lang.String> implements TransactionNoticeDAO {
+public class TransactionNoticeDAOImpl extends BaseDAOImpl<TransactionNotice, String> implements TransactionNoticeDAO {
 	
 }

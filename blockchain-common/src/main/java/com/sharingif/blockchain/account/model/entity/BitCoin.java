@@ -7,7 +7,12 @@ import com.sharingif.cube.components.sequence.Sequence;
 import java.util.Date;
 
 public class BitCoin implements java.io.Serializable, IObjectDateOperationHistory {
-	
+
+	/**
+	 * 区块类型(Ether)
+	 */
+	public static final String BLOCK_TYPE_ETHER = "Ether";
+
 	//columns START
     /**
      * id			db_column: ID 

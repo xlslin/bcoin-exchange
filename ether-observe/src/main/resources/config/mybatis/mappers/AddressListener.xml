@@ -12,9 +12,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=address">
     		and ADDRESS = #{address}
     	</if>
-    	<if test="null!=blockType">
-    		and BLOCK_TYPE = #{blockType}
-    	</if>
     	<if test="null!=createTime">
     		and CREATE_TIME = #{createTime}
     	</if>
@@ -27,9 +24,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=address">
 		    ADDRESS = #{address},
 		    </if>
-		    <if test="null!=blockType">
-		    BLOCK_TYPE = #{blockType},
-		    </if>
 		    <if test="null!=createTime">
 		    CREATE_TIME = #{createTime},
 		    </if>
@@ -40,7 +34,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<resultMap id="addressListenerResultMap" type="com.sharingif.blockchain.ether.account.model.entity.AddressListener">
         <result property="address" column="ADDRESS"/>
-        <result property="blockType" column="BLOCK_TYPE"/>
         <result property="createTime" column="CREATE_TIME"/>
         <result property="modifyTime" column="MODIFY_TIME"/>
 	</resultMap>
@@ -49,12 +42,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<insert id="insert">
         INSERT INTO ADDRESS_LISTENER (
         	ADDRESS
-        	,BLOCK_TYPE
         	,CREATE_TIME
         	,MODIFY_TIME
         ) VALUES (
         	#{address}
-        	,#{blockType}
         	,#{createTime}
         	,#{modifyTime}
         )
@@ -88,7 +79,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="queryById" resultMap="addressListenerResultMap">
 		SELECT
 			ADDRESS
-			,BLOCK_TYPE
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -100,7 +90,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryList" resultMap="addressListenerResultMap">
 		SELECT
 			ADDRESS
-			,BLOCK_TYPE
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -115,7 +104,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryAll" resultMap="addressListenerResultMap">
 		SELECT
 			ADDRESS
-			,BLOCK_TYPE
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
@@ -137,7 +125,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="addressListenerResultMap">
 		SELECT
 			ADDRESS
-			,BLOCK_TYPE
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM

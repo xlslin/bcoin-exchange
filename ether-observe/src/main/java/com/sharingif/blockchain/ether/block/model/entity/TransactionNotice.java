@@ -2,13 +2,17 @@ package com.sharingif.blockchain.ether.block.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+import com.sharingif.cube.components.sequence.Sequence;
+
+import java.util.Date;
 
 public class TransactionNotice implements java.io.Serializable, IObjectDateOperationHistory {
 	
 	//columns START
     /**
      * id			db_column: ID 
-     */	
+     */
+	@Sequence(ref="uuidSequenceGenerator")
 	private java.lang.String id;
     /**
      * 通知地址			db_column: NOTICE_ADDRESS 

@@ -35,14 +35,5 @@ public class AddressListenerController {
 	public void add(AddressListenerAddReq req) {
 		addressListenerService.add(req);
 	}
-
-	/**
-	 * 判断地址是否是监听地址
-	 * @return
-	 */
-	@RequestMapping(value="isWatch", method= RequestMethod.POST)
-	public AddressListenerIsWatchRsp isWatch(AddressListenerIsWatchReq req) {
-		return addressListenerService.isWatch(req);
-	}
 	
 }
