@@ -80,14 +80,6 @@ public class ComponentsAutoconfigure {
         return multiHandlerMethodChain;
     }
 
-    @Bean("requestMappingHandlerMapping")
-    public RequestMappingHandlerMapping createRequestMappingHandlerMapping() {
-        RequestMappingHandlerMapping handlerMapping = new RequestMappingHandlerMapping();
-        handlerMapping.setUseSuffixPatternMatch(false);
-
-        return handlerMapping;
-    }
-
     @Bean("multiHandlerMapping")
     public MultiHandlerMapping createMultiHandlerMapping(RequestMappingHandlerMapping requestMappingHandlerMapping) {
         List<HandlerMapping> handlerMappings = new ArrayList<HandlerMapping>();
