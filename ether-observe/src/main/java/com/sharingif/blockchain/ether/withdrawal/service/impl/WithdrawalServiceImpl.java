@@ -145,13 +145,18 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
 
     @Override
     public void addUntreated(TransactionBusiness transactionBusiness) {
+        if(Transaction.TX_RECEIPT_STATUS_FAIL.equals(transactionBusiness.getTxReceiptStatus())) {
+            transactionBusiness.setAmount(BigInteger.ZERO);
+        }
+
         transactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
         transactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
+        transactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_UNTREATED);
         transactionBusiness.setTxStatus(BlockChain.STATUS_UNVERIFIED);
 
         transactionBusinessDAO.insert(transactionBusiness);
 
-        processingWithdrawal(transactionBusiness);
+        withdrawal(transactionBusiness);
     }
 
     @Transactional
@@ -236,7 +241,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     }
 
     @Override
-    public void processingWithdrawal(TransactionBusiness transactionBusiness) {
+    public void withdrawal(TransactionBusiness transactionBusiness) {
         // 交易状态为失败，只冻结手续费
         if(Transaction.TX_RECEIPT_STATUS_SUCCESS.equals(transactionBusiness.getTxReceiptStatus())) {
             accountService.frozenBalance(
@@ -264,8 +269,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         );
     }
 
-    @Override
-    public void withdrawalSuccess(TransactionBusiness transactionBusiness) {
+    protected void withdrawalSuccess(TransactionBusiness transactionBusiness) {
         if(Transaction.TX_RECEIPT_STATUS_SUCCESS.equals(transactionBusiness.getTxReceiptStatus())) {
             accountService.subtractFrozenBalance(
                     transactionBusiness.getTxFrom()
@@ -290,8 +294,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         );
     }
 
-    @Override
-    public void withdrawalFailure(TransactionBusiness transactionBusiness) {
+    protected void withdrawalFailure(TransactionBusiness transactionBusiness) {
         if(Transaction.TX_RECEIPT_STATUS_SUCCESS.equals(transactionBusiness.getTxReceiptStatus())) {
             accountService.unFrozenBalance(
                     transactionBusiness.getTxFrom()
@@ -315,6 +318,15 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
                 ,transactionBusiness.getId()
                 ,transactionBusiness.getTxTime()
         );
+    }
+
+    @Override
+    public void withdrawalConfirmed(TransactionBusiness transactionBusiness, String txStatus) {
+        if(BlockChain.STATUS_VERIFY_VALID.equals(txStatus)) {
+            withdrawalSuccess(transactionBusiness);
+        } else {
+            withdrawalFailure(transactionBusiness);
+        }
     }
 
     @Transactional
@@ -345,7 +357,8 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     @Override
     public void finishNotice() {
         TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-        queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_SETTLED);
+        queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
+        queryTransactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_FINISH);
         queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
         PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
         paginationCondition.setCondition(queryTransactionBusiness);

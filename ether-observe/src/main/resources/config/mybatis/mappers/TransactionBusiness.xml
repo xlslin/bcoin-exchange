@@ -51,6 +51,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=txReceiptStatus">
     		and TX_RECEIPT_STATUS = #{txReceiptStatus}
     	</if>
+    	<if test="null!=settleStatus">
+    		and SETTLE_STATUS = #{settleStatus}
+    	</if>
     	<if test="null!=txStatus">
     		and TX_STATUS = #{txStatus}
     	</if>
@@ -108,6 +111,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=txReceiptStatus">
 		    TX_RECEIPT_STATUS = #{txReceiptStatus},
 		    </if>
+		    <if test="null!=settleStatus">
+		    SETTLE_STATUS = #{settleStatus},
+		    </if>
 		    <if test="null!=txStatus">
 		    TX_STATUS = #{txStatus},
 		    </if>
@@ -137,6 +143,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         <result property="type" column="TYPE"/>
         <result property="status" column="STATUS"/>
         <result property="txReceiptStatus" column="TX_RECEIPT_STATUS"/>
+        <result property="settleStatus" column="SETTLE_STATUS"/>
         <result property="txStatus" column="TX_STATUS"/>
         <result property="txTime" column="TX_TIME"/>
         <result property="createTime" column="CREATE_TIME"/>
@@ -160,6 +167,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,TYPE
         	,STATUS
         	,TX_RECEIPT_STATUS
+        	,SETTLE_STATUS
         	,TX_STATUS
         	,TX_TIME
         	,CREATE_TIME
@@ -179,6 +187,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,#{type}
         	,#{status}
         	,#{txReceiptStatus}
+        	,#{settleStatus}
         	,#{txStatus}
         	,#{txTime}
         	,#{createTime}
@@ -227,6 +236,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,TYPE
 			,STATUS
 			,TX_RECEIPT_STATUS
+			,SETTLE_STATUS
 			,TX_STATUS
 			,TX_TIME
 			,CREATE_TIME
@@ -253,6 +263,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,TYPE
 			,STATUS
 			,TX_RECEIPT_STATUS
+			,SETTLE_STATUS
 			,TX_STATUS
 			,TX_TIME
 			,CREATE_TIME
@@ -282,6 +293,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,TYPE
 			,STATUS
 			,TX_RECEIPT_STATUS
+			,SETTLE_STATUS
 			,TX_STATUS
 			,TX_TIME
 			,CREATE_TIME
@@ -318,6 +330,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,TYPE
 			,STATUS
 			,TX_RECEIPT_STATUS
+			,SETTLE_STATUS
 			,TX_STATUS
 			,TX_TIME
 			,CREATE_TIME
@@ -331,12 +344,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			ID
 	</select>
 
-	<update id="updateStatusByAddressCoinTypeBlockNumberTxStatus">
+	<update id="updateSettleStatusByAddressCoinTypeBlockNumberSettleStatus">
 	<![CDATA[
 		UPDATE
 			TRANSACTION_BUSINESS
 		SET
-			STATUS = #{status}
+			SETTLE_STATUS = #{status}
 		WHERE
 			(TX_FROM = #{txFrom} OR TX_TO = #{txTo})
 		AND
@@ -344,11 +357,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		AND
 			BLOCK_NUMBER <= #{blockNumber}
 		AND
-			TX_STATUS != #{txStatus}
+			SETTLE_STATUS = #{settleStatus}
 	]]>
 	</update>
 
-	<select id="queryCountByAddressCoinTypeBlockNumber" resultType="Integer">
+	<select id="queryCountByAddressCoinTypeSettleStatus" resultType="Integer">
 		SELECT
 			COUNT(0)
 		FROM
@@ -358,8 +371,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		AND
 			COIN_TYPE = #{coinType}
 		AND
-			BLOCK_NUMBER > #{blockNumber}
+			SETTLE_STATUS != #{settleStatus}
 	</select>
-	
+
+	<update id="updateByBlockNumberBlockHash">
+		UPDATE
+			TRANSACTION_BUSINESS
+		<set>
+			<include refid="transactionBusinessSetColumns" />
+		</set>
+		WHERE
+			BLOCK_NUMBER = #{blockNumber}
+		AND
+			BLOCK_HASH = #{blockHash}
+	</update>
+
 </mapper>
 

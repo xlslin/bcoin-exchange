@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigInteger;
 import java.util.List;
 
 @Service
@@ -51,8 +52,13 @@ public class DepositServiceImpl implements DepositService {
 
     @Override
     public void addUntreated(TransactionBusiness transactionBusiness) {
+        if(Transaction.TX_RECEIPT_STATUS_FAIL.equals(transactionBusiness.getTxReceiptStatus())) {
+            transactionBusiness.setAmount(BigInteger.ZERO);
+        }
+
         transactionBusiness.setType(TransactionBusiness.TYPE_DEPOSIT);
         transactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
+        transactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_UNTREATED);
         transactionBusiness.setTxStatus(BlockChain.STATUS_UNVERIFIED);
 
         transactionBusinessDAO.insert(transactionBusiness);
@@ -129,8 +135,7 @@ public class DepositServiceImpl implements DepositService {
         );
     }
 
-    @Override
-    public void depositReback(TransactionBusiness transactionBusiness) {
+    protected void depositReback(TransactionBusiness transactionBusiness) {
         if(Transaction.TX_RECEIPT_STATUS_FAIL.equals(transactionBusiness.getTxReceiptStatus())) {
             return;
         }
@@ -145,6 +150,15 @@ public class DepositServiceImpl implements DepositService {
                 ,transactionBusiness.getId()
                 ,transactionBusiness.getTxTime()
         );
+    }
+
+    @Override
+    public void depositConfirmed(TransactionBusiness transactionBusiness, String txStatus) {
+        if(BlockChain.STATUS_VERIFY_VALID.equals(txStatus)) {
+            return;
+        } else {
+            depositReback(transactionBusiness);
+        }
     }
 
     @Transactional
@@ -165,7 +179,8 @@ public class DepositServiceImpl implements DepositService {
     @Override
     public void readyFinishNotice() {
         TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-        queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_SETTLED);
+        queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
+        queryTransactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_FINISH);
         queryTransactionBusiness.setType(TransactionBusiness.TYPE_DEPOSIT);
         PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
         paginationCondition.setCondition(queryTransactionBusiness);

@@ -24,9 +24,9 @@ public class TransactionBusinessController {
 		this.transactionBusinessService = transactionBusinessService;
 	}
 
-	@RequestMapping(value="addTransactionBusinessAccount", method= RequestMethod.POST)
-	public void addTransactionBusinessAccount() {
-		transactionBusinessService.addTransactionBusinessAccount();
+	@RequestMapping(value="settle", method= RequestMethod.POST)
+	public void settle() {
+		transactionBusinessService.settle();
 	}
 
 }

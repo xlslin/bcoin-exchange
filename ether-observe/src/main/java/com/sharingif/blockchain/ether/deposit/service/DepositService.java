@@ -23,16 +23,17 @@ public interface DepositService {
     void initNotice(String id);
 
     /**
-     * 充值
+     * 充值，交易收据状态无效不处理
      * @param transactionBusiness
      */
     void deposit(TransactionBusiness transactionBusiness);
 
     /**
-     * 充值冲正
+     * 充值确认,交易收据状态无效不处理,充值有效不处理，充值无效减去余额
      * @param transactionBusiness
+     * @param txStatus
      */
-    void depositReback(TransactionBusiness transactionBusiness);
+    void depositConfirmed(TransactionBusiness transactionBusiness, String txStatus);
 
     /**
      * 准备充值完成通知

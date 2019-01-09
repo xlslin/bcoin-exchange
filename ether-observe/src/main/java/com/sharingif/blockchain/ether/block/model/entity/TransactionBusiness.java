@@ -31,14 +31,6 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	 */
 	public static final String STATUS_INIT_NOTICED = "CSHTZCG";
 	/**
-	 * 处理状态(QSZ:清算中)
-	 */
-	public static final String STATUS_SETTLING = "QSZ";
-	/**
-	 * 处理状态(QSWC:清算完成)
-	 */
-	public static final String STATUS_SETTLED = "QSWC";
-	/**
 	 * 处理状态(JYWCTZZ:交易完成通知中)
 	 */
 	public static final String STATUS_FINISH_NOTICING = "JYWCTZZ";
@@ -46,7 +38,24 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	 * 处理状态(JYWCTZCG:交易完成通知成功)
 	 */
 	public static final String STATUS_FINISH_NOTICED = "JYWCTZCG";
-	
+
+	/**
+	 * 处理状态(WQS:未清算)
+	 */
+	public static final String SETTLE_STATUS_UNTREATED = "WQS";
+	/**
+	 * 处理状态(ZBQS:准备清算)
+	 */
+	public static final String SETTLE_STATUS_READY = "ZBQS";
+	/**
+	 * 处理状态(QSZ:清算中)
+	 */
+	public static final String SETTLE_STATUS_PROCESSING = "QSZ";
+	/**
+	 * 处理状态(QSWC:清算完成)
+	 */
+	public static final String SETTLE_STATUS_FINISH = "QSWC";
+
 	//columns START
     /**
      * id			db_column: ID 
@@ -98,13 +107,17 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
      */	
 	private String type;
     /**
-     * 处理状态(WCL:未处理、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、QSZ:清算中、QSWC:清算完成、JYWCTZZ:交易完成通知中、JYWCTZCG:交易完成通知成功)			db_column: STATUS
+     * 处理状态(WCL:未处理、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、JYWCTZZ:交易完成通知中、JYWCTZCG:交易完成通知成功)			db_column: STATUS 
      */	
 	private String status;
     /**
-     * 合约交易状态(S:成功、F:失败)			db_column: TX_RECEIPT_STATUS 
+     * 交易收据状态(S:成功、F:失败)			db_column: TX_RECEIPT_STATUS
      */	
 	private String txReceiptStatus;
+    /**
+     * 处理状态(WQS:未清算、ZBQS:准备清算、QSZ:清算中、QSWC:清算完成)			db_column: SETTLE_STATUS 
+     */	
+	private String settleStatus;
     /**
      * 交易状态(WYZ:未验证、QKYZYX:区块验证有效、QKYZWX:区块验证无效)			db_column: TX_STATUS 
      */	
@@ -207,6 +220,12 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	public String getTxReceiptStatus() {
 		return this.txReceiptStatus;
 	}
+	public void setSettleStatus(String settleStatus) {
+		this.settleStatus = settleStatus;
+	}
+	public String getSettleStatus() {
+		return this.settleStatus;
+	}
 	public void setTxStatus(String txStatus) {
 		this.txStatus = txStatus;
 	}
@@ -248,6 +267,7 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 					.append("Type=").append(getType()).append(", ")
 					.append("Status=").append(getStatus()).append(", ")
 					.append("TxReceiptStatus=").append(getTxReceiptStatus()).append(", ")
+					.append("SettleStatus=").append(getSettleStatus()).append(", ")
 					.append("TxStatus=").append(getTxStatus()).append(", ")
 					.append("TxTime=").append(getTxTime()).append(", ")
 					.append("CreateTime=").append(getCreateTime()).append(", ")

@@ -20,9 +20,9 @@ public class TransactionBusinessScheduled {
     }
 
     @Scheduled(fixedRate = 1000*1)
-    public synchronized void addTransactionBusinessAccount() {
+    public synchronized void settle() {
         JobRequest jobRequest = new JobRequest();
-        jobRequest.setLookupPath("/transactionBusiness/addTransactionBusinessAccount");
+        jobRequest.setLookupPath("/transactionBusiness/settle");
 
         simpleDispatcherHandler.doDispatch(jobRequest);
     }

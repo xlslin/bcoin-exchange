@@ -14,7 +14,7 @@ public class TransactionBusinessDAOImpl extends BaseDAOImpl<TransactionBusiness,
 
 
     @Override
-    public int updateStatusByAddressCoinTypeBlockNumberTxStatus(String status, String address, String coinType, BigInteger blockNumber, String txStatus) {
+    public int updateSettleStatusByAddressCoinTypeBlockNumberSettleStatus(String status, String address, String coinType, BigInteger blockNumber, String settleStatus) {
         TransactionBusiness transactionBusiness = new TransactionBusiness();
         transactionBusiness.setStatus(status);
 
@@ -22,20 +22,25 @@ public class TransactionBusinessDAOImpl extends BaseDAOImpl<TransactionBusiness,
         transactionBusiness.setTxTo(address);
         transactionBusiness.setCoinType(coinType);
         transactionBusiness.setBlockNumber(blockNumber);
-        transactionBusiness.setTxStatus(txStatus);
+        transactionBusiness.setSettleStatus(settleStatus);
 
-        return update("updateStatusByAddressCoinTypeBlockNumberTxStatus", transactionBusiness);
+        return update("updateSettleStatusByAddressCoinTypeBlockNumberSettleStatus", transactionBusiness);
     }
 
     @Override
-    public int queryCountByAddressCoinTypeBlockNumber(String address, String coinType, BigInteger blockNumber) {
+    public int queryCountByAddressCoinTypeSettleStatus(String address, String coinType, String settleStatus) {
         TransactionBusiness transactionBusiness = new TransactionBusiness();
 
         transactionBusiness.setTxFrom(address);
         transactionBusiness.setTxTo(address);
         transactionBusiness.setCoinType(coinType);
-        transactionBusiness.setBlockNumber(blockNumber);
+        transactionBusiness.setSettleStatus(settleStatus);
 
-        return query("queryCountByAddressCoinTypeBlockNumber", transactionBusiness, Integer.TYPE);
+        return query("queryCountByAddressCoinTypeSettleStatus", transactionBusiness, Integer.TYPE);
+    }
+
+    @Override
+    public int updateByBlockNumberBlockHash(TransactionBusiness transactionBusiness) {
+        return update("updateByBlockNumberBlockHash", transactionBusiness);
     }
 }

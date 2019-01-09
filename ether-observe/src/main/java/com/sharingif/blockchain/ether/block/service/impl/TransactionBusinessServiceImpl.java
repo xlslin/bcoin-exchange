@@ -47,122 +47,100 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 	}
 
 	@Override
-	public int updateStatusToSettling(String id) {
+	public int updateSettleStatusToSettling(String id) {
 		TransactionBusiness transactionBusiness = new TransactionBusiness();
 		transactionBusiness.setId(id);
-		transactionBusiness.setStatus(TransactionBusiness.STATUS_SETTLING);
+		transactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_PROCESSING);
 
 		return transactionBusinessDAO.updateById(transactionBusiness);
 	}
 
 	@Override
-	public int updateStatusToSettled(String address, String coinType, BigInteger blockNumber) {
+	public int updateSettleStatusToSettled(String address, String coinType, BigInteger blockNumber) {
 
-		return transactionBusinessDAO.updateStatusByAddressCoinTypeBlockNumberTxStatus(
-				TransactionBusiness.STATUS_SETTLED
+		return transactionBusinessDAO.updateSettleStatusByAddressCoinTypeBlockNumberSettleStatus(
+				TransactionBusiness.SETTLE_STATUS_FINISH
 				,address
 				,coinType
 				,blockNumber
-				,BlockChain.STATUS_UNVERIFIED
+				,TransactionBusiness.SETTLE_STATUS_PROCESSING
 		);
 	}
 
 	@Override
-	public int getCountByAddressCoinTypeBlockNumber(String address, String coinType, BigInteger blockNumber) {
-		return transactionBusinessDAO.queryCountByAddressCoinTypeBlockNumber(address, coinType, blockNumber);
+	public int getUnsettledCountByAddressCoinTypeSettleStatus(String address, String coinType) {
+		return transactionBusinessDAO.queryCountByAddressCoinTypeSettleStatus(address, coinType, TransactionBusiness.SETTLE_STATUS_FINISH);
 	}
 
 	@Override
-	public void updateTxStatusToBlockConfirmedValid(String transactionId) {
-		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-		queryTransactionBusiness.setTransactionId(transactionId);
-		queryTransactionBusiness.setTxStatus(BlockChain.STATUS_UNVERIFIED);
+	public void updateTxStatusToValidSettleStatusToReady(BigInteger blockNumber, String blockHash) {
+		TransactionBusiness transactionBusiness = new TransactionBusiness();
+		transactionBusiness.setBlockNumber(blockNumber);
+		transactionBusiness.setBlockHash(blockHash);
 
-		List<TransactionBusiness> transactionBusinessList = transactionBusinessDAO.queryList(queryTransactionBusiness);
-		if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
+		transactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
+		transactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_READY);
+
+		transactionBusinessDAO.updateByBlockNumberBlockHash(transactionBusiness);
+	}
+
+	@Override
+	public void updateTxStatusToInvalidSettleStatusToReady(BigInteger blockNumber, String blockHash) {
+		TransactionBusiness transactionBusiness = new TransactionBusiness();
+		transactionBusiness.setBlockNumber(blockNumber);
+		transactionBusiness.setBlockHash(blockHash);
+
+		transactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_INVALID);
+		transactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_READY);
+
+		transactionBusinessDAO.updateByBlockNumberBlockHash(transactionBusiness);
+
+	}
+
+	@Transactional
+	protected void depositSettle(TransactionBusiness transactionBusiness) {
+		depositService.depositConfirmed(transactionBusiness, transactionBusiness.getTxStatus());
+
+		transactionBusinessAccountService.addTransactionBusinessAccount(transactionBusiness.getTxTo(), transactionBusiness.getCoinType(), transactionBusiness.getContractAddress());
+
+		updateSettleStatusToSettling(transactionBusiness.getId());
+	}
+
+	@Transactional
+	protected void withdrawalSettle(TransactionBusiness transactionBusiness) {
+		withdrawalService.withdrawalConfirmed(transactionBusiness, transactionBusiness.getTxStatus());
+
+		transactionBusinessAccountService.addTransactionBusinessAccount(transactionBusiness.getTxFrom(), transactionBusiness.getCoinType(), transactionBusiness.getContractAddress());
+
+		updateSettleStatusToSettling(transactionBusiness.getId());
+	}
+
+
+	protected void settle(TransactionBusiness transactionBusiness) {
+		if(TransactionBusiness.TYPE_DEPOSIT.equals(transactionBusiness.getType())) {
+			depositSettle(transactionBusiness);
 			return;
 		}
 
-		for(TransactionBusiness transactionBusiness : transactionBusinessList) {
-			TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
-			updateTransactionBusiness.setId(transactionBusiness.getId());
-			updateTransactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
-			transactionBusinessDAO.updateById(updateTransactionBusiness);
-
-			if(TransactionBusiness.TYPE_DEPOSIT.equals(transactionBusiness.getType())) {
-				continue;
-			}
-
-			if(TransactionBusiness.TYPE_WITHDRAWAL.equals(transactionBusiness.getType())) {
-				withdrawalService.withdrawalSuccess(transactionBusiness);
-				continue;
-			}
+		if(TransactionBusiness.TYPE_WITHDRAWAL.equals(transactionBusiness.getType())) {
+			withdrawalSettle(transactionBusiness);
+			return;
 		}
 	}
 
 	@Override
-	public void updateTxStatusToBlockConfirmedInvalid(String transactionId) {
+	public void settle() {
 		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-		queryTransactionBusiness.setTransactionId(transactionId);
-		queryTransactionBusiness.setTxStatus(BlockChain.STATUS_UNVERIFIED);
-
+		queryTransactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_READY);
 		List<TransactionBusiness> transactionBusinessList = transactionBusinessDAO.queryList(queryTransactionBusiness);
-		if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
-			return;
-		}
-
-		for(TransactionBusiness transactionBusiness : transactionBusinessList) {
-			TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
-			updateTransactionBusiness.setId(transactionBusiness.getId());
-			updateTransactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_INVALID);
-			transactionBusinessDAO.updateById(updateTransactionBusiness);
-
-			if(TransactionBusiness.TYPE_DEPOSIT.equals(transactionBusiness.getType())) {
-				depositService.depositReback(transactionBusiness);
-				continue;
-			}
-			if(TransactionBusiness.TYPE_WITHDRAWAL.equals(transactionBusiness.getType())) {
-				withdrawalService.withdrawalFailure(transactionBusiness);
-				continue;
-			}
-		}
-
-	}
-
-	protected void addTransactionBusinessAccount(String transactionBusinessId, String address, String coinType, String contractAddress) {
-		transactionBusinessAccountService.addTransactionBusinessAccount(address, coinType, contractAddress);
-
-		updateStatusToSettling(transactionBusinessId);
-	}
-
-	protected void addTransactionBusinessAccount(String txStatus, String status) {
-		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-		queryTransactionBusiness.setTxStatus(txStatus);
-		queryTransactionBusiness.setStatus(status);
-		List<TransactionBusiness> transactionBusinessList = transactionBusinessDAO.queryList(queryTransactionBusiness);
-
 
 		if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
 			return;
 		}
 
-		for(TransactionBusiness transactionBusiness : transactionBusinessList) {
-			if(TransactionBusiness.TYPE_DEPOSIT.equals(transactionBusiness.getType())) {
-				addTransactionBusinessAccount(transactionBusiness.getId(), transactionBusiness.getTxTo(), transactionBusiness.getCoinType(), transactionBusiness.getContractAddress());
-				continue;
-			}
-
-			if(TransactionBusiness.TYPE_WITHDRAWAL.equals(transactionBusiness.getType())) {
-				addTransactionBusinessAccount(transactionBusiness.getId(),transactionBusiness.getTxFrom(), transactionBusiness.getCoinType(), transactionBusiness.getContractAddress());
-				continue;
-			}
+		for (TransactionBusiness transactionBusiness : transactionBusinessList) {
+			settle(transactionBusiness);
 		}
-	}
-
-	@Override
-	public void addTransactionBusinessAccount() {
-		addTransactionBusinessAccount(BlockChain.STATUS_VERIFY_VALID, TransactionBusiness.STATUS_INIT_NOTICED);
-		addTransactionBusinessAccount(BlockChain.STATUS_VERIFY_INVALID, TransactionBusiness.STATUS_INIT_NOTICED);
 	}
 
 }

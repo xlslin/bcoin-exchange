@@ -65,19 +65,14 @@ public interface WithdrawalService extends IBaseService<Withdrawal, String> {
      * 取现处理中
      * @param transactionBusiness
      */
-    void processingWithdrawal(TransactionBusiness transactionBusiness);
+    void withdrawal(TransactionBusiness transactionBusiness);
 
     /**
-     * 取现成功
+     * 取现确认
      * @param transactionBusiness
+     * @param txStatus
      */
-    void withdrawalSuccess(TransactionBusiness transactionBusiness);
-
-    /**
-     * 取现失败
-     * @param transactionBusiness
-     */
-    void withdrawalFailure(TransactionBusiness transactionBusiness);
+    void withdrawalConfirmed(TransactionBusiness transactionBusiness, String txStatus);
 
     /**
      * 提现完成通知

@@ -111,17 +111,11 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		transactionBusiness.setTxTime(transaction.getTxTime());
 
 		if(isWatchFrom) {
-			if(Transaction.TX_RECEIPT_STATUS_FAIL.equals(transactionBusiness.getTxReceiptStatus())) {
-				transactionBusiness.setAmount(BigInteger.ZERO);
-			}
 			withdrawalService.addUntreated(transactionBusiness);
 		}
 
 		if(isWatchTo) {
 			transactionBusiness.setId(null);
-			if(Transaction.TX_RECEIPT_STATUS_FAIL.equals(transactionBusiness.getTxReceiptStatus())) {
-				transactionBusiness.setAmount(BigInteger.ZERO);
-			}
 			depositService.addUntreated(transactionBusiness);
 		}
 
@@ -233,65 +227,32 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 	}
 
-	@Transactional
-	protected void updateTxStatusToBlockConfirmedValid(Transaction transaction, int confirmBlockNumber) {
-		transactionBusinessService.updateTxStatusToBlockConfirmedValid(transaction.getId());
-
+	@Override
+	public void updateTxStatusToBlockConfirmedValid(BigInteger blockNumber, String blockHash, int confirmBlockNumber) {
 		Transaction updateTransaction = new Transaction();
-		updateTransaction.setId(transaction.getId());
+		updateTransaction.setBlockNumber(blockNumber);
+		updateTransaction.setBlockHash(blockHash);
+
 		updateTransaction.setConfirmBlockNumber(confirmBlockNumber);
 		updateTransaction.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
 
-		transactionDAO.updateById(updateTransaction);
-	}
+		transactionDAO.updateByBlockNumberBlockHash(updateTransaction);
 
-	@Override
-	public void updateTxStatusToBlockConfirmedValid(BigInteger blockNumber, String blockHash, int confirmBlockNumber) {
-		Transaction queryTransaction = new Transaction();
-		queryTransaction.setBlockNumber(blockNumber);
-		queryTransaction.setBlockHash(blockHash);
-		queryTransaction.setTxStatus(BlockChain.STATUS_UNVERIFIED);
-
-		List<Transaction> transactionList = transactionDAO.queryList(queryTransaction);
-
-		if(transactionList == null || transactionList.isEmpty()) {
-			return;
-		}
-
-		for(Transaction transaction : transactionList) {
-			updateTxStatusToBlockConfirmedValid(transaction, confirmBlockNumber);
-		}
-
-	}
-
-	@Transactional
-	protected void updateTxStatusToBlockConfirmedInvalid(Transaction transaction, int confirmBlockNumber) {
-		transactionBusinessService.updateTxStatusToBlockConfirmedInvalid(transaction.getId());
-
-		Transaction updateTransaction = new Transaction();
-		updateTransaction.setId(transaction.getId());
-		updateTransaction.setConfirmBlockNumber(confirmBlockNumber);
-		updateTransaction.setTxStatus(BlockChain.STATUS_VERIFY_INVALID);
-
-		transactionDAO.updateById(updateTransaction);
+		transactionBusinessService.updateTxStatusToValidSettleStatusToReady(blockNumber, blockHash);
 	}
 
 	@Override
 	public void updateTxStatusToBlockConfirmedInvalid(BigInteger blockNumber, String blockHash, int confirmBlockNumber) {
-		Transaction queryTransaction = new Transaction();
-		queryTransaction.setBlockNumber(blockNumber);
-		queryTransaction.setBlockHash(blockHash);
-		queryTransaction.setTxStatus(BlockChain.STATUS_UNVERIFIED);
+		Transaction updateTransaction = new Transaction();
+		updateTransaction.setBlockNumber(blockNumber);
+		updateTransaction.setBlockHash(blockHash);
 
-		List<Transaction> transactionList = transactionDAO.queryList(queryTransaction);
+		updateTransaction.setConfirmBlockNumber(confirmBlockNumber);
+		updateTransaction.setTxStatus(BlockChain.STATUS_VERIFY_INVALID);
 
-		if(transactionList == null || transactionList.isEmpty()) {
-			return;
-		}
+		transactionDAO.updateByBlockNumberBlockHash(updateTransaction);
 
-		for(Transaction transaction : transactionList) {
-			updateTxStatusToBlockConfirmedInvalid(transaction, confirmBlockNumber);
-		}
+		transactionBusinessService.updateTxStatusToInvalidSettleStatusToReady(blockNumber, blockHash);
 	}
 
 }

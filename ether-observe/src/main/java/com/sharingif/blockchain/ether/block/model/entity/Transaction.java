@@ -20,11 +20,11 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
 	public static final String RECEIPT_STATUS_SUCCESS = "0x1";
 
 	/**
-	 * 交易状态(S:成功)
+	 * 交易收据状态(S:成功)
 	 */
 	public static final String TX_RECEIPT_STATUS_SUCCESS = "S";
 	/**
-	 * 交易状态(F:失败)
+	 * 交易收据状态(F:失败)
 	 */
 	public static final String TX_RECEIPT_STATUS_FAIL = "F";
 
@@ -96,7 +96,7 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
 	 */
 	private BigInteger nonce;
 	/**
-	 * 合约交易状态(S:成功、F:失败、P:处理中)			db_column: TX_RECEIPT_STATUS
+	 * 交易收据状态(S:成功、F:失败、P:处理中)			db_column: TX_RECEIPT_STATUS
 	 */
 	private String txReceiptStatus;
 	/**

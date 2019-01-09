@@ -10,11 +10,11 @@ import java.math.BigInteger;
 public interface TransactionBusinessService extends IBaseService<TransactionBusiness, java.lang.String> {
 
     /**
-     * 修改状态为清算中
+     * 修改结算状态为清算中
      * @param id
      * @return
      */
-    int updateStatusToSettling(String id);
+    int updateSettleStatusToSettling(String id);
 
     /**
      * 修改状态为清算完成
@@ -23,34 +23,35 @@ public interface TransactionBusinessService extends IBaseService<TransactionBusi
      * @param blockNumber
      * @return
      */
-    int updateStatusToSettled(String address, String coinType, BigInteger blockNumber);
+    int updateSettleStatusToSettled(String address, String coinType, BigInteger blockNumber);
 
     /**
-     * 根据地址、币种、大于区块号查询数据条数
+     * 根据地址、币种、查询未结算数据条数
      * @param address
      * @param coinType
-     * @param blockNumber
      * @return
      */
-    int getCountByAddressCoinTypeBlockNumber(String address, String coinType, BigInteger blockNumber);
+    int getUnsettledCountByAddressCoinTypeSettleStatus(String address, String coinType);
 
     /**
-     * 修改状态为有效,并且就
-     * @param transactionId
+     * 修改状态为有效
+     * @param blockNumber
+     * @param blockHash
      * @return
      */
-    void updateTxStatusToBlockConfirmedValid(String transactionId);
+    void updateTxStatusToValidSettleStatusToReady(BigInteger blockNumber, String blockHash);
 
     /**
      * 修改状态为无效
-     * @param transactionId
+     * @param blockNumber
+     * @param blockHash
      * @return
      */
-    void updateTxStatusToBlockConfirmedInvalid(String transactionId);
+    void updateTxStatusToInvalidSettleStatusToReady(BigInteger blockNumber, String blockHash);
 
     /**
-     * 添加需要处理的交易账号
+     * 清算
      */
-    void addTransactionBusinessAccount();
+    void settle();
 
 }
