@@ -220,9 +220,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         updateWithdrawal.setGasUsed(transaction.getGasUsed());
         updateWithdrawal.setGasPrice(transaction.getGasPrice());
         updateWithdrawal.setFee(transactionBusiness.getFee());
-        if(Transaction.TX_RECEIPT_STATUS_FAIL.equals(transactionBusiness.getTxReceiptStatus())) {
-            updateWithdrawal.setAmount(BigInteger.ZERO);
-        }
+        updateWithdrawal.setAmount(BigInteger.ZERO);
 
         withdrawalDAO.updateById(updateWithdrawal);
 
