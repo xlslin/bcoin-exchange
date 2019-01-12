@@ -209,6 +209,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
             return;
         }
 
+        // 分叉数据不处理，防止通知提现失败导致重复提现
         if(BlockChain.STATUS_VERIFY_INVALID.equals(transactionBusiness.getTxStatus())) {
             return;
         }
