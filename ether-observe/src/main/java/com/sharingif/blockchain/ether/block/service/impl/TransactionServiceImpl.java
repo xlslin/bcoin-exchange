@@ -158,7 +158,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		}
 
 		boolean isWatchTo = false;
-		if(StringUtils.isTrimEmpty(transaction.getTxTo())) {
+		if(!StringUtils.isTrimEmpty(transaction.getTxTo())) {
 			isWatchTo = addressListenerService.isWatch(transaction.getTxTo());
 		}
 
