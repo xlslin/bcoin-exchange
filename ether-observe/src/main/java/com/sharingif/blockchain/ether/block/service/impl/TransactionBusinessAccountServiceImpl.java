@@ -90,12 +90,12 @@ public class TransactionBusinessAccountServiceImpl extends BaseServiceImpl<Trans
 				continue;
 			}
 
+			transactionBusinessService.updateSettleStatusToSettled(transactionBusinessAccount.getAddress(), transactionBusinessAccount.getCoinType(), blockNumber);
+
 			boolean deleteTransactionBusinessAccount = transactionBusinessService.getUnsettledCountByAddressCoinTypeSettleStatus(
 					transactionBusinessAccount.getAddress()
 					,transactionBusinessAccount.getCoinType()
 			) == 0;
-
-			transactionBusinessService.updateSettleStatusToSettled(transactionBusinessAccount.getAddress(), transactionBusinessAccount.getCoinType(), blockNumber);
 
 			if(deleteTransactionBusinessAccount) {
 				transactionBusinessAccountDAO.deleteById(transactionBusinessAccount.getId());
