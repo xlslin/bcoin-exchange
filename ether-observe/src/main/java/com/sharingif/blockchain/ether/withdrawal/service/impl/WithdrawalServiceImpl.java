@@ -331,7 +331,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     @Transactional
     protected void finishNotice(TransactionBusiness transactionBusiness, Withdrawal withdrawal) {
         TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
-        updateTransactionBusiness.setId(transactionBusiness.getTransactionId());
+        updateTransactionBusiness.setId(transactionBusiness.getId());
         updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_FINISH_NOTICED);
 
         transactionBusinessDAO.updateById(updateTransactionBusiness);
