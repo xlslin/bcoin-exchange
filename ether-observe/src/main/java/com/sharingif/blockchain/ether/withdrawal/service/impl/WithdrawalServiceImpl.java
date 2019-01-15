@@ -400,6 +400,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
 
         WithdrawalEtherRsp withdrawalEtherRsp = new WithdrawalEtherRsp();
         withdrawalEtherRsp.setId(withdrawal.getId());
+        withdrawalEtherRsp.setWithdrawalId(withdrawal.getWithdrawalId());
 
         return withdrawalEtherRsp;
     }
