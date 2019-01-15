@@ -21,7 +21,7 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 	/**
 	 * 处理状态(TXCG:提现成功)
 	 */
-	public static final String STATUS_SUCCESS = "TXCLZ";
+	public static final String STATUS_SUCCESS = "TXCG";
 	/**
 	 * 处理状态(TXSB:提现失败)
 	 */
