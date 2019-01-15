@@ -37,9 +37,9 @@ public class Erc20SignMessageReq {
      */
     private BigInteger gasLimit;
     /**
-     * secret key id
+     * 发款人地址
      */
-    private String secretKeyId;
+    private String fromAddress;
     /**
      * 密码
      */
@@ -93,12 +93,12 @@ public class Erc20SignMessageReq {
         this.gasLimit = gasLimit;
     }
 
-    public String getSecretKeyId() {
-        return secretKeyId;
+    public String getFromAddress() {
+        return fromAddress;
     }
 
-    public void setSecretKeyId(String secretKeyId) {
-        this.secretKeyId = secretKeyId;
+    public void setFromAddress(String fromAddress) {
+        this.fromAddress = fromAddress;
     }
 
     public String getPassword() {
@@ -111,14 +111,14 @@ public class Erc20SignMessageReq {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Erc20TransferReq{");
+        final StringBuilder sb = new StringBuilder("Erc20SignMessageReq{");
         sb.append("nonce=").append(nonce);
         sb.append(", toAddress='").append(toAddress).append('\'');
         sb.append(", contractAddress='").append(contractAddress).append('\'');
         sb.append(", amount=").append(amount);
         sb.append(", gasPrice=").append(gasPrice);
         sb.append(", gasLimit=").append(gasLimit);
-        sb.append(", secretKeyId='").append(secretKeyId).append('\'');
+        sb.append(", fromAddress='").append(fromAddress).append('\'');
         sb.append(", password='").append(password).append('\'');
         sb.append('}');
         return sb.toString();

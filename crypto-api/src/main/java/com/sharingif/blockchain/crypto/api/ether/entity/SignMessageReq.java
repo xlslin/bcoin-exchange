@@ -29,9 +29,9 @@ public class SignMessageReq {
      */
     private BigInteger gasPrice;
     /**
-     * secret key id
+     * 发款人地址
      */
-    private String secretKeyId;
+    private String fromAddress;
     /**
      * 密码
      */
@@ -69,12 +69,12 @@ public class SignMessageReq {
         this.gasPrice = gasPrice;
     }
 
-    public String getSecretKeyId() {
-        return secretKeyId;
+    public String getFromAddress() {
+        return fromAddress;
     }
 
-    public void setSecretKeyId(String secretKeyId) {
-        this.secretKeyId = secretKeyId;
+    public void setFromAddress(String fromAddress) {
+        this.fromAddress = fromAddress;
     }
 
     public String getPassword() {
@@ -87,12 +87,12 @@ public class SignMessageReq {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("EthTransferReq{");
+        final StringBuilder sb = new StringBuilder("SignMessageReq{");
         sb.append("nonce=").append(nonce);
         sb.append(", toAddress='").append(toAddress).append('\'');
         sb.append(", amount=").append(amount);
         sb.append(", gasPrice=").append(gasPrice);
-        sb.append(", secretKeyId='").append(secretKeyId).append('\'');
+        sb.append(", fromAddress='").append(fromAddress).append('\'');
         sb.append(", password='").append(password).append('\'');
         sb.append('}');
         return sb.toString();

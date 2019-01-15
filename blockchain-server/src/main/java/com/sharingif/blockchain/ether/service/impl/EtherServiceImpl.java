@@ -49,7 +49,7 @@ public class EtherServiceImpl implements EtherService {
         signMessageReq.setToAddress(req.getToAddress());
         signMessageReq.setAmount(req.getAmount());
         signMessageReq.setGasPrice(req.getGasPrice());
-        signMessageReq.setSecretKeyId(secretKey.getId());
+        signMessageReq.setFromAddress(secretKey.getAddress());
         signMessageReq.setPassword(password);
 
         com.sharingif.blockchain.crypto.api.ether.entity.SignMessageRsp signMessageRsp = etherApiService.signMessage(signMessageReq);
@@ -72,7 +72,7 @@ public class EtherServiceImpl implements EtherService {
         erc20SignMessageReq.setAmount(req.getAmount());
         erc20SignMessageReq.setGasPrice(req.getGasPrice());
         erc20SignMessageReq.setGasLimit(req.getGasLimit());
-        erc20SignMessageReq.setSecretKeyId(secretKey.getId());
+        erc20SignMessageReq.setFromAddress(secretKey.getAddress());
         erc20SignMessageReq.setPassword(password);
 
         com.sharingif.blockchain.crypto.api.ether.entity.Erc20SignMessageRsp erc20SignMessageRsp = etherApiService.erc20SignMessage(erc20SignMessageReq);

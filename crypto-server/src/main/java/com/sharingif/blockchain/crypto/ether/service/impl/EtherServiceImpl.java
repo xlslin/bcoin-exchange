@@ -46,7 +46,7 @@ public class EtherServiceImpl implements EtherService {
     @Override
     public SignMessageRsp signMessage(SignMessageReq req) {
 
-        Credentials credentials = secretKeyService.getCredentials(req.getSecretKeyId(), req.getPassword());
+        Credentials credentials = secretKeyService.getCredentials(req.getFromAddress(), req.getPassword());
 
         RawTransaction rawTransaction  = RawTransaction.createEtherTransaction(
                 req.getNonce()
@@ -68,7 +68,7 @@ public class EtherServiceImpl implements EtherService {
     @Override
     public Erc20SignMessageRsp erc20SignMessage(Erc20SignMessageReq req) {
 
-        Credentials credentials = secretKeyService.getCredentials(req.getSecretKeyId(), req.getPassword());
+        Credentials credentials = secretKeyService.getCredentials(req.getFromAddress(), req.getPassword());
 
         Function function = new Function(
                 "transfer"

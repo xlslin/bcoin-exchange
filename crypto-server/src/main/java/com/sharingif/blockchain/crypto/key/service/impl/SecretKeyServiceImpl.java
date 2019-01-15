@@ -100,8 +100,8 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, java.lang.S
 	}
 
 	@Override
-	public Credentials getCredentials(String secretKeyId, String password) {
-		SecretKey secretKey = secretKeyDAO.queryById(secretKeyId);
+	public Credentials getCredentials(String address, String password) {
+		SecretKey secretKey = secretKeyDAO.queryById(address);
 
 		return getCredentials(secretKey, password);
 	}
