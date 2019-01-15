@@ -6,11 +6,14 @@ import com.sharingif.blockchain.account.service.AddressListenerService;
 import com.sharingif.blockchain.ether.api.account.service.AddressListenerApiService;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 @Service
 public class AddressListenerServiceImpl implements AddressListenerService {
 
 	private AddressListenerApiService addressListenerApiService;
 
+	@Resource
 	public void setAddressListenerApiService(AddressListenerApiService addressListenerApiService) {
 		this.addressListenerApiService = addressListenerApiService;
 	}
