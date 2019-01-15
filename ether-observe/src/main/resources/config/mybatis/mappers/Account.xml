@@ -308,7 +308,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		ACCOUNT
 		SET
 		FROZEN_AMOUNT = FROZEN_AMOUNT - #{frozenAmount}
-		,TOTAL_OUT = TOTAL_OUT + #{frozenAmount},
+		,TOTAL_OUT = TOTAL_OUT + #{frozenAmount}
 		WHERE
 			ADDRESS = #{address}
 		AND
