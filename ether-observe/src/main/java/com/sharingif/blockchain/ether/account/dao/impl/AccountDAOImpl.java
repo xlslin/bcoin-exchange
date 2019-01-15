@@ -15,11 +15,6 @@ import java.math.BigInteger;
 public class AccountDAOImpl extends BaseDAOImpl<Account, String> implements AccountDAO {
 
     @Override
-    public Account queryForUpdate(Account account) {
-        return selectOne("queryForUpdate", account);
-    }
-
-    @Override
     public int updateAddTotalInBalanceByAddressCoinType(String address, String coinType, BigInteger balance) {
         Account account = new Account();
         account.setAddress(address);

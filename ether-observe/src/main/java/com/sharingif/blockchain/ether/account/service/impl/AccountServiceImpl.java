@@ -55,7 +55,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 		account.setAddress(address);
 		account.setCoinType(coinType);
 
-		Account queryAccount = accountDAO.queryForUpdate(account);
+		Account queryAccount = accountDAO.query(account);
 		if(queryAccount == null) {
 			account.setTotalIn(BigInteger.ZERO);
 			account.setTotalOut(BigInteger.ZERO);

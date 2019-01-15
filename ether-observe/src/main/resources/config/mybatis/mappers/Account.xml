@@ -227,28 +227,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			ID
 	</select>
 
-	<select id="queryForUpdate" resultMap="accountResultMap">
-		SELECT
-		ID
-		,ADDRESS
-		,COIN_TYPE
-		,TOTAL_IN
-		,TOTAL_OUT
-		,BALANCE
-		,FROZEN_AMOUNT
-		,STATUS
-		,CREATE_TIME
-		,MODIFY_TIME
-		FROM
-		ACCOUNT
-		WHERE
-		1=1
-		<include refid="accountColumns" />
-		ORDER BY
-		ID
-		FOR UPDATE
-	</select>
-
 	<update id="updateAddTotalInBalanceByAddressCoinType">
 		UPDATE
 		ACCOUNT

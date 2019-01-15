@@ -12,13 +12,6 @@ import java.math.BigInteger;
 public interface AccountDAO extends BaseDAO<Account, String> {
 
     /**
-     * 查询并锁定
-     * @param account
-     * @return
-     */
-    Account queryForUpdate(Account account);
-
-    /**
      * 增加总入账、增加余额
      * @param address
      * @param coinType
