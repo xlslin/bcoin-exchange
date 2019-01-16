@@ -221,7 +221,8 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 		} catch (Exception e) {
 			// geth连接超时
-			logger.error("analysis block transaction error, transaction:{}, exception:{}", transaction, e);
+			logger.error("analysis block transaction error", e);
+			logger.error("analysis block transaction error, transaction:{}", transaction);
 			analysis(tx, transactionReceipt, blockCreateTime);
 		}
 
