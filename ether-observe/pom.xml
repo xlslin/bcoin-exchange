@@ -141,7 +141,7 @@
                 <configuration>
                     <fork>true</fork>
                     <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
-                    <mainClass>com.sharingif.blockchain.crypto.app.runtime.Bootstrap</mainClass>
+                    <mainClass>com.sharingif.blockchain.ether.app.runtime.Bootstrap</mainClass>
                 </configuration>
                 <executions>
                     <execution>
