@@ -101,6 +101,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		transactionBusiness.setBlockNumber(transaction.getBlockNumber());
 		transactionBusiness.setBlockHash(transaction.getBlockHash());
 		transactionBusiness.setTransactionId(transaction.getId());
+		transactionBusiness.setContractAddress(transaction.getContractAddress());
 		transactionBusiness.setTxHash(transaction.getTxHash());
 		transactionBusiness.setCoinType(transaction.getCoinType());
 		transactionBusiness.setTxFrom(transaction.getTxFrom());
