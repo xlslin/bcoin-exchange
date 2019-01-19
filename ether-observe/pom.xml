@@ -8,7 +8,7 @@
     <artifactId>ether-observe</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>ether-observe Maven Webapp</name>
+    <name>ether-observe</name>
     <url>http://maven.apache.org</url>
 
     <properties>
