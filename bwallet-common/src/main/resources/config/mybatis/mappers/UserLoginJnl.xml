@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="userLoginJnl">
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="userLoginJnlColumns">
+    	<if test="null!=id">
+    		and ID = #{id}
+    	</if>
+    	<if test="null!=username">
+    		and USERNAME = #{username}
+    	</if>
+    	<if test="null!=loginIp">
+    		and LOGIN_IP = #{loginIp}
+    	</if>
+    	<if test="null!=loginDeviceCode">
+    		and LOGIN_DEVICE_CODE = #{loginDeviceCode}
+    	</if>
+    	<if test="null!=loginType">
+    		and LOGIN_TYPE = #{loginType}
+    	</if>
+    	<if test="null!=loginStatus">
+    		and LOGIN_STATUS = #{loginStatus}
+    	</if>
+    	<if test="null!=createTime">
+    		and CREATE_TIME = #{createTime}
+    	</if>
+    	<if test="null!=modifyTime">
+    		and MODIFY_TIME = #{modifyTime}
+    	</if>
+	</sql>
+	
+	<sql id="userLoginJnlSetColumns">
+		    <if test="null!=id">
+		    ID = #{id},
+		    </if>
+		    <if test="null!=username">
+		    USERNAME = #{username},
+		    </if>
+		    <if test="null!=loginIp">
+		    LOGIN_IP = #{loginIp},
+		    </if>
+		    <if test="null!=loginDeviceCode">
+		    LOGIN_DEVICE_CODE = #{loginDeviceCode},
+		    </if>
+		    <if test="null!=loginType">
+		    LOGIN_TYPE = #{loginType},
+		    </if>
+		    <if test="null!=loginStatus">
+		    LOGIN_STATUS = #{loginStatus},
+		    </if>
+		    <if test="null!=createTime">
+		    CREATE_TIME = #{createTime},
+		    </if>
+		    <if test="null!=modifyTime">
+		    MODIFY_TIME = #{modifyTime},
+		    </if>
+	</sql>
+
+	<resultMap id="userLoginJnlResultMap" type="com.sharingif.wallet.user.model.entity.UserLoginJnl">
+        <result property="id" column="ID"/>
+        <result property="username" column="USERNAME"/>
+        <result property="loginIp" column="LOGIN_IP"/>
+        <result property="loginDeviceCode" column="LOGIN_DEVICE_CODE"/>
+        <result property="loginType" column="LOGIN_TYPE"/>
+        <result property="loginStatus" column="LOGIN_STATUS"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+	</resultMap>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert">
+        INSERT INTO USER_LOGIN_JNL (
+        	ID
+        	,USERNAME
+        	,LOGIN_IP
+        	,LOGIN_DEVICE_CODE
+        	,LOGIN_TYPE
+        	,LOGIN_STATUS
+        	,CREATE_TIME
+        	,MODIFY_TIME
+        ) VALUES (
+        	#{id}
+        	,#{username}
+        	,#{loginIp}
+        	,#{loginDeviceCode}
+        	,#{loginType}
+        	,#{loginStatus}
+        	,#{createTime}
+        	,#{modifyTime}
+        )
+	</insert>
+	
+	<delete id="deleteById">
+	    DELETE FROM
+	    	USER_LOGIN_JNL 
+	    WHERE
+	    ID = #{id} 
+    </delete>
+    
+    <delete id="deleteByCondition">
+	    DELETE FROM
+	    	USER_LOGIN_JNL 
+	    WHERE
+	    	1=1
+		    <include refid="userLoginJnlColumns" />
+    </delete>
+    
+	<update id="updateById">
+	    UPDATE
+	    	USER_LOGIN_JNL 
+        <set>
+	        <include refid="userLoginJnlSetColumns" />
+		</set>
+	    WHERE
+	    ID = #{id} 
+	</update>
+	
+    <select id="queryById" resultMap="userLoginJnlResultMap">
+		SELECT
+			ID
+			,USERNAME
+			,LOGIN_IP
+			,LOGIN_DEVICE_CODE
+			,LOGIN_TYPE
+			,LOGIN_STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			USER_LOGIN_JNL 
+		WHERE 
+			ID = #{id} 
+	</select>
+	
+	<select id="queryList" resultMap="userLoginJnlResultMap">
+		SELECT
+			ID
+			,USERNAME
+			,LOGIN_IP
+			,LOGIN_DEVICE_CODE
+			,LOGIN_TYPE
+			,LOGIN_STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			USER_LOGIN_JNL
+		WHERE
+			1=1
+			<include refid="userLoginJnlColumns" />
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryAll" resultMap="userLoginJnlResultMap">
+		SELECT
+			ID
+			,USERNAME
+			,LOGIN_IP
+			,LOGIN_DEVICE_CODE
+			,LOGIN_TYPE
+			,LOGIN_STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			USER_LOGIN_JNL 
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryPaginationListCount" resultType="Integer">
+		SELECT
+			COUNT(0)
+		FROM
+			USER_LOGIN_JNL 
+		WHERE
+			1=1 
+			<include refid="userLoginJnlColumns" />
+	</select>
+	
+	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="userLoginJnlResultMap">
+		SELECT
+			ID
+			,USERNAME
+			,LOGIN_IP
+			,LOGIN_DEVICE_CODE
+			,LOGIN_TYPE
+			,LOGIN_STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			USER_LOGIN_JNL
+		WHERE
+			1=1
+			<include refid="userLoginJnlColumns" />
+		ORDER BY
+			ID
+	</select>
+	
+</mapper>
+

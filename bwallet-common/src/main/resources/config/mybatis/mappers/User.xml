@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="user">
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="userColumns">
+    	<if test="null!=userId">
+    		and USER_ID = #{userId}
+    	</if>
+    	<if test="null!=username">
+    		and USERNAME = #{username}
+    	</if>
+    	<if test="null!=password">
+    		and PASSWORD = #{password}
+    	</if>
+    	<if test="null!=paymentPassword">
+    		and PAYMENT_PASSWORD = #{paymentPassword}
+    	</if>
+    	<if test="null!=paymentPasswordFailCounter">
+    		and PAYMENT_PASSWORD_FAIL_COUNTER = #{paymentPasswordFailCounter}
+    	</if>
+    	<if test="null!=nick">
+    		and NICK = #{nick}
+    	</if>
+    	<if test="null!=mobilePrefix">
+    		and MOBILE_PREFIX = #{mobilePrefix}
+    	</if>
+    	<if test="null!=mobile">
+    		and MOBILE = #{mobile}
+    	</if>
+    	<if test="null!=email">
+    		and EMAIL = #{email}
+    	</if>
+    	<if test="null!=cifId">
+    		and CIF_ID = #{cifId}
+    	</if>
+    	<if test="null!=userPicture">
+    		and USER_PICTURE = #{userPicture}
+    	</if>
+    	<if test="null!=status">
+    		and STATUS = #{status}
+    	</if>
+    	<if test="null!=lockExpireTime">
+    		and LOCK_EXPIRE_TIME = #{lockExpireTime}
+    	</if>
+    	<if test="null!=createChannel">
+    		and CREATE_CHANNEL = #{createChannel}
+    	</if>
+    	<if test="null!=loginToken">
+    		and LOGIN_TOKEN = #{loginToken}
+    	</if>
+    	<if test="null!=loginTokenExpiratTime">
+    		and LOGIN_TOKEN_EXPIRAT_TIME = #{loginTokenExpiratTime}
+    	</if>
+    	<if test="null!=lastLoginTime">
+    		and LAST_LOGIN_TIME = #{lastLoginTime}
+    	</if>
+    	<if test="null!=lastLoginIp">
+    		and LAST_LOGIN_IP = #{lastLoginIp}
+    	</if>
+    	<if test="null!=loginDeviceCode">
+    		and LOGIN_DEVICE_CODE = #{loginDeviceCode}
+    	</if>
+    	<if test="null!=lastLoginDevice">
+    		and LAST_LOGIN_DEVICE = #{lastLoginDevice}
+    	</if>
+    	<if test="null!=lastLoginLocale">
+    		and LAST_LOGIN_LOCALE = #{lastLoginLocale}
+    	</if>
+    	<if test="null!=failLoginCounter">
+    		and FAIL_LOGIN_COUNTER = #{failLoginCounter}
+    	</if>
+    	<if test="null!=createTime">
+    		and CREATE_TIME = #{createTime}
+    	</if>
+    	<if test="null!=modifyTime">
+    		and MODIFY_TIME = #{modifyTime}
+    	</if>
+	</sql>
+	
+	<sql id="userSetColumns">
+		    <if test="null!=userId">
+		    USER_ID = #{userId},
+		    </if>
+		    <if test="null!=username">
+		    USERNAME = #{username},
+		    </if>
+		    <if test="null!=password">
+		    PASSWORD = #{password},
+		    </if>
+		    <if test="null!=paymentPassword">
+		    PAYMENT_PASSWORD = #{paymentPassword},
+		    </if>
+		    <if test="null!=paymentPasswordFailCounter">
+		    PAYMENT_PASSWORD_FAIL_COUNTER = #{paymentPasswordFailCounter},
+		    </if>
+		    <if test="null!=nick">
+		    NICK = #{nick},
+		    </if>
+		    <if test="null!=mobilePrefix">
+		    MOBILE_PREFIX = #{mobilePrefix},
+		    </if>
+		    <if test="null!=mobile">
+		    MOBILE = #{mobile},
+		    </if>
+		    <if test="null!=email">
+		    EMAIL = #{email},
+		    </if>
+		    <if test="null!=cifId">
+		    CIF_ID = #{cifId},
+		    </if>
+		    <if test="null!=userPicture">
+		    USER_PICTURE = #{userPicture},
+		    </if>
+		    <if test="null!=status">
+		    STATUS = #{status},
+		    </if>
+		    <if test="null!=lockExpireTime">
+		    LOCK_EXPIRE_TIME = #{lockExpireTime},
+		    </if>
+		    <if test="null!=createChannel">
+		    CREATE_CHANNEL = #{createChannel},
+		    </if>
+		    <if test="null!=loginToken">
+		    LOGIN_TOKEN = #{loginToken},
+		    </if>
+		    <if test="null!=loginTokenExpiratTime">
+		    LOGIN_TOKEN_EXPIRAT_TIME = #{loginTokenExpiratTime},
+		    </if>
+		    <if test="null!=lastLoginTime">
+		    LAST_LOGIN_TIME = #{lastLoginTime},
+		    </if>
+		    <if test="null!=lastLoginIp">
+		    LAST_LOGIN_IP = #{lastLoginIp},
+		    </if>
+		    <if test="null!=loginDeviceCode">
+		    LOGIN_DEVICE_CODE = #{loginDeviceCode},
+		    </if>
+		    <if test="null!=lastLoginDevice">
+		    LAST_LOGIN_DEVICE = #{lastLoginDevice},
+		    </if>
+		    <if test="null!=lastLoginLocale">
+		    LAST_LOGIN_LOCALE = #{lastLoginLocale},
+		    </if>
+		    <if test="null!=failLoginCounter">
+		    FAIL_LOGIN_COUNTER = #{failLoginCounter},
+		    </if>
+		    <if test="null!=createTime">
+		    CREATE_TIME = #{createTime},
+		    </if>
+		    <if test="null!=modifyTime">
+		    MODIFY_TIME = #{modifyTime},
+		    </if>
+	</sql>
+
+	<resultMap id="userResultMap" type="com.sharingif.wallet.user.model.entity.User">
+        <result property="userId" column="USER_ID"/>
+        <result property="username" column="USERNAME"/>
+        <result property="password" column="PASSWORD"/>
+        <result property="paymentPassword" column="PAYMENT_PASSWORD"/>
+        <result property="paymentPasswordFailCounter" column="PAYMENT_PASSWORD_FAIL_COUNTER"/>
+        <result property="nick" column="NICK"/>
+        <result property="mobilePrefix" column="MOBILE_PREFIX"/>
+        <result property="mobile" column="MOBILE"/>
+        <result property="email" column="EMAIL"/>
+        <result property="cifId" column="CIF_ID"/>
+        <result property="userPicture" column="USER_PICTURE"/>
+        <result property="status" column="STATUS"/>
+        <result property="lockExpireTime" column="LOCK_EXPIRE_TIME"/>
+        <result property="createChannel" column="CREATE_CHANNEL"/>
+        <result property="loginToken" column="LOGIN_TOKEN"/>
+        <result property="loginTokenExpiratTime" column="LOGIN_TOKEN_EXPIRAT_TIME"/>
+        <result property="lastLoginTime" column="LAST_LOGIN_TIME"/>
+        <result property="lastLoginIp" column="LAST_LOGIN_IP"/>
+        <result property="loginDeviceCode" column="LOGIN_DEVICE_CODE"/>
+        <result property="lastLoginDevice" column="LAST_LOGIN_DEVICE"/>
+        <result property="lastLoginLocale" column="LAST_LOGIN_LOCALE"/>
+        <result property="failLoginCounter" column="FAIL_LOGIN_COUNTER"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+	</resultMap>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert">
+        INSERT INTO USER (
+        	USER_ID
+        	,USERNAME
+        	,PASSWORD
+        	,PAYMENT_PASSWORD
+        	,PAYMENT_PASSWORD_FAIL_COUNTER
+        	,NICK
+        	,MOBILE_PREFIX
+        	,MOBILE
+        	,EMAIL
+        	,CIF_ID
+        	,USER_PICTURE
+        	,STATUS
+        	,LOCK_EXPIRE_TIME
+        	,CREATE_CHANNEL
+        	,LOGIN_TOKEN
+        	,LOGIN_TOKEN_EXPIRAT_TIME
+        	,LAST_LOGIN_TIME
+        	,LAST_LOGIN_IP
+        	,LOGIN_DEVICE_CODE
+        	,LAST_LOGIN_DEVICE
+        	,LAST_LOGIN_LOCALE
+        	,FAIL_LOGIN_COUNTER
+        	,CREATE_TIME
+        	,MODIFY_TIME
+        ) VALUES (
+        	#{userId}
+        	,#{username}
+        	,#{password}
+        	,#{paymentPassword}
+        	,#{paymentPasswordFailCounter}
+        	,#{nick}
+        	,#{mobilePrefix}
+        	,#{mobile}
+        	,#{email}
+        	,#{cifId}
+        	,#{userPicture}
+        	,#{status}
+        	,#{lockExpireTime}
+        	,#{createChannel}
+        	,#{loginToken}
+        	,#{loginTokenExpiratTime}
+        	,#{lastLoginTime}
+        	,#{lastLoginIp}
+        	,#{loginDeviceCode}
+        	,#{lastLoginDevice}
+        	,#{lastLoginLocale}
+        	,#{failLoginCounter}
+        	,#{createTime}
+        	,#{modifyTime}
+        )
+	</insert>
+	
+	<delete id="deleteById">
+	    DELETE FROM
+	    	USER 
+	    WHERE
+	    USER_ID = #{id} 
+    </delete>
+    
+    <delete id="deleteByCondition">
+	    DELETE FROM
+	    	USER 
+	    WHERE
+	    	1=1
+		    <include refid="userColumns" />
+    </delete>
+    
+	<update id="updateById">
+	    UPDATE
+	    	USER 
+        <set>
+	        <include refid="userSetColumns" />
+		</set>
+	    WHERE
+	    USER_ID = #{userId} 
+	</update>
+	
+    <select id="queryById" resultMap="userResultMap">
+		SELECT
+			USER_ID
+			,USERNAME
+			,PASSWORD
+			,PAYMENT_PASSWORD
+			,PAYMENT_PASSWORD_FAIL_COUNTER
+			,NICK
+			,MOBILE_PREFIX
+			,MOBILE
+			,EMAIL
+			,CIF_ID
+			,USER_PICTURE
+			,STATUS
+			,LOCK_EXPIRE_TIME
+			,CREATE_CHANNEL
+			,LOGIN_TOKEN
+			,LOGIN_TOKEN_EXPIRAT_TIME
+			,LAST_LOGIN_TIME
+			,LAST_LOGIN_IP
+			,LOGIN_DEVICE_CODE
+			,LAST_LOGIN_DEVICE
+			,LAST_LOGIN_LOCALE
+			,FAIL_LOGIN_COUNTER
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			USER 
+		WHERE 
+			USER_ID = #{id} 
+	</select>
+	
+	<select id="queryList" resultMap="userResultMap">
+		SELECT
+			USER_ID
+			,USERNAME
+			,PASSWORD
+			,PAYMENT_PASSWORD
+			,PAYMENT_PASSWORD_FAIL_COUNTER
+			,NICK
+			,MOBILE_PREFIX
+			,MOBILE
+			,EMAIL
+			,CIF_ID
+			,USER_PICTURE
+			,STATUS
+			,LOCK_EXPIRE_TIME
+			,CREATE_CHANNEL
+			,LOGIN_TOKEN
+			,LOGIN_TOKEN_EXPIRAT_TIME
+			,LAST_LOGIN_TIME
+			,LAST_LOGIN_IP
+			,LOGIN_DEVICE_CODE
+			,LAST_LOGIN_DEVICE
+			,LAST_LOGIN_LOCALE
+			,FAIL_LOGIN_COUNTER
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			USER
+		WHERE
+			1=1
+			<include refid="userColumns" />
+		ORDER BY
+			USER_ID
+	</select>
+	
+	<select id="queryAll" resultMap="userResultMap">
+		SELECT
+			USER_ID
+			,USERNAME
+			,PASSWORD
+			,PAYMENT_PASSWORD
+			,PAYMENT_PASSWORD_FAIL_COUNTER
+			,NICK
+			,MOBILE_PREFIX
+			,MOBILE
+			,EMAIL
+			,CIF_ID
+			,USER_PICTURE
+			,STATUS
+			,LOCK_EXPIRE_TIME
+			,CREATE_CHANNEL
+			,LOGIN_TOKEN
+			,LOGIN_TOKEN_EXPIRAT_TIME
+			,LAST_LOGIN_TIME
+			,LAST_LOGIN_IP
+			,LOGIN_DEVICE_CODE
+			,LAST_LOGIN_DEVICE
+			,LAST_LOGIN_LOCALE
+			,FAIL_LOGIN_COUNTER
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			USER 
+		ORDER BY
+			USER_ID
+	</select>
+	
+	<select id="queryPaginationListCount" resultType="Integer">
+		SELECT
+			COUNT(0)
+		FROM
+			USER 
+		WHERE
+			1=1 
+			<include refid="userColumns" />
+	</select>
+	
+	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="userResultMap">
+		SELECT
+			USER_ID
+			,USERNAME
+			,PASSWORD
+			,PAYMENT_PASSWORD
+			,PAYMENT_PASSWORD_FAIL_COUNTER
+			,NICK
+			,MOBILE_PREFIX
+			,MOBILE
+			,EMAIL
+			,CIF_ID
+			,USER_PICTURE
+			,STATUS
+			,LOCK_EXPIRE_TIME
+			,CREATE_CHANNEL
+			,LOGIN_TOKEN
+			,LOGIN_TOKEN_EXPIRAT_TIME
+			,LAST_LOGIN_TIME
+			,LAST_LOGIN_IP
+			,LOGIN_DEVICE_CODE
+			,LAST_LOGIN_DEVICE
+			,LAST_LOGIN_LOCALE
+			,FAIL_LOGIN_COUNTER
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			USER
+		WHERE
+			1=1
+			<include refid="userColumns" />
+		ORDER BY
+			USER_ID
+	</select>
+	
+</mapper>
+

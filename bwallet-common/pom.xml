@@ -2,10 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sharingif.wallet</groupId>
-  <artifactId>bwallet-server</artifactId>
+  <artifactId>bwallet-common</artifactId>
   <packaging>jar</packaging>
   <version>0.0.1-SNAPSHOT</version>
-  <name>bwallet-server</name>
+  <name>bwallet-common</name>
   <url>http://maven.apache.org</url>
 
   <properties>
@@ -22,32 +22,31 @@
   <dependencies>
 
     <dependency>
-      <groupId>com.sharingif.cube</groupId>
-      <artifactId>com.sharingif.cube.communication.http.apache</artifactId>
+      <groupId>com.sharingif.cube.spring.boot</groupId>
+      <artifactId>com.sharingif.cube.spring.boot.persistence.mybatis</artifactId>
       <version>${maven.project.com.sharingif.cube.version}</version>
     </dependency>
     <dependency>
       <groupId>com.sharingif.cube.spring.boot</groupId>
-      <artifactId>com.sharingif.cube.spring.boot.security.web.spring</artifactId>
-      <version>${maven.project.com.sharingif.cube.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sharingif.cube.spring.boot</groupId>
-      <artifactId>com.sharingif.cube.spring.boot.web.springmvc</artifactId>
+      <artifactId>com.sharingif.cube.spring.boot.tomcat</artifactId>
       <version>${maven.project.com.sharingif.cube.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>bwallet-common</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.30</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-dbcp</artifactId>
+      <version>8.5.14</version>
+    </dependency>
 
   </dependencies>
 
   <build>
-    <finalName>bwallet-server</finalName>
+    <finalName>bwallet-common</finalName>
     <resources>
       <resource>
         <directory>src\main\java</directory>
