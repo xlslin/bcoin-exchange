@@ -3,7 +3,14 @@ package com.sharingif.blockchain.bitcoin.block.model.entity;
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
 
+import java.util.Date;
+
 public class BlockChainSync implements java.io.Serializable, IObjectDateOperationHistory {
+
+	/**
+	 * 类型(00:区块同步)
+	 */
+	public static final String TYPE_SYNC = "00";
 	
 	//columns START
     /**

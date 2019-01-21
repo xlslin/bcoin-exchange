@@ -14,7 +14,7 @@ public interface BlockChainApiService {
      * @return
      */
     @RequestMapping(value="getblockcount", method= RequestMethod.POST)
-    BigInteger getblockcount();
+    BigInteger getBlockCount();
 
 
 }

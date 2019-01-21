@@ -33,8 +33,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.http.HttpService;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -202,11 +200,6 @@ public class ComponentsAutoconfigure {
         AESECBEncryptor encryptor = new AESECBEncryptor(keysByte, base64Coder);
 
         return encryptor;
-    }
-
-    @Bean("web3j")
-    public Web3j createWeb3j(@Value("${eth.web3j.address}")String ethWeb3jAddress) {
-        return Web3j.build(new HttpService(ethWeb3jAddress));
     }
 
 }

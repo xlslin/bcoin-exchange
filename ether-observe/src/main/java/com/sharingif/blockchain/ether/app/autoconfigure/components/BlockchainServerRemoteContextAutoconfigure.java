@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * crypto-server服务
+ * blockchain-server服务
  */
 @Configuration
 public class BlockchainServerRemoteContextAutoconfigure {

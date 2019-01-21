@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * crypto-server服务
+ * BitCoinCore服务
  */
 @Configuration
 public class BitCoinCoreRemoteContextAutoconfigure {

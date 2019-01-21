@@ -3,6 +3,8 @@ package com.sharingif.blockchain.bitcoin.block.model.entity;
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
 
+import java.util.Date;
+
 public class BlockChain implements java.io.Serializable, IObjectDateOperationHistory {
 	
 	//columns START
