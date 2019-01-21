@@ -1,13 +1,11 @@
-package com.sharingif.blockchain.ether.job.controller;
+package com.sharingif.blockchain.bitcoin.job.controller;
 
 
-
-import javax.annotation.Resource;
-
+import com.sharingif.blockchain.bitcoin.job.service.BatchJobService;
+import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
 import org.springframework.stereotype.Controller;
 
-import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
-import com.sharingif.blockchain.ether.job.service.BatchJobService;
+import javax.annotation.Resource;
 
 
 @Controller
