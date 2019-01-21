@@ -1,9 +1,8 @@
-package com.sharingif.blockchain.ether.job.model.entity;
+package com.sharingif.blockchain.bitcoin.job.model.entity;
 
 
 import com.sharingif.cube.batch.core.request.JobRequest;
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
-import com.sharingif.cube.components.sequence.Sequence;
 
 import java.util.Date;
 
@@ -33,8 +32,7 @@ public class BatchJob implements java.io.Serializable, IObjectDateOperationHisto
 	//columns START
     /**
      * 主键ID			db_column: ID 
-     */
-	@Sequence(ref="uuidSequenceGenerator")
+     */	
 	private java.lang.String id;
     /**
      * 父级JOB ID			db_column: PARENT_JOB_ID 

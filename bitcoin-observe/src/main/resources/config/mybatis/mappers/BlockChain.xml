@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="blockChain">
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="blockChainColumns">
+    	<if test="null!=id">
+    		and ID = #{id}
+    	</if>
+    	<if test="null!=blockNumber">
+    		and BLOCK_NUMBER = #{blockNumber}
+    	</if>
+    	<if test="null!=verifyBlockNumber">
+    		and VERIFY_BLOCK_NUMBER = #{verifyBlockNumber}
+    	</if>
+    	<if test="null!=hash">
+    		and HASH = #{hash}
+    	</if>
+    	<if test="null!=blockCreateTime">
+    		and BLOCK_CREATE_TIME = #{blockCreateTime}
+    	</if>
+    	<if test="null!=status">
+    		and STATUS = #{status}
+    	</if>
+    	<if test="null!=createTime">
+    		and CREATE_TIME = #{createTime}
+    	</if>
+    	<if test="null!=modifyTime">
+    		and MODIFY_TIME = #{modifyTime}
+    	</if>
+	</sql>
+	
+	<sql id="blockChainSetColumns">
+		    <if test="null!=id">
+		    ID = #{id},
+		    </if>
+		    <if test="null!=blockNumber">
+		    BLOCK_NUMBER = #{blockNumber},
+		    </if>
+		    <if test="null!=verifyBlockNumber">
+		    VERIFY_BLOCK_NUMBER = #{verifyBlockNumber},
+		    </if>
+		    <if test="null!=hash">
+		    HASH = #{hash},
+		    </if>
+		    <if test="null!=blockCreateTime">
+		    BLOCK_CREATE_TIME = #{blockCreateTime},
+		    </if>
+		    <if test="null!=status">
+		    STATUS = #{status},
+		    </if>
+		    <if test="null!=createTime">
+		    CREATE_TIME = #{createTime},
+		    </if>
+		    <if test="null!=modifyTime">
+		    MODIFY_TIME = #{modifyTime},
+		    </if>
+	</sql>
+
+	<resultMap id="blockChainResultMap" type="com.sharingif.blockchain.bitcoin.block.model.entity.BlockChain">
+        <result property="id" column="ID"/>
+        <result property="blockNumber" column="BLOCK_NUMBER"/>
+        <result property="verifyBlockNumber" column="VERIFY_BLOCK_NUMBER"/>
+        <result property="hash" column="HASH"/>
+        <result property="blockCreateTime" column="BLOCK_CREATE_TIME"/>
+        <result property="status" column="STATUS"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+	</resultMap>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert">
+        INSERT INTO BLOCK_CHAIN (
+        	ID
+        	,BLOCK_NUMBER
+        	,VERIFY_BLOCK_NUMBER
+        	,HASH
+        	,BLOCK_CREATE_TIME
+        	,STATUS
+        	,CREATE_TIME
+        	,MODIFY_TIME
+        ) VALUES (
+        	#{id}
+        	,#{blockNumber}
+        	,#{verifyBlockNumber}
+        	,#{hash}
+        	,#{blockCreateTime}
+        	,#{status}
+        	,#{createTime}
+        	,#{modifyTime}
+        )
+	</insert>
+	
+	<delete id="deleteById">
+	    DELETE FROM
+	    	BLOCK_CHAIN 
+	    WHERE
+	    ID = #{id} 
+    </delete>
+    
+    <delete id="deleteByCondition">
+	    DELETE FROM
+	    	BLOCK_CHAIN 
+	    WHERE
+	    	1=1
+		    <include refid="blockChainColumns" />
+    </delete>
+    
+	<update id="updateById">
+	    UPDATE
+	    	BLOCK_CHAIN 
+        <set>
+	        <include refid="blockChainSetColumns" />
+		</set>
+	    WHERE
+	    ID = #{id} 
+	</update>
+	
+    <select id="queryById" resultMap="blockChainResultMap">
+		SELECT
+			ID
+			,BLOCK_NUMBER
+			,VERIFY_BLOCK_NUMBER
+			,HASH
+			,BLOCK_CREATE_TIME
+			,STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			BLOCK_CHAIN 
+		WHERE 
+			ID = #{id} 
+	</select>
+	
+	<select id="queryList" resultMap="blockChainResultMap">
+		SELECT
+			ID
+			,BLOCK_NUMBER
+			,VERIFY_BLOCK_NUMBER
+			,HASH
+			,BLOCK_CREATE_TIME
+			,STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			BLOCK_CHAIN
+		WHERE
+			1=1
+			<include refid="blockChainColumns" />
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryAll" resultMap="blockChainResultMap">
+		SELECT
+			ID
+			,BLOCK_NUMBER
+			,VERIFY_BLOCK_NUMBER
+			,HASH
+			,BLOCK_CREATE_TIME
+			,STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			BLOCK_CHAIN 
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryPaginationListCount" resultType="Integer">
+		SELECT
+			COUNT(0)
+		FROM
+			BLOCK_CHAIN 
+		WHERE
+			1=1 
+			<include refid="blockChainColumns" />
+	</select>
+	
+	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="blockChainResultMap">
+		SELECT
+			ID
+			,BLOCK_NUMBER
+			,VERIFY_BLOCK_NUMBER
+			,HASH
+			,BLOCK_CREATE_TIME
+			,STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			BLOCK_CHAIN
+		WHERE
+			1=1
+			<include refid="blockChainColumns" />
+		ORDER BY
+			ID
+	</select>
+	
+</mapper>
+

@@ -8,7 +8,7 @@ import java.util.List;
 public interface Erc20ContractService {
 
     /**
-     *
+     * 获取交易信息
      * @param txInput
      * @return
      */
