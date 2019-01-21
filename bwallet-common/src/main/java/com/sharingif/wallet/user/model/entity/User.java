@@ -4,6 +4,8 @@ package com.sharingif.wallet.user.model.entity;
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
 import com.sharingif.cube.components.sequence.Sequence;
 
+import java.util.Date;
+
 public class User implements java.io.Serializable, IObjectDateOperationHistory {
 	
 	//columns START
