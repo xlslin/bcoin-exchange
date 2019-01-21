@@ -2,7 +2,9 @@ package com.sharingif.blockchain.bitcoin.block.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+import com.sharingif.cube.components.sequence.Sequence;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 public class BlockChainSync implements java.io.Serializable, IObjectDateOperationHistory {
@@ -15,16 +17,17 @@ public class BlockChainSync implements java.io.Serializable, IObjectDateOperatio
 	//columns START
     /**
      * id			db_column: ID 
-     */	
-	private java.lang.String id;
+     */
+	@Sequence(ref="uuidSequenceGenerator")
+	private String id;
     /**
      * 区块数			db_column: BLOCK_NUMBER 
      */	
-	private java.lang.Long blockNumber;
+	private BigInteger blockNumber;
     /**
      * 类型(00:区块同步)			db_column: TYPE 
      */	
-	private java.lang.String type;
+	private String type;
     /**
      * 创建时间			db_column: CREATE_TIME 
      */	
@@ -35,22 +38,22 @@ public class BlockChainSync implements java.io.Serializable, IObjectDateOperatio
 	private Date modifyTime;
 	//columns END
 
-	public void setId(java.lang.String id) {
+	public void setId(String id) {
 		this.id = id;
 	}
-	public java.lang.String getId() {
+	public String getId() {
 		return this.id;
 	}
-	public void setBlockNumber(java.lang.Long blockNumber) {
+	public void setBlockNumber(BigInteger blockNumber) {
 		this.blockNumber = blockNumber;
 	}
-	public java.lang.Long getBlockNumber() {
+	public BigInteger getBlockNumber() {
 		return this.blockNumber;
 	}
-	public void setType(java.lang.String type) {
+	public void setType(String type) {
 		this.type = type;
 	}
-	public java.lang.String getType() {
+	public String getType() {
 		return this.type;
 	}
 	public void setCreateTime(Date createTime) {

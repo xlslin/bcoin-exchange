@@ -2,28 +2,56 @@ package com.sharingif.blockchain.bitcoin.block.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+import com.sharingif.cube.components.sequence.Sequence;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 public class BlockChain implements java.io.Serializable, IObjectDateOperationHistory {
+
+	/**
+	 * 状态(WCL:未处理)
+	 */
+	public static final String STATUS_UNTREATED = "WCL";
+	/**
+	 * 状态(QKTBZ:区块同步中)
+	 */
+	public static final String STATUS_BLOCK_SYNCHING = "QKTBZ";
+	/**
+	 * 状态(WYZ:未验证)
+	 */
+	public static final String STATUS_UNVERIFIED = "WYZ";
+	/**
+	 * 状态(QKYZZ:区块验证中)
+	 */
+	public static final String STATUS_VERIFYING = "QKYZZ";
+	/**
+	 * 状态(QKYZYX:区块验证有效)
+	 */
+	public static final String STATUS_VERIFY_VALID = "QKYZYX";
+	/**
+	 * 状态(QKYZWX:区块验证无效)
+	 */
+	public static final String STATUS_VERIFY_INVALID = "QKYZWX";
 	
 	//columns START
     /**
      * id			db_column: ID 
-     */	
-	private java.lang.String id;
+     */
+	@Sequence(ref="uuidSequenceGenerator")
+	private String id;
     /**
      * 区块号			db_column: BLOCK_NUMBER 
      */	
-	private java.lang.Long blockNumber;
+	private BigInteger blockNumber;
     /**
      * 验证区块号			db_column: VERIFY_BLOCK_NUMBER 
      */	
-	private java.lang.Long verifyBlockNumber;
+	private BigInteger verifyBlockNumber;
     /**
      * 区块hash			db_column: HASH 
      */	
-	private java.lang.String hash;
+	private String hash;
     /**
      * 块创建时间			db_column: BLOCK_CREATE_TIME 
      */	
@@ -31,7 +59,7 @@ public class BlockChain implements java.io.Serializable, IObjectDateOperationHis
     /**
      * 状态(WCL:未处理、QKTBZ:区块同步中、WYZ:未验证、QKYZYX:区块验证有效、QKYZWX:区块验证无效)			db_column: STATUS 
      */	
-	private java.lang.String status;
+	private String status;
     /**
      * 创建时间			db_column: CREATE_TIME 
      */	
@@ -42,28 +70,28 @@ public class BlockChain implements java.io.Serializable, IObjectDateOperationHis
 	private Date modifyTime;
 	//columns END
 
-	public void setId(java.lang.String id) {
+	public void setId(String id) {
 		this.id = id;
 	}
-	public java.lang.String getId() {
+	public String getId() {
 		return this.id;
 	}
-	public void setBlockNumber(java.lang.Long blockNumber) {
+	public void setBlockNumber(BigInteger blockNumber) {
 		this.blockNumber = blockNumber;
 	}
-	public java.lang.Long getBlockNumber() {
+	public BigInteger getBlockNumber() {
 		return this.blockNumber;
 	}
-	public void setVerifyBlockNumber(java.lang.Long verifyBlockNumber) {
+	public void setVerifyBlockNumber(BigInteger verifyBlockNumber) {
 		this.verifyBlockNumber = verifyBlockNumber;
 	}
-	public java.lang.Long getVerifyBlockNumber() {
+	public BigInteger getVerifyBlockNumber() {
 		return this.verifyBlockNumber;
 	}
-	public void setHash(java.lang.String hash) {
+	public void setHash(String hash) {
 		this.hash = hash;
 	}
-	public java.lang.String getHash() {
+	public String getHash() {
 		return this.hash;
 	}
 	public void setBlockCreateTime(Date blockCreateTime) {
@@ -72,10 +100,10 @@ public class BlockChain implements java.io.Serializable, IObjectDateOperationHis
 	public Date getBlockCreateTime() {
 		return this.blockCreateTime;
 	}
-	public void setStatus(java.lang.String status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
-	public java.lang.String getStatus() {
+	public String getStatus() {
 		return this.status;
 	}
 	public void setCreateTime(Date createTime) {
