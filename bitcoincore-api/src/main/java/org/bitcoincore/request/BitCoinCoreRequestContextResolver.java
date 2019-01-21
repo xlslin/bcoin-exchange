@@ -3,6 +3,7 @@ package org.bitcoincore.request;
 import com.sharingif.cube.communication.MediaType;
 import com.sharingif.cube.communication.transport.AbstractHandlerMethodTransport;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
+import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import com.sharingif.cube.core.request.RequestContext;
 import com.sharingif.cube.core.request.RequestContextResolver;
 import com.sharingif.cube.core.util.UUIDUtils;
@@ -19,20 +20,25 @@ public class BitCoinCoreRequestContextResolver implements RequestContextResolver
         Object[] args = (Object[])request[1];
 
         RequestMapping methodRequestMapping = AnnotationUtils.findAnnotation(remoteHttpJsonHandlerMethod.getMethod(), RequestMapping.class);
+        RequestMethod bestRequestMethod = methodRequestMapping.method()[0];
         String bestMethodValue = methodRequestMapping.value()[0];
 
         BitCoinCoreRequest bitCoinCoreRequest = new BitCoinCoreRequest();
         bitCoinCoreRequest.setJsonrpc("1.0");
         bitCoinCoreRequest.setId(UUIDUtils.generateUUID());
         bitCoinCoreRequest.setMethod(bestMethodValue);
+        if(args == null) {
+            args = new Object[]{};
+        }
         bitCoinCoreRequest.setParams(Arrays.asList(args));
 
         args = new Object[]{bitCoinCoreRequest};
 
         RequestContext<Object[]> requestContext = new RequestContext<Object[]>(
                 MediaType.APPLICATION_JSON.toString()
-                ,bestMethodValue, Locale.getDefault()
-                ,methodRequestMapping.name()
+                ,"/"
+                ,Locale.getDefault()
+                ,bestRequestMethod.name()
                 ,args
         );
 

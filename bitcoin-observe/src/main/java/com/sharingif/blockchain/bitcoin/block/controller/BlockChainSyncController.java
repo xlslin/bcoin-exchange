@@ -3,6 +3,7 @@ package com.sharingif.blockchain.bitcoin.block.controller;
 
 import com.sharingif.blockchain.bitcoin.block.service.BlockChainSyncService;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
+import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
@@ -21,5 +22,10 @@ public class BlockChainSyncController {
 	public void setBlockChainSyncService(BlockChainSyncService blockChainSyncService) {
 		this.blockChainSyncService = blockChainSyncService;
 	}
-	
+
+	@RequestMapping(value="sync", method= RequestMethod.POST)
+	public void sync() {
+		blockChainSyncService.sync();
+	}
+
 }

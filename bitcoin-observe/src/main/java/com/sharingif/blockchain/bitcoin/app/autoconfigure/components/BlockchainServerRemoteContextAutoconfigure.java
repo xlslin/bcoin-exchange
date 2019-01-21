@@ -37,13 +37,13 @@ public class BlockchainServerRemoteContextAutoconfigure {
 
     @Bean(name= "blockchainServerHttpJsonRemoteHandlerMethodTransportFactory")
     public ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>> createBlockchainServerHttpJsonRemoteHandlerMethodTransportFactory(
-            HttpJsonConnection cryptoServerHttpJsonConnection
+            HttpJsonConnection blockchainServerHttpJsonConnection
             , ProxyInterfaceHandlerMethodCommunicationTransform<String,String,JsonModel<Object>> jsonModelProxyInterfaceHandlerMethodCommunicationTransform
             , JsonModelBusinessCommunicationExceptionHandler jsonModelBusinessCommunicationExceptionHandler
             , MultiHandlerMethodChain transportChains
     ) {
         ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>> httpJsonRemoteHandlerMethodTransportFactory = new ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>>();
-        httpJsonRemoteHandlerMethodTransportFactory.setConnection(cryptoServerHttpJsonConnection);
+        httpJsonRemoteHandlerMethodTransportFactory.setConnection(blockchainServerHttpJsonConnection);
         httpJsonRemoteHandlerMethodTransportFactory.setTransform(jsonModelProxyInterfaceHandlerMethodCommunicationTransform);
         httpJsonRemoteHandlerMethodTransportFactory.setBusinessCommunicationExceptionHandler(jsonModelBusinessCommunicationExceptionHandler);
         httpJsonRemoteHandlerMethodTransportFactory.setHandlerMethodChain(transportChains);
@@ -54,7 +54,7 @@ public class BlockchainServerRemoteContextAutoconfigure {
     @Bean(name = "blockchainServerRemoteServices")
     public RemoteServices createBlockchainServerRemoteServices(
             HandlerMethodCommunicationTransportRequestContextResolver handlerMethodCommunicationTransportRequestContextResolver
-            ,ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>> cryptoServerHttpJsonRemoteHandlerMethodTransportFactory
+            ,ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>> blockchainServerHttpJsonRemoteHandlerMethodTransportFactory
     ) {
         List<String> services = new ArrayList<String>();
 
@@ -62,7 +62,7 @@ public class BlockchainServerRemoteContextAutoconfigure {
 
         RemoteServices remoteServices = new RemoteServices();
         remoteServices.setRequestContextResolver(handlerMethodCommunicationTransportRequestContextResolver);
-        remoteServices.setHandlerMethodCommunicationTransportFactory(cryptoServerHttpJsonRemoteHandlerMethodTransportFactory);
+        remoteServices.setHandlerMethodCommunicationTransportFactory(blockchainServerHttpJsonRemoteHandlerMethodTransportFactory);
         remoteServices.setServices(services);
 
         return remoteServices;

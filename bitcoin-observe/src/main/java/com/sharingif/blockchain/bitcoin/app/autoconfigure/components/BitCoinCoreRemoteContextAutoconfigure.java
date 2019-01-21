@@ -56,7 +56,7 @@ public class BitCoinCoreRemoteContextAutoconfigure {
     @Bean(name="bitCoinCoreJsonModelProxyInterfaceHandlerMethodCommunicationTransform")
     public ProxyInterfaceHandlerMethodCommunicationTransform<String,String,JsonModel<Object>> createBitCoinCoreJsonModelProxyInterfaceHandlerMethodCommunicationTransform(
             ObjectToJsonStringMarshaller objectToJsonStringMarshaller
-            ,StringToJsonModelMarshaller bitCoinCoreStringToJsonModelMarshaller
+            ,BitCoinCoreStringToJsonModelMarshaller bitCoinCoreStringToJsonModelMarshaller
     ) {
         ProxyInterfaceHandlerMethodCommunicationTransform<String,String,JsonModel<Object>> proxyInterfaceHandlerMethodCommunicationTransform = new ProxyInterfaceHandlerMethodCommunicationTransform<String,String,JsonModel<Object>>();
         proxyInterfaceHandlerMethodCommunicationTransform.setMarshaller(objectToJsonStringMarshaller);
