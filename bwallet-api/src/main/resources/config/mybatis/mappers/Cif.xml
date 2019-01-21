@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="cif">
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="cifColumns">
+    	<if test="null!=id">
+    		and ID = #{id}
+    	</if>
+    	<if test="null!=cifName">
+    		and CIF_NAME = #{cifName}
+    	</if>
+    	<if test="null!=sex">
+    		and SEX = #{sex}
+    	</if>
+    	<if test="null!=birthday">
+    		and BIRTHDAY = #{birthday}
+    	</if>
+    	<if test="null!=idType">
+    		and ID_TYPE = #{idType}
+    	</if>
+    	<if test="null!=idNum">
+    		and ID_NUM = #{idNum}
+    	</if>
+    	<if test="null!=halfPhoto">
+    		and HALF_PHOTO = #{halfPhoto}
+    	</if>
+    	<if test="null!=identityPhotosFornt">
+    		and IDENTITY_PHOTOS_FORNT = #{identityPhotosFornt}
+    	</if>
+    	<if test="null!=identityPhotosRear">
+    		and IDENTITY_PHOTOS_REAR = #{identityPhotosRear}
+    	</if>
+    	<if test="null!=identityPhotosHold">
+    		and IDENTITY_PHOTOS_HOLD = #{identityPhotosHold}
+    	</if>
+    	<if test="null!=createTime">
+    		and CREATE_TIME = #{createTime}
+    	</if>
+    	<if test="null!=modifyTime">
+    		and MODIFY_TIME = #{modifyTime}
+    	</if>
+	</sql>
+	
+	<sql id="cifSetColumns">
+		    <if test="null!=id">
+		    ID = #{id},
+		    </if>
+		    <if test="null!=cifName">
+		    CIF_NAME = #{cifName},
+		    </if>
+		    <if test="null!=sex">
+		    SEX = #{sex},
+		    </if>
+		    <if test="null!=birthday">
+		    BIRTHDAY = #{birthday},
+		    </if>
+		    <if test="null!=idType">
+		    ID_TYPE = #{idType},
+		    </if>
+		    <if test="null!=idNum">
+		    ID_NUM = #{idNum},
+		    </if>
+		    <if test="null!=halfPhoto">
+		    HALF_PHOTO = #{halfPhoto},
+		    </if>
+		    <if test="null!=identityPhotosFornt">
+		    IDENTITY_PHOTOS_FORNT = #{identityPhotosFornt},
+		    </if>
+		    <if test="null!=identityPhotosRear">
+		    IDENTITY_PHOTOS_REAR = #{identityPhotosRear},
+		    </if>
+		    <if test="null!=identityPhotosHold">
+		    IDENTITY_PHOTOS_HOLD = #{identityPhotosHold},
+		    </if>
+		    <if test="null!=createTime">
+		    CREATE_TIME = #{createTime},
+		    </if>
+		    <if test="null!=modifyTime">
+		    MODIFY_TIME = #{modifyTime},
+		    </if>
+	</sql>
+
+	<resultMap id="cifResultMap" type="com.sharingif.wallet.user.model.entity.Cif">
+        <result property="id" column="ID"/>
+        <result property="cifName" column="CIF_NAME"/>
+        <result property="sex" column="SEX"/>
+        <result property="birthday" column="BIRTHDAY"/>
+        <result property="idType" column="ID_TYPE"/>
+        <result property="idNum" column="ID_NUM"/>
+        <result property="halfPhoto" column="HALF_PHOTO"/>
+        <result property="identityPhotosFornt" column="IDENTITY_PHOTOS_FORNT"/>
+        <result property="identityPhotosRear" column="IDENTITY_PHOTOS_REAR"/>
+        <result property="identityPhotosHold" column="IDENTITY_PHOTOS_HOLD"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+	</resultMap>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert">
+        INSERT INTO CIF (
+        	ID
+        	,CIF_NAME
+        	,SEX
+        	,BIRTHDAY
+        	,ID_TYPE
+        	,ID_NUM
+        	,HALF_PHOTO
+        	,IDENTITY_PHOTOS_FORNT
+        	,IDENTITY_PHOTOS_REAR
+        	,IDENTITY_PHOTOS_HOLD
+        	,CREATE_TIME
+        	,MODIFY_TIME
+        ) VALUES (
+        	#{id}
+        	,#{cifName}
+        	,#{sex}
+        	,#{birthday}
+        	,#{idType}
+        	,#{idNum}
+        	,#{halfPhoto}
+        	,#{identityPhotosFornt}
+        	,#{identityPhotosRear}
+        	,#{identityPhotosHold}
+        	,#{createTime}
+        	,#{modifyTime}
+        )
+	</insert>
+	
+	<delete id="deleteById">
+	    DELETE FROM
+	    	CIF 
+	    WHERE
+	    ID = #{id} 
+    </delete>
+    
+    <delete id="deleteByCondition">
+	    DELETE FROM
+	    	CIF 
+	    WHERE
+	    	1=1
+		    <include refid="cifColumns" />
+    </delete>
+    
+	<update id="updateById">
+	    UPDATE
+	    	CIF 
+        <set>
+	        <include refid="cifSetColumns" />
+		</set>
+	    WHERE
+	    ID = #{id} 
+	</update>
+	
+    <select id="queryById" resultMap="cifResultMap">
+		SELECT
+			ID
+			,CIF_NAME
+			,SEX
+			,BIRTHDAY
+			,ID_TYPE
+			,ID_NUM
+			,HALF_PHOTO
+			,IDENTITY_PHOTOS_FORNT
+			,IDENTITY_PHOTOS_REAR
+			,IDENTITY_PHOTOS_HOLD
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			CIF 
+		WHERE 
+			ID = #{id} 
+	</select>
+	
+	<select id="queryList" resultMap="cifResultMap">
+		SELECT
+			ID
+			,CIF_NAME
+			,SEX
+			,BIRTHDAY
+			,ID_TYPE
+			,ID_NUM
+			,HALF_PHOTO
+			,IDENTITY_PHOTOS_FORNT
+			,IDENTITY_PHOTOS_REAR
+			,IDENTITY_PHOTOS_HOLD
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			CIF
+		WHERE
+			1=1
+			<include refid="cifColumns" />
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryAll" resultMap="cifResultMap">
+		SELECT
+			ID
+			,CIF_NAME
+			,SEX
+			,BIRTHDAY
+			,ID_TYPE
+			,ID_NUM
+			,HALF_PHOTO
+			,IDENTITY_PHOTOS_FORNT
+			,IDENTITY_PHOTOS_REAR
+			,IDENTITY_PHOTOS_HOLD
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			CIF 
+		ORDER BY
+			ID
+	</select>
+	
+	<select id="queryPaginationListCount" resultType="Integer">
+		SELECT
+			COUNT(0)
+		FROM
+			CIF 
+		WHERE
+			1=1 
+			<include refid="cifColumns" />
+	</select>
+	
+	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="cifResultMap">
+		SELECT
+			ID
+			,CIF_NAME
+			,SEX
+			,BIRTHDAY
+			,ID_TYPE
+			,ID_NUM
+			,HALF_PHOTO
+			,IDENTITY_PHOTOS_FORNT
+			,IDENTITY_PHOTOS_REAR
+			,IDENTITY_PHOTOS_HOLD
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			CIF
+		WHERE
+			1=1
+			<include refid="cifColumns" />
+		ORDER BY
+			ID
+	</select>
+	
+</mapper>
+
