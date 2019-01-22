@@ -9,6 +9,11 @@ import java.util.Date;
 public class BitCoin implements java.io.Serializable, IObjectDateOperationHistory {
 
 	/**
+	 * 区块类型(Bitcoin)
+	 */
+	public static final String BLOCK_TYPE_BITCOIN = "Bitcoin";
+
+	/**
 	 * 区块类型(Ether)
 	 */
 	public static final String BLOCK_TYPE_ETHER = "Ether";

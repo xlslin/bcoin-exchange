@@ -64,6 +64,11 @@
             <artifactId>ether-observe-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>bitcoin-observe-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 
 	</dependencies>
 	

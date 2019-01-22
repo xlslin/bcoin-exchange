@@ -10,24 +10,19 @@ import com.sharingif.cube.communication.transport.transform.ProxyInterfaceHandle
 import com.sharingif.cube.core.handler.chain.MultiHandlerMethodChain;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * ether-observe服务
- */
-@Configuration
-public class EtherObserveRemoteContextAutoconfigure {
+public class BitcoinObserveRemoteContextAutoconfigure {
 
-    @Bean(name = "etherObserveHttpJsonConnection")
-    public HttpJsonConnection createEtherObserveHttpJsonConnection(
-            @Value("${ether.observe.http.host}")String host
-            ,@Value("${ether.observe.http.port}")int port
-            ,@Value("${ether.observe.http.contextPath}") String contextPath
-            ,@Value("${ether.observe.http.so.timeout}")int soTimeout
+    @Bean(name = "bitcoinObserveHttpJsonConnection")
+    public HttpJsonConnection createBitcoinObserveHttpJsonConnection(
+            @Value("${bitcoin.observe.http.host}")String host
+            ,@Value("${bitcoin.observe.http.port}")int port
+            ,@Value("${bitcoin.observe.http.contextPath}") String contextPath
+            ,@Value("${bitcoin.observe.http.so.timeout}")int soTimeout
     ) {
         HttpJsonConnection apacheHttpJsonConnection = new HttpJsonConnection(host, port, contextPath);
         apacheHttpJsonConnection.setSoTimeout(soTimeout);
@@ -36,15 +31,15 @@ public class EtherObserveRemoteContextAutoconfigure {
     }
 
 
-    @Bean(name= "etherObserveHttpJsonRemoteHandlerMethodTransportFactory")
-    public ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>> createEtherObserveHttpJsonRemoteHandlerMethodTransportFactory(
-            HttpJsonConnection etherObserveHttpJsonConnection
+    @Bean(name= "bitcoinObserveHttpJsonRemoteHandlerMethodTransportFactory")
+    public ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>> createBitcoinObserveHttpJsonRemoteHandlerMethodTransportFactory(
+            HttpJsonConnection bitcoinObserveHttpJsonConnection
             , ProxyInterfaceHandlerMethodCommunicationTransform<String,String,JsonModel<Object>> jsonModelProxyInterfaceHandlerMethodCommunicationTransform
             , JsonModelBusinessCommunicationExceptionHandler jsonModelBusinessCommunicationExceptionHandler
             , MultiHandlerMethodChain transportChains
     ) {
         ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>> httpJsonRemoteHandlerMethodTransportFactory = new ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>>();
-        httpJsonRemoteHandlerMethodTransportFactory.setConnection(etherObserveHttpJsonConnection);
+        httpJsonRemoteHandlerMethodTransportFactory.setConnection(bitcoinObserveHttpJsonConnection);
         httpJsonRemoteHandlerMethodTransportFactory.setTransform(jsonModelProxyInterfaceHandlerMethodCommunicationTransform);
         httpJsonRemoteHandlerMethodTransportFactory.setBusinessCommunicationExceptionHandler(jsonModelBusinessCommunicationExceptionHandler);
         httpJsonRemoteHandlerMethodTransportFactory.setHandlerMethodChain(transportChains);
@@ -52,19 +47,18 @@ public class EtherObserveRemoteContextAutoconfigure {
         return httpJsonRemoteHandlerMethodTransportFactory;
     }
 
-    @Bean(name = "etherObserveRemoteServices")
-    public RemoteServices createEtherObserveRemoteServices(
+    @Bean(name = "bitcoinObserveRemoteServices")
+    public RemoteServices createBitcoinObserveRemoteServices(
             HandlerMethodCommunicationTransportRequestContextResolver handlerMethodCommunicationTransportRequestContextResolver
-            ,ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>> etherObserveHttpJsonRemoteHandlerMethodTransportFactory
+            ,ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>> bitcoinObserveHttpJsonRemoteHandlerMethodTransportFactory
     ) {
         List<String> services = new ArrayList<String>();
 
-        services.add("com.sharingif.blockchain.ether.api.account.service.AddressListenerApiService");
-        services.add("com.sharingif.blockchain.ether.api.withdrawal.service.WithdrawalEtherApiService");
+        services.add("com.sharingif.blockchain.bitcoin.api.account.service.AddressListenerApiService");
 
         RemoteServices remoteServices = new RemoteServices();
         remoteServices.setRequestContextResolver(handlerMethodCommunicationTransportRequestContextResolver);
-        remoteServices.setHandlerMethodCommunicationTransportFactory(etherObserveHttpJsonRemoteHandlerMethodTransportFactory);
+        remoteServices.setHandlerMethodCommunicationTransportFactory(bitcoinObserveHttpJsonRemoteHandlerMethodTransportFactory);
         remoteServices.setServices(services);
 
         return remoteServices;

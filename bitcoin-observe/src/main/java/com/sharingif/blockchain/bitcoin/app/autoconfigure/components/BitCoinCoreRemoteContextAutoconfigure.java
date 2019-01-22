@@ -37,11 +37,13 @@ public class BitCoinCoreRemoteContextAutoconfigure {
             ,@Value("${bitcoincore.server.http.so.timeout}")int soTimeout
             ,@Value("${bitcoincore.server.http.user}")String user
             ,@Value("${bitcoincore.server.http.password}")String password
+            ,@Value("${bitcoincore.server.http.receive.logger}")Boolean receiveLogger
     ) {
         HttpJsonConnection apacheHttpJsonConnection = new HttpJsonConnection(host, port, null);
         apacheHttpJsonConnection.setSoTimeout(soTimeout);
         apacheHttpJsonConnection.setUser(user);
         apacheHttpJsonConnection.setPassword(password);
+        apacheHttpJsonConnection.setReceiveLogger(receiveLogger);
 
         return apacheHttpJsonConnection;
     }

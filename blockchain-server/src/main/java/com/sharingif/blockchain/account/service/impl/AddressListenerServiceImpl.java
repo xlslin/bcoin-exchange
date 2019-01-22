@@ -11,20 +11,32 @@ import javax.annotation.Resource;
 @Service
 public class AddressListenerServiceImpl implements AddressListenerService {
 
-	private AddressListenerApiService addressListenerApiService;
+	private com.sharingif.blockchain.ether.api.account.service.AddressListenerApiService etherAddressListenerApiService;
+	private com.sharingif.blockchain.bitcoin.api.account.service.AddressListenerApiService bitCoinAddressListenerApiService;
 
 	@Resource
-	public void setAddressListenerApiService(AddressListenerApiService addressListenerApiService) {
-		this.addressListenerApiService = addressListenerApiService;
+	public void setEtherAddressListenerApiService(AddressListenerApiService etherAddressListenerApiService) {
+		this.etherAddressListenerApiService = etherAddressListenerApiService;
+	}
+	@Resource
+	public void setBitCoinAddressListenerApiService(com.sharingif.blockchain.bitcoin.api.account.service.AddressListenerApiService bitCoinAddressListenerApiService) {
+		this.bitCoinAddressListenerApiService = bitCoinAddressListenerApiService;
 	}
 
 	@Override
 	public void add(String blockType, String address) {
 		if(BitCoin.BLOCK_TYPE_ETHER.equals(blockType)) {
+			com.sharingif.blockchain.bitcoin.api.account.entity.AddressListenerAddReq req = new com.sharingif.blockchain.bitcoin.api.account.entity.AddressListenerAddReq();
+			req.setAddress(address);
+
+			bitCoinAddressListenerApiService.add(req);
+		}
+
+		if(BitCoin.BLOCK_TYPE_ETHER.equals(blockType)) {
 			com.sharingif.blockchain.ether.api.account.entity.AddressListenerAddReq req = new com.sharingif.blockchain.ether.api.account.entity.AddressListenerAddReq();
 			req.setAddress(address);
 
-			addressListenerApiService.add(req);
+			etherAddressListenerApiService.add(req);
 		}
 
 	}
