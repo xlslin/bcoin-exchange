@@ -3,11 +3,14 @@ package com.sharingif.blockchain.bitcoin.block.service.impl;
 
 import javax.annotation.Resource;
 
+import com.sharingif.blockchain.bitcoin.account.service.AddressListenerService;
 import com.sharingif.blockchain.bitcoin.app.constants.Constants;
+import com.sharingif.blockchain.bitcoin.app.constants.ScriptTypes;
 import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChain;
 import com.sharingif.blockchain.bitcoin.block.model.entity.UtxoVin;
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
 import com.sharingif.cube.core.util.StringUtils;
+import org.bitcoincore.api.rawtransactions.entity.ScriptPubKey;
 import org.bitcoincore.api.rawtransactions.entity.Vin;
 import org.bitcoincore.api.rawtransactions.entity.Vout;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	
 	private TransactionDAO transactionDAO;
 	private BitCoinBlockService bitCoinBlockService;
+	private AddressListenerService addressListenerService;
 
 	public TransactionDAO getTransactionDAO() {
 		return transactionDAO;
@@ -39,8 +43,29 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	public void setBitCoinBlockService(BitCoinBlockService bitCoinBlockService) {
 		this.bitCoinBlockService = bitCoinBlockService;
 	}
+	@Resource
+	public void setAddressListenerService(AddressListenerService addressListenerService) {
+		this.addressListenerService = addressListenerService;
+	}
 
 	public void addUntreatedTransaction(Transaction transaction) {
+		transaction.setTxStatus(BlockChain.STATUS_UNVERIFIED);
+		add(transaction);
+	}
+
+	public void persistenceTransaction(Transaction transaction) {
+
+		Transaction queryTransaction = new Transaction();
+		queryTransaction.setBlockNumber(transaction.getBlockNumber());
+		queryTransaction.setBlockHash(transaction.getBlockHash());
+		queryTransaction.setTxHash(transaction.getTxHash());
+
+		queryTransaction = transactionDAO.query(queryTransaction);
+
+		if(queryTransaction != null) {
+			return;
+		}
+
 		transaction.setTxStatus(BlockChain.STATUS_UNVERIFIED);
 		add(transaction);
 	}
@@ -74,30 +99,6 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		}
 
 		return utxoVinList;
-	}
-
-	/**
-	 * 合并相同vin地址的余额
-	 * @param utxoVinList
-	 */
-	protected List<UtxoVin> mergeVinAddressValue(List<UtxoVin> utxoVinList) {
-		Map<String,UtxoVin> vInMap = new HashMap<String,UtxoVin>();
-		for(UtxoVin utxoVin : utxoVinList) {
-			Vout vout = utxoVin.getVout();
-			String addresses = vout.getScriptPubKey().getAddresses().get(0);
-			UtxoVin uv = vInMap.get(addresses);
-			if(uv == null) {
-				vInMap.put(addresses, utxoVin);
-			} else {
-				uv.getVout().setValue(uv.getVout().getValue().add(vout.getValue()));
-			}
-		}
-
-		List<UtxoVin> newUtxoVinList = new ArrayList<UtxoVin>(vInMap.entrySet().size());
-		for(Map.Entry<String, UtxoVin> entry : vInMap.entrySet()) {
-			newUtxoVinList.add(entry.getValue());
-		}
-		return newUtxoVinList;
 	}
 
 	/**
@@ -142,13 +143,29 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		return txFee;
 	}
 
+	protected boolean isWatch(Vout vout, Transaction transaction) {
+		ScriptPubKey scriptPubKey = vout.getScriptPubKey();
+		String scriptTypes = scriptPubKey.getType();
+		List<String> addresses = scriptPubKey.getAddresses();
+
+		if((!ScriptTypes.PUB_KEY_HASH.getName().equals(scriptTypes) && !ScriptTypes.SCRIPT_HASH.getName().equals(scriptTypes)) || addresses.size()>1) {
+			logger.error("script types error, vout:{}, transaction:{}", vout, transaction);
+
+			return false;
+		}
+
+		String address = addresses.get(0);
+
+		return addressListenerService.isWatch(address);
+
+	}
+
 	@Override
 	public void analysis(org.bitcoincore.api.rawtransactions.entity.Transaction tx, BigInteger blockNumber, String blockHash, Date blockCreateTime) {
 		Transaction transaction = null;
 		try {
 
 			List<UtxoVin> utxoVinList = handletUtxoVin(blockHash, tx.getvIn());
-			utxoVinList = mergeVinAddressValue(utxoVinList);
 			List<Vout> vOutList = tx.getvOut();
 
 			updateValueUnit(utxoVinList, vOutList);
@@ -162,6 +179,23 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			transaction.setTxFee(txFee);
 			transaction.setTxTime(blockCreateTime);
 			transaction.setConfirmBlockNumber(0);
+
+			boolean isAddUntreatedTransaction = false;
+
+			for(UtxoVin utxoVin : utxoVinList) {
+				boolean isWatchFrom = isWatch(utxoVin.getVout(), transaction);
+				if(isWatchFrom) {
+					if(!isAddUntreatedTransaction) {
+						persistenceTransaction(transaction);
+						isAddUntreatedTransaction = true;
+					}
+
+				}
+			}
+
+			for(Vout vout : vOutList) {
+
+			}
 
 		} catch (Exception e) {
 		// geth连接超时

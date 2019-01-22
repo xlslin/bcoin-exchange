@@ -4,11 +4,57 @@ package com.sharingif.blockchain.bitcoin.block.model.entity;
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
 import com.sharingif.cube.components.sequence.Sequence;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 
 public class TransactionBusiness implements java.io.Serializable, IObjectDateOperationHistory {
+
+	/**
+	 * 交易类型(DEPOSIT:充值)
+	 */
+	public static final String TYPE_DEPOSIT = "DEPOSIT";
+	/**
+	 * 交易类型(WITHDRAWAL:提现)
+	 */
+	public static final String TYPE_WITHDRAWAL = "WITHDRAWAL";
+
+	/**
+	 * 处理状态(WCL:未处理)
+	 */
+	public static final String STATUS_UNTREATED = "WCL";
+	/**
+	 * 处理状态(CSHTZZ:初始化通知中)
+	 */
+	public static final String STATUS_INIT_NOTICE = "CSHTZZ";
+	/**
+	 * 处理状态(CSHTZCG:初始化通知成功)
+	 */
+	public static final String STATUS_INIT_NOTICED = "CSHTZCG";
+	/**
+	 * 处理状态(JYWCTZZ:交易完成通知中)
+	 */
+	public static final String STATUS_FINISH_NOTICING = "JYWCTZZ";
+	/**
+	 * 处理状态(JYWCTZCG:交易完成通知成功)
+	 */
+	public static final String STATUS_FINISH_NOTICED = "JYWCTZCG";
+
+	/**
+	 * 处理状态(WQS:未清算)
+	 */
+	public static final String SETTLE_STATUS_UNTREATED = "WQS";
+	/**
+	 * 处理状态(ZBQS:准备清算)
+	 */
+	public static final String SETTLE_STATUS_READY = "ZBQS";
+	/**
+	 * 处理状态(QSZ:清算中)
+	 */
+	public static final String SETTLE_STATUS_PROCESSING = "QSZ";
+	/**
+	 * 处理状态(QSWC:清算完成)
+	 */
+	public static final String SETTLE_STATUS_FINISH = "QSWC";
 	
 	//columns START
     /**
@@ -33,6 +79,10 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
      */	
 	private String transactionId;
     /**
+     * vin/vout index			db_column: VIO_INDEX 
+     */	
+	private BigInteger vioIndex;
+    /**
      * 币种			db_column: COIN_TYPE 
      */	
 	private String coinType;
@@ -47,11 +97,11 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
     /**
      * 金额			db_column: AMOUNT 
      */	
-	private BigDecimal amount;
+	private BigInteger amount;
     /**
      * 手续费			db_column: FEE 
      */	
-	private BigDecimal fee;
+	private BigInteger fee;
     /**
      * 交易类型(DEPOSIT:充值、WITHDRAWAL:提现)			db_column: TYPE 
      */	
@@ -112,6 +162,12 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	public String getTransactionId() {
 		return this.transactionId;
 	}
+	public void setVioIndex(BigInteger vioIndex) {
+		this.vioIndex = vioIndex;
+	}
+	public BigInteger getVioIndex() {
+		return this.vioIndex;
+	}
 	public void setCoinType(String coinType) {
 		this.coinType = coinType;
 	}
@@ -130,16 +186,16 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 	public String getTxTo() {
 		return this.txTo;
 	}
-	public void setAmount(BigDecimal amount) {
+	public void setAmount(BigInteger amount) {
 		this.amount = amount;
 	}
-	public BigDecimal getAmount() {
+	public BigInteger getAmount() {
 		return this.amount;
 	}
-	public void setFee(BigDecimal fee) {
+	public void setFee(BigInteger fee) {
 		this.fee = fee;
 	}
-	public BigDecimal getFee() {
+	public BigInteger getFee() {
 		return this.fee;
 	}
 	public void setType(String type) {
@@ -192,6 +248,7 @@ public class TransactionBusiness implements java.io.Serializable, IObjectDateOpe
 					.append("BlockHash=").append(getBlockHash()).append(", ")
 					.append("TxHash=").append(getTxHash()).append(", ")
 					.append("TransactionId=").append(getTransactionId()).append(", ")
+					.append("VioIndex=").append(getVioIndex()).append(", ")
 					.append("CoinType=").append(getCoinType()).append(", ")
 					.append("TxFrom=").append(getTxFrom()).append(", ")
 					.append("TxTo=").append(getTxTo()).append(", ")

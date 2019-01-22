@@ -5,27 +5,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 
 <!-- 不使用namespace的话sql搜索定位会比较方便 -->
-<mapper namespace="transactionBusiness">
+<mapper namespace="withdrawal">
 
 	<!-- 用于select查询公用抽取的列 -->
-	<sql id="transactionBusinessColumns">
+	<sql id="withdrawalColumns">
     	<if test="null!=id">
     		and ID = #{id}
     	</if>
-    	<if test="null!=blockNumber">
-    		and BLOCK_NUMBER = #{blockNumber}
-    	</if>
-    	<if test="null!=blockHash">
-    		and BLOCK_HASH = #{blockHash}
+    	<if test="null!=withdrawalId">
+    		and WITHDRAWAL_ID = #{withdrawalId}
     	</if>
     	<if test="null!=txHash">
     		and TX_HASH = #{txHash}
-    	</if>
-    	<if test="null!=transactionId">
-    		and TRANSACTION_ID = #{transactionId}
-    	</if>
-    	<if test="null!=vioIndex">
-    		and VIO_INDEX = #{vioIndex}
     	</if>
     	<if test="null!=coinType">
     		and COIN_TYPE = #{coinType}
@@ -36,23 +27,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=txTo">
     		and TX_TO = #{txTo}
     	</if>
+    	<if test="null!=contractAddress">
+    		and CONTRACT_ADDRESS = #{contractAddress}
+    	</if>
     	<if test="null!=amount">
     		and AMOUNT = #{amount}
     	</if>
     	<if test="null!=fee">
     		and FEE = #{fee}
     	</if>
-    	<if test="null!=type">
-    		and TYPE = #{type}
-    	</if>
     	<if test="null!=status">
     		and STATUS = #{status}
-    	</if>
-    	<if test="null!=settleStatus">
-    		and SETTLE_STATUS = #{settleStatus}
-    	</if>
-    	<if test="null!=txStatus">
-    		and TX_STATUS = #{txStatus}
     	</if>
     	<if test="null!=txTime">
     		and TX_TIME = #{txTime}
@@ -65,24 +50,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	</if>
 	</sql>
 	
-	<sql id="transactionBusinessSetColumns">
+	<sql id="withdrawalSetColumns">
 		    <if test="null!=id">
 		    ID = #{id},
 		    </if>
-		    <if test="null!=blockNumber">
-		    BLOCK_NUMBER = #{blockNumber},
-		    </if>
-		    <if test="null!=blockHash">
-		    BLOCK_HASH = #{blockHash},
+		    <if test="null!=withdrawalId">
+		    WITHDRAWAL_ID = #{withdrawalId},
 		    </if>
 		    <if test="null!=txHash">
 		    TX_HASH = #{txHash},
-		    </if>
-		    <if test="null!=transactionId">
-		    TRANSACTION_ID = #{transactionId},
-		    </if>
-		    <if test="null!=vioIndex">
-		    VIO_INDEX = #{vioIndex},
 		    </if>
 		    <if test="null!=coinType">
 		    COIN_TYPE = #{coinType},
@@ -93,23 +69,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=txTo">
 		    TX_TO = #{txTo},
 		    </if>
+		    <if test="null!=contractAddress">
+		    CONTRACT_ADDRESS = #{contractAddress},
+		    </if>
 		    <if test="null!=amount">
 		    AMOUNT = #{amount},
 		    </if>
 		    <if test="null!=fee">
 		    FEE = #{fee},
 		    </if>
-		    <if test="null!=type">
-		    TYPE = #{type},
-		    </if>
 		    <if test="null!=status">
 		    STATUS = #{status},
-		    </if>
-		    <if test="null!=settleStatus">
-		    SETTLE_STATUS = #{settleStatus},
-		    </if>
-		    <if test="null!=txStatus">
-		    TX_STATUS = #{txStatus},
 		    </if>
 		    <if test="null!=txTime">
 		    TX_TIME = #{txTime},
@@ -122,22 +92,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    </if>
 	</sql>
 
-	<resultMap id="transactionBusinessResultMap" type="com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness">
+	<resultMap id="withdrawalResultMap" type="com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal">
         <result property="id" column="ID"/>
-        <result property="blockNumber" column="BLOCK_NUMBER"/>
-        <result property="blockHash" column="BLOCK_HASH"/>
+        <result property="withdrawalId" column="WITHDRAWAL_ID"/>
         <result property="txHash" column="TX_HASH"/>
-        <result property="transactionId" column="TRANSACTION_ID"/>
-        <result property="vioIndex" column="VIO_INDEX"/>
         <result property="coinType" column="COIN_TYPE"/>
         <result property="txFrom" column="TX_FROM"/>
         <result property="txTo" column="TX_TO"/>
+        <result property="contractAddress" column="CONTRACT_ADDRESS"/>
         <result property="amount" column="AMOUNT"/>
         <result property="fee" column="FEE"/>
-        <result property="type" column="TYPE"/>
         <result property="status" column="STATUS"/>
-        <result property="settleStatus" column="SETTLE_STATUS"/>
-        <result property="txStatus" column="TX_STATUS"/>
         <result property="txTime" column="TX_TIME"/>
         <result property="createTime" column="CREATE_TIME"/>
         <result property="modifyTime" column="MODIFY_TIME"/>
@@ -145,41 +110,31 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
 	<insert id="insert">
-        INSERT INTO TRANSACTION_BUSINESS (
+        INSERT INTO WITHDRAWAL (
         	ID
-        	,BLOCK_NUMBER
-        	,BLOCK_HASH
+        	,WITHDRAWAL_ID
         	,TX_HASH
-        	,TRANSACTION_ID
-        	,VIO_INDEX
         	,COIN_TYPE
         	,TX_FROM
         	,TX_TO
+        	,CONTRACT_ADDRESS
         	,AMOUNT
         	,FEE
-        	,TYPE
         	,STATUS
-        	,SETTLE_STATUS
-        	,TX_STATUS
         	,TX_TIME
         	,CREATE_TIME
         	,MODIFY_TIME
         ) VALUES (
         	#{id}
-        	,#{blockNumber}
-        	,#{blockHash}
+        	,#{withdrawalId}
         	,#{txHash}
-        	,#{transactionId}
-        	,#{vioIndex}
         	,#{coinType}
         	,#{txFrom}
         	,#{txTo}
+        	,#{contractAddress}
         	,#{amount}
         	,#{fee}
-        	,#{type}
         	,#{status}
-        	,#{settleStatus}
-        	,#{txStatus}
         	,#{txTime}
         	,#{createTime}
         	,#{modifyTime}
@@ -188,106 +143,91 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	
 	<delete id="deleteById">
 	    DELETE FROM
-	    	TRANSACTION_BUSINESS 
+	    	WITHDRAWAL 
 	    WHERE
 	    ID = #{id} 
     </delete>
     
     <delete id="deleteByCondition">
 	    DELETE FROM
-	    	TRANSACTION_BUSINESS 
+	    	WITHDRAWAL 
 	    WHERE
 	    	1=1
-		    <include refid="transactionBusinessColumns" />
+		    <include refid="withdrawalColumns" />
     </delete>
     
 	<update id="updateById">
 	    UPDATE
-	    	TRANSACTION_BUSINESS 
+	    	WITHDRAWAL 
         <set>
-	        <include refid="transactionBusinessSetColumns" />
+	        <include refid="withdrawalSetColumns" />
 		</set>
 	    WHERE
 	    ID = #{id} 
 	</update>
 	
-    <select id="queryById" resultMap="transactionBusinessResultMap">
+    <select id="queryById" resultMap="withdrawalResultMap">
 		SELECT
 			ID
-			,BLOCK_NUMBER
-			,BLOCK_HASH
+			,WITHDRAWAL_ID
 			,TX_HASH
-			,TRANSACTION_ID
-			,VIO_INDEX
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
+			,CONTRACT_ADDRESS
 			,AMOUNT
 			,FEE
-			,TYPE
 			,STATUS
-			,SETTLE_STATUS
-			,TX_STATUS
 			,TX_TIME
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
-			TRANSACTION_BUSINESS 
+			WITHDRAWAL 
 		WHERE 
 			ID = #{id} 
 	</select>
 	
-	<select id="queryList" resultMap="transactionBusinessResultMap">
+	<select id="queryList" resultMap="withdrawalResultMap">
 		SELECT
 			ID
-			,BLOCK_NUMBER
-			,BLOCK_HASH
+			,WITHDRAWAL_ID
 			,TX_HASH
-			,TRANSACTION_ID
-			,VIO_INDEX
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
+			,CONTRACT_ADDRESS
 			,AMOUNT
 			,FEE
-			,TYPE
 			,STATUS
-			,SETTLE_STATUS
-			,TX_STATUS
 			,TX_TIME
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
-			TRANSACTION_BUSINESS
+			WITHDRAWAL
 		WHERE
 			1=1
-			<include refid="transactionBusinessColumns" />
+			<include refid="withdrawalColumns" />
 		ORDER BY
 			ID
 	</select>
 	
-	<select id="queryAll" resultMap="transactionBusinessResultMap">
+	<select id="queryAll" resultMap="withdrawalResultMap">
 		SELECT
 			ID
-			,BLOCK_NUMBER
-			,BLOCK_HASH
+			,WITHDRAWAL_ID
 			,TX_HASH
-			,TRANSACTION_ID
-			,VIO_INDEX
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
+			,CONTRACT_ADDRESS
 			,AMOUNT
 			,FEE
-			,TYPE
 			,STATUS
-			,SETTLE_STATUS
-			,TX_STATUS
 			,TX_TIME
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
-			TRANSACTION_BUSINESS 
+			WITHDRAWAL 
 		ORDER BY
 			ID
 	</select>
@@ -296,37 +236,32 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		SELECT
 			COUNT(0)
 		FROM
-			TRANSACTION_BUSINESS 
+			WITHDRAWAL 
 		WHERE
 			1=1 
-			<include refid="transactionBusinessColumns" />
+			<include refid="withdrawalColumns" />
 	</select>
 	
-	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="transactionBusinessResultMap">
+	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="withdrawalResultMap">
 		SELECT
 			ID
-			,BLOCK_NUMBER
-			,BLOCK_HASH
+			,WITHDRAWAL_ID
 			,TX_HASH
-			,TRANSACTION_ID
-			,VIO_INDEX
 			,COIN_TYPE
 			,TX_FROM
 			,TX_TO
+			,CONTRACT_ADDRESS
 			,AMOUNT
 			,FEE
-			,TYPE
 			,STATUS
-			,SETTLE_STATUS
-			,TX_STATUS
 			,TX_TIME
 			,CREATE_TIME
 			,MODIFY_TIME
 		FROM
-			TRANSACTION_BUSINESS
+			WITHDRAWAL
 		WHERE
 			1=1
-			<include refid="transactionBusinessColumns" />
+			<include refid="withdrawalColumns" />
 		ORDER BY
 			ID
 	</select>

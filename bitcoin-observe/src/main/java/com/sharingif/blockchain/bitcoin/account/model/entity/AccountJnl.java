@@ -8,6 +8,31 @@ import java.math.BigInteger;
 import java.util.Date;
 
 public class AccountJnl implements java.io.Serializable, IObjectDateOperationHistory {
+
+	/**
+	 * 类型(00:充值)
+	 */
+	public static final String TYPE_DEPOSIT = "00";
+	/**
+	 * 类型(01:提现)
+	 */
+	public static final String TYPE_WITHDRAWAL = "01";
+	/**
+	 * 类型(02:充值冲正)
+	 */
+	public static final String TYPE_DEPOSIT_REBACK = "02";
+	/**
+	 * 类型(03:提现冲正)
+	 */
+	public static final String TYPE_WITHDRAWAL_REBACK = "03";
+	/**
+	 * 类型(04:提现手续费)
+	 */
+	public static final String TYPE_WITHDRAWAL_FEE = "04";
+	/**
+	 * 类型(05:提现手续费冲正)
+	 */
+	public static final String TYPE_WITHDRAWAL_FEE_REBACK = "05";
 	
 	//columns START
     /**

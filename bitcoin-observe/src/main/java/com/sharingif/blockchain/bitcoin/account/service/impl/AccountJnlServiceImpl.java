@@ -23,6 +23,6 @@ public class AccountJnlServiceImpl extends BaseServiceImpl<AccountJnl, java.lang
 		super.setBaseDAO(accountJnlDAO);
 		this.accountJnlDAO = accountJnlDAO;
 	}
-	
+
 	
 }

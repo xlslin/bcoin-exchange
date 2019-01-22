@@ -75,6 +75,7 @@ CREATE TABLE TRANSACTION_BUSINESS
   BLOCK_HASH            VARCHAR(100) NOT NULL COMMENT '区块hash',
   TX_HASH               VARCHAR(100) NOT NULL COMMENT '交易hash',
   TRANSACTION_ID        CHAR(32) NOT NULL COMMENT '交易id',
+  VIO_INDEX              BIGINT COMMENT 'vin/vout index',
   COIN_TYPE             VARCHAR(20) NOT NULL COMMENT '币种',
   TX_FROM               VARCHAR(100) COMMENT 'FORM地址',
   TX_TO                 VARCHAR(100) COMMENT 'TO地址',

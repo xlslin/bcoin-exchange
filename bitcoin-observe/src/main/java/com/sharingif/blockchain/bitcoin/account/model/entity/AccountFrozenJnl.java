@@ -8,6 +8,15 @@ import java.math.BigInteger;
 import java.util.Date;
 
 public class AccountFrozenJnl implements java.io.Serializable, IObjectDateOperationHistory {
+
+	/**
+	 * 类型(00:冻结)
+	 */
+	public static final String TYPE_FROZEN = "00";
+	/**
+	 * 类型(01:解冻)
+	 */
+	public static final String TYPE_UNFROZEN = "01";
 	
 	//columns START
     /**

@@ -23,6 +23,17 @@ public class AccountFrozenJnlServiceImpl extends BaseServiceImpl<AccountFrozenJn
 		super.setBaseDAO(accountFrozenJnlDAO);
 		this.accountFrozenJnlDAO = accountFrozenJnlDAO;
 	}
-	
+
+	@Override
+	public void addAccountFrozenJnl(AccountFrozenJnl accountFrozenJnl) {
+		accountFrozenJnl.setType(AccountFrozenJnl.TYPE_FROZEN);
+		accountFrozenJnlDAO.insert(accountFrozenJnl);
+	}
+
+	@Override
+	public void addAccountUnFrozenJnl(AccountFrozenJnl accountFrozenJnl) {
+		accountFrozenJnl.setType(AccountFrozenJnl.TYPE_UNFROZEN);
+		accountFrozenJnlDAO.insert(accountFrozenJnl);
+	}
 	
 }
