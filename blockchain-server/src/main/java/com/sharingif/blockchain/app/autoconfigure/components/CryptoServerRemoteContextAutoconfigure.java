@@ -1,6 +1,5 @@
 package com.sharingif.blockchain.app.autoconfigure.components;
 
-import com.sharingif.blockchain.crypto.api.ether.service.EtherApiService;
 import com.sharingif.cube.communication.JsonModel;
 import com.sharingif.cube.communication.exception.JsonModelBusinessCommunicationExceptionHandler;
 import com.sharingif.cube.communication.http.apache.transport.HttpJsonConnection;

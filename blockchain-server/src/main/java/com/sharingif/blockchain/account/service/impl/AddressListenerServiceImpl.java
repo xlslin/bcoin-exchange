@@ -25,7 +25,7 @@ public class AddressListenerServiceImpl implements AddressListenerService {
 
 	@Override
 	public void add(String blockType, String address) {
-		if(BitCoin.BLOCK_TYPE_ETHER.equals(blockType)) {
+		if(BitCoin.BLOCK_TYPE_BITCOIN.equals(blockType)) {
 			com.sharingif.blockchain.bitcoin.api.account.entity.AddressListenerAddReq req = new com.sharingif.blockchain.bitcoin.api.account.entity.AddressListenerAddReq();
 			req.setAddress(address);
 

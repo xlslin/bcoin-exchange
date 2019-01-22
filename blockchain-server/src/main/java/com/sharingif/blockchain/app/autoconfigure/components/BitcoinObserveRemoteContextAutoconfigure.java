@@ -10,11 +10,12 @@ import com.sharingif.cube.communication.transport.transform.ProxyInterfaceHandle
 import com.sharingif.cube.core.handler.chain.MultiHandlerMethodChain;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+@Configuration
 public class BitcoinObserveRemoteContextAutoconfigure {
 
     @Bean(name = "bitcoinObserveHttpJsonConnection")

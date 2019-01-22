@@ -33,12 +33,14 @@ public class RemoteContextAutoconfigure {
             BindingInitializer bindingInitializer
             ,RemoteServices cryptoServerRemoteServices
             ,RemoteServices etherObserveRemoteServices
+            ,RemoteServices bitcoinObserveRemoteServices
     ) {
 
 
         List<RemoteServices> remoteServicesList = new ArrayList<RemoteServices>();
         remoteServicesList.add(cryptoServerRemoteServices);
         remoteServicesList.add(etherObserveRemoteServices);
+        remoteServicesList.add(bitcoinObserveRemoteServices);
 
         RemoteServicesApplicationContext remoteServicesApplicationContext = new RemoteServicesApplicationContext();
         remoteServicesApplicationContext.setBindingInitializer(bindingInitializer);
