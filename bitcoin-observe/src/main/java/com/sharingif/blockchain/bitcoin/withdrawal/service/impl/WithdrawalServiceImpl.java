@@ -42,17 +42,6 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	@Override
 	public void addUntreated(TransactionBusiness transactionBusiness) {
 
-		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-		queryTransactionBusiness.setBlockNumber(transactionBusiness.getBlockNumber());
-		queryTransactionBusiness.setBlockHash(transactionBusiness.getBlockHash());
-		queryTransactionBusiness.setTxHash(transactionBusiness.getTxHash());
-		queryTransactionBusiness.setVioIndex(transactionBusiness.getVioIndex());
-
-		queryTransactionBusiness = transactionBusinessDAO.query(queryTransactionBusiness);
-		if(queryTransactionBusiness != null) {
-			return;
-		}
-
 		transactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
 		transactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
 		transactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_UNTREATED);

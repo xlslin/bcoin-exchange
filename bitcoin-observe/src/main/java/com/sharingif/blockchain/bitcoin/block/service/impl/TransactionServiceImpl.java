@@ -11,6 +11,7 @@ import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChain;
 import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.bitcoin.block.model.entity.UtxoVin;
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
+import com.sharingif.blockchain.bitcoin.block.service.TransactionBusinessService;
 import com.sharingif.blockchain.bitcoin.deposit.service.DepositService;
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalService;
@@ -38,6 +39,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	private AddressListenerService addressListenerService;
 	private WithdrawalService withdrawalService;
 	private DepositService depositService;
+	private TransactionBusinessService transactionBusinessService;
 
 	public TransactionDAO getTransactionDAO() {
 		return transactionDAO;
@@ -63,21 +65,29 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	public void setDepositService(DepositService depositService) {
 		this.depositService = depositService;
 	}
+	@Resource
+	public void setTransactionBusinessService(TransactionBusinessService transactionBusinessService) {
+		this.transactionBusinessService = transactionBusinessService;
+	}
 
 	public void addUntreatedTransaction(Transaction transaction) {
-		Transaction queryTransaction = new Transaction();
-		queryTransaction.setBlockNumber(transaction.getBlockNumber());
-		queryTransaction.setBlockHash(transaction.getBlockHash());
-		queryTransaction.setTxHash(transaction.getTxHash());
-
-		queryTransaction = transactionDAO.query(queryTransaction);
-
-		if(queryTransaction != null) {
-			return;
-		}
-
 		transaction.setTxStatus(BlockChain.STATUS_UNVERIFIED);
 		add(transaction);
+	}
+
+	protected Boolean isDuplicationTransaction(BigInteger blockNumber, String blockHash, String txHash) {
+		Transaction transaction = new Transaction();
+		transaction.setBlockNumber(blockNumber);
+		transaction.setBlockHash(blockHash);
+		transaction.setTxHash(txHash);
+
+		transaction = transactionDAO.query(transaction);
+
+		if(transaction == null) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -187,19 +197,45 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	}
 
 	@Transactional
-	protected void withdrawal(int vioIndex, Vout vout, Transaction transaction) {
+	protected void withdrawal(int vioIndex, Vout vout, Transaction transaction, boolean isDuplicationTransaction) {
 		TransactionBusiness transactionBusiness = handleTransactionBusiness(vout, transaction);
 		transactionBusiness.setTxFrom(vout.getScriptPubKey().getAddresses().get(0));
 		transactionBusiness.setVioIndex(new BigInteger(String.valueOf(vioIndex)));
+
+		if(isDuplicationTransaction) {
+			TransactionBusiness queryTransactionBusiness = transactionBusinessService.getTransactionBusiness(
+					transactionBusiness.getBlockNumber()
+					,transactionBusiness.getBlockHash()
+					,transactionBusiness.getTxHash()
+					,transactionBusiness.getVioIndex()
+					,TransactionBusiness.TYPE_WITHDRAWAL
+			);
+			if(queryTransactionBusiness != null) {
+				return;
+			}
+		}
 
 		withdrawalService.addUntreated(transactionBusiness);
 	}
 
 	@Transactional
-	protected void deposit(int vioIndex, Vout vout, Transaction transaction) {
+	protected void deposit(int vioIndex, Vout vout, Transaction transaction, boolean isDuplicationTransaction) {
 		TransactionBusiness transactionBusiness = handleTransactionBusiness(vout, transaction);
 		transactionBusiness.setTxTo(vout.getScriptPubKey().getAddresses().get(0));
 		transactionBusiness.setVioIndex(new BigInteger(String.valueOf(vioIndex)));
+
+		if(isDuplicationTransaction) {
+			TransactionBusiness queryTransactionBusiness = transactionBusinessService.getTransactionBusiness(
+					transactionBusiness.getBlockNumber()
+					,transactionBusiness.getBlockHash()
+					,transactionBusiness.getTxHash()
+					,transactionBusiness.getVioIndex()
+					,TransactionBusiness.TYPE_DEPOSIT
+			);
+			if(queryTransactionBusiness != null) {
+				return;
+			}
+		}
 
 		depositService.addUntreated(transactionBusiness);
 	}
@@ -208,7 +244,6 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	public void analysis(org.bitcoincore.api.rawtransactions.entity.Transaction tx, BigInteger blockNumber, String blockHash, Date blockCreateTime) {
 		Transaction transaction = null;
 		try {
-
 			List<UtxoVin> utxoVinList = handletUtxoVin(blockHash, tx.getvIn());
 			List<Vout> vOutList = tx.getvOut();
 
@@ -224,7 +259,8 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			transaction.setTxTime(blockCreateTime);
 			transaction.setConfirmBlockNumber(0);
 
-			boolean isAddUntreatedTransaction = false;
+			boolean isDuplicationTransaction = isDuplicationTransaction(transaction.getBlockNumber(), transaction.getBlockHash(), transaction.getTxHash());
+			boolean isAddUntreatedTransaction = isDuplicationTransaction;
 			for(int i=0; i<utxoVinList.size(); i++) {
 				UtxoVin utxoVin = utxoVinList.get(i);
 				Vout vout = utxoVin.getVout();
@@ -234,7 +270,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 						isAddUntreatedTransaction = true;
 					}
 
-					withdrawal(i, vout, transaction);
+					withdrawal(i, vout, transaction, isDuplicationTransaction);
 				}
 
 			}
@@ -246,7 +282,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 						isAddUntreatedTransaction = true;
 					}
 
-					deposit(i, vout, transaction);
+					deposit(i, vout, transaction, isDuplicationTransaction);
 				}
 			}
 

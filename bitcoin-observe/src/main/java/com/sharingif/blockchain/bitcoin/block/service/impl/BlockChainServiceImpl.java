@@ -1,25 +1,23 @@
 package com.sharingif.blockchain.bitcoin.block.service.impl;
 
 
-import javax.annotation.Resource;
-
+import com.sharingif.blockchain.bitcoin.block.dao.BlockChainDAO;
+import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChain;
 import com.sharingif.blockchain.bitcoin.block.model.entity.BlockTransaction;
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
+import com.sharingif.blockchain.bitcoin.block.service.BlockChainService;
 import com.sharingif.blockchain.bitcoin.block.service.TransactionService;
 import com.sharingif.cube.batch.core.JobConfig;
 import com.sharingif.cube.batch.core.handler.MultithreadDispatcherHandler;
 import com.sharingif.cube.batch.core.request.JobRequest;
 import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
 import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
+import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.bitcoincore.api.blockchain.entity.Block;
 import org.bitcoincore.api.rawtransactions.entity.Transaction;
 import org.springframework.stereotype.Service;
 
-import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChain;
-import com.sharingif.blockchain.bitcoin.block.dao.BlockChainDAO;
-import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
-import com.sharingif.blockchain.bitcoin.block.service.BlockChainService;
-
+import javax.annotation.Resource;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
@@ -136,11 +134,21 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		}
 	}
 
+	protected synchronized void synchingData(String blockChainId, Transaction transaction) {
+		if(blockTransactionQueue.size() == 1) {
+			updateStatusToUnverified(blockChainId);
+		}
+		blockTransactionQueue.remove(transaction);
+	}
+
 	@Override
 	public void synchingData(BlockTransaction blockTransaction) {
 		BlockChain blockChain = blockTransaction.getBlockChain();
 		Transaction transaction = blockTransaction.getTransaction();
 
 		transactionService.analysis(transaction, blockChain.getBlockNumber(), blockChain.getHash(), blockChain.getBlockCreateTime());
+
+		synchingData(blockChain.getId(), transaction);
+
 	}
 }
