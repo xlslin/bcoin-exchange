@@ -52,8 +52,8 @@ public class BitCoinBlockServiceImpl implements BitCoinBlockService {
     }
 
     @Override
-    public Transaction getFullRawTransaction(String txid, String blockhash) {
-        return rawTransactionsApiService.getFullRawTransaction(txid, true, blockhash);
+    public Transaction getFullRawTransaction(String txid) {
+        return rawTransactionsApiService.getFullRawTransaction(txid, true, null);
     }
 
 }

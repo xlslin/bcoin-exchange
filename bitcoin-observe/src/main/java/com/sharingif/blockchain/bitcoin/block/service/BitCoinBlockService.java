@@ -45,8 +45,7 @@ public interface BitCoinBlockService {
     /**
      * 返回交易完整信息
      * @param txid
-     * @param blockhash
      */
-    Transaction getFullRawTransaction(String txid, String blockhash);
+    Transaction getFullRawTransaction(String txid);
 
 }

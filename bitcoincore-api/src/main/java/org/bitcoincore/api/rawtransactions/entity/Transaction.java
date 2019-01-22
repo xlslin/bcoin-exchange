@@ -7,6 +7,8 @@ import java.util.Objects;
 
 public class Transaction {
 
+    @JsonProperty("in_active_chain")
+    private Boolean inActiveChain;
     @JsonProperty("txid")
     private String txId;
     private String hash;
@@ -28,6 +30,14 @@ public class Transaction {
     private Long time;
     @JsonProperty("blocktime")
     private Long blockTime;
+
+    public Boolean getInActiveChain() {
+        return inActiveChain;
+    }
+
+    public void setInActiveChain(Boolean inActiveChain) {
+        this.inActiveChain = inActiveChain;
+    }
 
     public String getTxId() {
         return txId;
@@ -157,7 +167,8 @@ public class Transaction {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Transaction{");
-        sb.append("txId='").append(txId).append('\'');
+        sb.append("inActiveChain=").append(inActiveChain);
+        sb.append(", txId='").append(txId).append('\'');
         sb.append(", hash='").append(hash).append('\'');
         sb.append(", version=").append(version);
         sb.append(", size=").append(size);

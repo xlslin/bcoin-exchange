@@ -92,11 +92,10 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 	/**
 	 * 处理输入交易金额
-	 * @param blockHash
 	 * @param vInList
 	 * @return
 	 */
-	protected List<UtxoVin> handletUtxoVin(String blockHash, List<Vin> vInList) {
+	protected List<UtxoVin> handletUtxoVin(List<Vin> vInList) {
 		List<UtxoVin> utxoVinList = new ArrayList<UtxoVin>(vInList.size());
 
 		for(Vin vin : vInList) {
@@ -108,7 +107,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 				continue;
 			}
 
-			org.bitcoincore.api.rawtransactions.entity.Transaction tx = bitCoinBlockService.getFullRawTransaction(txId, blockHash);
+			org.bitcoincore.api.rawtransactions.entity.Transaction tx = bitCoinBlockService.getFullRawTransaction(txId);
 			Vout vout = tx.getvOut().get(vin.getvOut());
 
 			UtxoVin utxoVin = new UtxoVin();
@@ -244,7 +243,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	public void analysis(org.bitcoincore.api.rawtransactions.entity.Transaction tx, BigInteger blockNumber, String blockHash, Date blockCreateTime) {
 		Transaction transaction = null;
 		try {
-			List<UtxoVin> utxoVinList = handletUtxoVin(blockHash, tx.getvIn());
+			List<UtxoVin> utxoVinList = handletUtxoVin(tx.getvIn());
 			List<Vout> vOutList = tx.getvOut();
 
 			updateValueUnit(utxoVinList, vOutList);
@@ -290,7 +289,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		} catch (Exception e) {
 			// 连接超时
 			logger.error("analysis block transaction error", e);
-			logger.error("analysis block transaction error, transaction:{}", transaction);
+			logger.error("analysis block transaction error, tx:{}", tx);
 			analysis(tx, blockNumber, blockHash, blockCreateTime);
 		}
 	}

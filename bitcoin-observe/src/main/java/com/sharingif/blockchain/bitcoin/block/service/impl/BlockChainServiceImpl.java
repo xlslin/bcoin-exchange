@@ -15,6 +15,9 @@ import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.bitcoincore.api.blockchain.entity.Block;
 import org.bitcoincore.api.rawtransactions.entity.Transaction;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,7 +28,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
-public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang.String> implements BlockChainService {
+public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang.String> implements BlockChainService, ApplicationContextAware {
 
 	private Queue<Transaction> blockTransactionQueue = new ConcurrentLinkedQueue<Transaction>();
 	
@@ -46,14 +49,6 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	@Resource
 	public void setBitCoinBlockService(BitCoinBlockService bitCoinBlockService) {
 		this.bitCoinBlockService = bitCoinBlockService;
-	}
-	@Resource
-	public void setJobMultithreadDispatcherHandler(MultithreadDispatcherHandler jobMultithreadDispatcherHandler) {
-		this.jobMultithreadDispatcherHandler = jobMultithreadDispatcherHandler;
-	}
-	@Resource
-	public void setBlockTransactionQueue(Queue<Transaction> blockTransactionQueue) {
-		this.blockTransactionQueue = blockTransactionQueue;
 	}
 	@Resource
 	public void setBlockChainSynchingDataJobConfig(JobConfig blockChainSynchingDataJobConfig) {
@@ -103,8 +98,14 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 
 		for(Transaction transaction : transactionList) {
 			blockTransactionQueue.add(transaction);
-			JobRequest<Transaction> jobRequest = new JobRequest<Transaction>();
+
+			BlockTransaction blockTransaction = new BlockTransaction();
+			blockTransaction.setBlockChain(blockChain);
+			blockTransaction.setTransaction(transaction);
+			JobRequest<BlockTransaction> jobRequest = new JobRequest<BlockTransaction>();
 			jobRequest.setLookupPath(blockChainSynchingDataJobConfig.getLookupPath());
+			jobRequest.setData(blockTransaction);
+
 			jobMultithreadDispatcherHandler.doDispatch(jobRequest);
 		}
 	}
@@ -150,5 +151,10 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 
 		synchingData(blockChain.getId(), transaction);
 
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		jobMultithreadDispatcherHandler = applicationContext.getBean(MultithreadDispatcherHandler.class);
 	}
 }
