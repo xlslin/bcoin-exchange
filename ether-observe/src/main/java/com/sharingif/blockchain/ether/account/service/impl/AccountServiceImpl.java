@@ -9,6 +9,7 @@ import com.sharingif.blockchain.ether.account.service.AccountFrozenJnlService;
 import com.sharingif.blockchain.ether.account.service.AccountJnlService;
 import com.sharingif.blockchain.ether.account.service.AccountService;
 import com.sharingif.blockchain.ether.app.autoconfigure.constants.CoinType;
+import com.sharingif.blockchain.ether.app.constants.ErrorConstants;
 import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
 import com.sharingif.cube.core.exception.validation.ValidationCubeException;
 import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
@@ -101,7 +102,10 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 	public void subtractBalance(String address, String coinType, BigInteger balance, String accountFrom, String accountTo, String type, String txId, Date transTime) {
 		initNormalAccount(address, coinType);
 
-		accountDAO.updateSubTotalOutBalanceByAddressCoinType(address, coinType, balance);
+		int num = accountDAO.updateSubTotalOutBalanceByAddressCoinType(address, coinType, balance);
+		if(num == 0) {
+			throw new ValidationCubeException(ErrorConstants.INSUFFICIENT_BALANCE);
+		}
 
 		AccountJnl accountJnl = new AccountJnl();
 		accountJnl.setAccountFrom(accountFrom);
@@ -122,7 +126,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 
 		int num = accountDAO.updateSubBalanceFrozenAmountByAddressCoinType(address, coinType, balance);
 		if(num == 0) {
-			throw new ValidationCubeException("Insufficient balance");
+			throw new ValidationCubeException(ErrorConstants.INSUFFICIENT_BALANCE);
 		}
 
 		AccountJnl accountJnl = new AccountJnl();
@@ -152,7 +156,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 
 		int num = accountDAO.updateAddBalanceFrozenAmountByAddressCoinType(address, coinType, balance);
 		if(num == 0) {
-			throw new ValidationCubeException("Insufficient frozen balance");
+			throw new ValidationCubeException(ErrorConstants.INSUFFICIENT_FROZEN_BALANCE);
 		}
 
 		AccountJnl accountJnl = new AccountJnl();
@@ -182,7 +186,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 
 		int num = accountDAO.updateSubFrozenAmountTotalOutByAddressCoinType(address, coinType, balance);
 		if(num == 0) {
-			throw new ValidationCubeException("Insufficient frozen balance");
+			throw new ValidationCubeException(ErrorConstants.INSUFFICIENT_FROZEN_BALANCE);
 		}
 
 		AccountFrozenJnl accountFrozenJnl = new AccountFrozenJnl();
