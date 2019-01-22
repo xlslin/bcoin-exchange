@@ -1,7 +1,7 @@
 package com.sharingif.blockchain.bitcoin.block.service.impl;
 
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
-import org.bitcoincore.api.blockchain.entity.GetBlockRsp;
+import org.bitcoincore.api.blockchain.entity.Block;
 import org.bitcoincore.api.blockchain.service.BlockChainApiService;
 import org.springframework.stereotype.Service;
 
@@ -29,12 +29,12 @@ public class BitCoinBlockServiceImpl implements BitCoinBlockService {
     }
 
     @Override
-    public GetBlockRsp getBlock(String blockHash) {
+    public Block getBlock(String blockHash) {
         return blockChainApiService.getBlock(blockHash, 1);
     }
 
     @Override
-    public GetBlockRsp getBlock(BigInteger blockNumber) {
+    public Block getBlock(BigInteger blockNumber) {
         return getBlock(getBlockHash(blockNumber));
     }
 

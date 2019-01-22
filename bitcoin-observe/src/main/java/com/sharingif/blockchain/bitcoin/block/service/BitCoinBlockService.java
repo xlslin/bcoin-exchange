@@ -1,6 +1,6 @@
 package com.sharingif.blockchain.bitcoin.block.service;
 
-import org.bitcoincore.api.blockchain.entity.GetBlockRsp;
+import org.bitcoincore.api.blockchain.entity.Block;
 
 import java.math.BigInteger;
 
@@ -24,13 +24,13 @@ public interface BitCoinBlockService {
      * @param blockHash
      * @return
      */
-    GetBlockRsp getBlock(String blockHash);
+    Block getBlock(String blockHash);
 
     /**
      * 根据区块号查询区块信息
      * @param blockNumber
      * @return
      */
-    GetBlockRsp getBlock(BigInteger blockNumber);
+    Block getBlock(BigInteger blockNumber);
 
 }

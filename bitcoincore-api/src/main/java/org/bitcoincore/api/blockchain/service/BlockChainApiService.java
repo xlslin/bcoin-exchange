@@ -3,9 +3,11 @@ package org.bitcoincore.api.blockchain.service;
 
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
-import org.bitcoincore.api.blockchain.entity.GetBlockRsp;
+import org.bitcoincore.api.blockchain.entity.Block;
+import org.bitcoincore.api.blockchain.entity.Transaction;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @RequestMapping(value="/")
 public interface BlockChainApiService {
@@ -31,6 +33,14 @@ public interface BlockChainApiService {
      * @param verbosity
      */
     @RequestMapping(value="getblock", method= RequestMethod.POST)
-    GetBlockRsp getBlock(String blockhash, int verbosity);
+    Block<List<String>> getBlock(String blockhash, int verbosity);
+
+    /**
+     * 根据哈希查询区块完整信息响应
+     * @param blockhash
+     * @param verbosity
+     */
+    @RequestMapping(value="getblock", method= RequestMethod.POST)
+    Block<List<Transaction>> getBlockFullTransaction(String blockhash, int verbosity);
 
 }

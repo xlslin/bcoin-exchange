@@ -5,8 +5,7 @@ import javax.annotation.Resource;
 
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
 import com.sharingif.blockchain.bitcoin.block.service.BlockChainService;
-import org.bitcoincore.api.blockchain.entity.GetBlockRsp;
-import org.bitcoincore.api.blockchain.service.BlockChainApiService;
+import org.bitcoincore.api.blockchain.entity.Block;
 import org.springframework.stereotype.Service;
 
 import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChainSync;
@@ -54,7 +53,7 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, j
 	 * 添加区块信息
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	protected void addBlockChainSyncBlockChain(BigInteger blockNumber, GetBlockRsp block) {
+	protected void addBlockChainSyncBlockChain(BigInteger blockNumber, Block block) {
 		BlockChainSync syncBlockChainSync = new BlockChainSync();
 		syncBlockChainSync.setType(BlockChainSync.TYPE_SYNC);
 		syncBlockChainSync.setBlockNumber(blockNumber);
@@ -67,7 +66,7 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, j
 	 * 修改区块信息
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	protected void updateBlockChainSyncBlockChain(BigInteger blockNumber, GetBlockRsp block) {
+	protected void updateBlockChainSyncBlockChain(BigInteger blockNumber, Block block) {
 		BlockChainSync queryBlockChainSync = new BlockChainSync();
 		queryBlockChainSync.setType(BlockChainSync.TYPE_SYNC);
 		queryBlockChainSync = blockChainSyncDAO.query(queryBlockChainSync);
@@ -90,7 +89,7 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, j
 
 		// 如果数据库区块同步信息为空，插入当前区块链信息到BlockChainSync表、BlockChain表并返回
 		if(blockChainSync == null) {
-			GetBlockRsp block = bitCoinBlockService.getBlock(blockNumber);
+			Block block = bitCoinBlockService.getBlock(blockNumber);
 			addBlockChainSyncBlockChain(blockNumber, block);
 
 			return;
@@ -106,7 +105,7 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, j
 		// 如果数据库区块号小于区块链当前区块号，递增修改BlockChainSync，添加BlockChain表
 		while (currentSyncBlockNumber.compareTo(blockNumber)< 0) {
 			currentSyncBlockNumber = currentSyncBlockNumber.add(BigInteger.ONE);
-			GetBlockRsp block = bitCoinBlockService.getBlock(currentSyncBlockNumber);
+			Block block = bitCoinBlockService.getBlock(currentSyncBlockNumber);
 			updateBlockChainSyncBlockChain(currentSyncBlockNumber, block);
 		}
 

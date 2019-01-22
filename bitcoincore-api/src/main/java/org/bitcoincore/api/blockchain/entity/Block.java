@@ -3,12 +3,8 @@ package org.bitcoincore.api.blockchain.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
-import java.util.List;
 
-/**
- * 根据哈希查询区块信息响应
- */
-public class GetBlockRsp {
+public class Block<T> {
 
     private String hash;
     private Integer confirmations;
@@ -20,7 +16,7 @@ public class GetBlockRsp {
     private String versionHex;
     @JsonProperty("merkleroot")
     private String merkleRoot;
-    private List<String> tx;
+    private T tx;
     private Long time;
     private Long mediantime;
     private Long nonce;
@@ -31,6 +27,8 @@ public class GetBlockRsp {
     private Integer nTx;
     @JsonProperty("previousblockhash")
     private String previousBlockHash;
+    @JsonProperty("nextblockhash")
+    private String nextBlockHash;
 
     public String getHash() {
         return hash;
@@ -104,11 +102,11 @@ public class GetBlockRsp {
         this.merkleRoot = merkleRoot;
     }
 
-    public List<String> getTx() {
+    public T getTx() {
         return tx;
     }
 
-    public void setTx(List<String> tx) {
+    public void setTx(T tx) {
         this.tx = tx;
     }
 
@@ -176,9 +174,17 @@ public class GetBlockRsp {
         this.previousBlockHash = previousBlockHash;
     }
 
+    public String getNextBlockHash() {
+        return nextBlockHash;
+    }
+
+    public void setNextBlockHash(String nextBlockHash) {
+        this.nextBlockHash = nextBlockHash;
+    }
+
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("GetBlockRsp{");
+        final StringBuilder sb = new StringBuilder("Block{");
         sb.append("hash='").append(hash).append('\'');
         sb.append(", confirmations=").append(confirmations);
         sb.append(", strippedsize=").append(strippedsize);
@@ -197,6 +203,7 @@ public class GetBlockRsp {
         sb.append(", chainWork='").append(chainWork).append('\'');
         sb.append(", nTx=").append(nTx);
         sb.append(", previousBlockHash='").append(previousBlockHash).append('\'');
+        sb.append(", nextBlockHash='").append(nextBlockHash).append('\'');
         sb.append('}');
         return sb.toString();
     }
