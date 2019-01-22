@@ -4,11 +4,16 @@ package com.sharingif.blockchain.bitcoin.block.service.impl;
 import javax.annotation.Resource;
 
 import com.sharingif.blockchain.bitcoin.account.service.AddressListenerService;
+import com.sharingif.blockchain.bitcoin.app.constants.CoinType;
 import com.sharingif.blockchain.bitcoin.app.constants.Constants;
 import com.sharingif.blockchain.bitcoin.app.constants.ScriptTypes;
 import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChain;
+import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.bitcoin.block.model.entity.UtxoVin;
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
+import com.sharingif.blockchain.bitcoin.deposit.service.DepositService;
+import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
+import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalService;
 import com.sharingif.cube.core.util.StringUtils;
 import org.bitcoincore.api.rawtransactions.entity.ScriptPubKey;
 import org.bitcoincore.api.rawtransactions.entity.Vin;
@@ -19,6 +24,7 @@ import com.sharingif.blockchain.bitcoin.block.model.entity.Transaction;
 import com.sharingif.blockchain.bitcoin.block.dao.TransactionDAO;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import com.sharingif.blockchain.bitcoin.block.service.TransactionService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -30,6 +36,8 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	private TransactionDAO transactionDAO;
 	private BitCoinBlockService bitCoinBlockService;
 	private AddressListenerService addressListenerService;
+	private WithdrawalService withdrawalService;
+	private DepositService depositService;
 
 	public TransactionDAO getTransactionDAO() {
 		return transactionDAO;
@@ -47,14 +55,16 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	public void setAddressListenerService(AddressListenerService addressListenerService) {
 		this.addressListenerService = addressListenerService;
 	}
-
-	public void addUntreatedTransaction(Transaction transaction) {
-		transaction.setTxStatus(BlockChain.STATUS_UNVERIFIED);
-		add(transaction);
+	@Resource
+	public void setWithdrawalService(WithdrawalService withdrawalService) {
+		this.withdrawalService = withdrawalService;
+	}
+	@Resource
+	public void setDepositService(DepositService depositService) {
+		this.depositService = depositService;
 	}
 
-	public void persistenceTransaction(Transaction transaction) {
-
+	public void addUntreatedTransaction(Transaction transaction) {
 		Transaction queryTransaction = new Transaction();
 		queryTransaction.setBlockNumber(transaction.getBlockNumber());
 		queryTransaction.setBlockHash(transaction.getBlockHash());
@@ -160,6 +170,40 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 	}
 
+	private TransactionBusiness handleTransactionBusiness(Vout vout, Transaction transaction) {
+
+		TransactionBusiness transactionBusiness = new TransactionBusiness();
+		transactionBusiness.setBlockNumber(transaction.getBlockNumber());
+		transactionBusiness.setBlockHash(transaction.getBlockHash());
+		transactionBusiness.setTxHash(transaction.getTxHash());
+		transactionBusiness.setTransactionId(transaction.getId());
+		transactionBusiness.setCoinType(CoinType.BTC.name());
+		transactionBusiness.setAmount(vout.getValue().toBigInteger());
+		transactionBusiness.setFee(BigInteger.ZERO);
+		transactionBusiness.setTxTime(transaction.getTxTime());
+
+		return transactionBusiness;
+
+	}
+
+	@Transactional
+	protected void withdrawal(int vioIndex, Vout vout, Transaction transaction) {
+		TransactionBusiness transactionBusiness = handleTransactionBusiness(vout, transaction);
+		transactionBusiness.setTxFrom(vout.getScriptPubKey().getAddresses().get(0));
+		transactionBusiness.setVioIndex(new BigInteger(String.valueOf(vioIndex)));
+
+		withdrawalService.addUntreated(transactionBusiness);
+	}
+
+	@Transactional
+	protected void deposit(int vioIndex, Vout vout, Transaction transaction) {
+		TransactionBusiness transactionBusiness = handleTransactionBusiness(vout, transaction);
+		transactionBusiness.setTxTo(vout.getScriptPubKey().getAddresses().get(0));
+		transactionBusiness.setVioIndex(new BigInteger(String.valueOf(vioIndex)));
+
+		depositService.addUntreated(transactionBusiness);
+	}
+
 	@Override
 	public void analysis(org.bitcoincore.api.rawtransactions.entity.Transaction tx, BigInteger blockNumber, String blockHash, Date blockCreateTime) {
 		Transaction transaction = null;
@@ -181,27 +225,37 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			transaction.setConfirmBlockNumber(0);
 
 			boolean isAddUntreatedTransaction = false;
-
-			for(UtxoVin utxoVin : utxoVinList) {
-				boolean isWatchFrom = isWatch(utxoVin.getVout(), transaction);
-				if(isWatchFrom) {
+			for(int i=0; i<utxoVinList.size(); i++) {
+				UtxoVin utxoVin = utxoVinList.get(i);
+				Vout vout = utxoVin.getVout();
+				if(isWatch(vout, transaction)) {
 					if(!isAddUntreatedTransaction) {
-						persistenceTransaction(transaction);
+						addUntreatedTransaction(transaction);
 						isAddUntreatedTransaction = true;
 					}
 
+					withdrawal(i, vout, transaction);
+				}
+
+			}
+			for(int i=0; i<vOutList.size(); i++) {
+				Vout vout = vOutList.get(i);
+				if(isWatch(vout, transaction)) {
+					if(!isAddUntreatedTransaction) {
+						addUntreatedTransaction(transaction);
+						isAddUntreatedTransaction = true;
+					}
+
+					deposit(i, vout, transaction);
 				}
 			}
 
-			for(Vout vout : vOutList) {
-
-			}
 
 		} catch (Exception e) {
-		// geth连接超时
-		logger.error("analysis block transaction error", e);
-		logger.error("analysis block transaction error, transaction:{}", transaction);
-		analysis(tx, blockNumber, blockHash, blockCreateTime);
-	}
+			// 连接超时
+			logger.error("analysis block transaction error", e);
+			logger.error("analysis block transaction error, transaction:{}", transaction);
+			analysis(tx, blockNumber, blockHash, blockCreateTime);
+		}
 	}
 }
