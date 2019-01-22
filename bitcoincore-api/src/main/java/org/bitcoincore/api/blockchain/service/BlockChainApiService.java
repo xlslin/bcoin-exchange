@@ -4,7 +4,7 @@ package org.bitcoincore.api.blockchain.service;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import org.bitcoincore.api.blockchain.entity.Block;
-import org.bitcoincore.api.blockchain.entity.Transaction;
+import org.bitcoincore.api.rawtransactions.entity.Transaction;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -36,7 +36,7 @@ public interface BlockChainApiService {
     Block<List<String>> getBlock(String blockhash, int verbosity);
 
     /**
-     * 根据哈希查询区块完整信息响应
+     * 根据哈希查询区块完整信息
      * @param blockhash
      * @param verbosity
      */

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Service
 public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, java.lang.String> implements BlockChainSyncService {
@@ -89,7 +90,7 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, j
 
 		// 如果数据库区块同步信息为空，插入当前区块链信息到BlockChainSync表、BlockChain表并返回
 		if(blockChainSync == null) {
-			Block block = bitCoinBlockService.getBlock(blockNumber);
+			Block<List<String>> block = bitCoinBlockService.getBlock(blockNumber);
 			addBlockChainSyncBlockChain(blockNumber, block);
 
 			return;
@@ -105,7 +106,7 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, j
 		// 如果数据库区块号小于区块链当前区块号，递增修改BlockChainSync，添加BlockChain表
 		while (currentSyncBlockNumber.compareTo(blockNumber)< 0) {
 			currentSyncBlockNumber = currentSyncBlockNumber.add(BigInteger.ONE);
-			Block block = bitCoinBlockService.getBlock(currentSyncBlockNumber);
+			Block<List<String>> block = bitCoinBlockService.getBlock(currentSyncBlockNumber);
 			updateBlockChainSyncBlockChain(currentSyncBlockNumber, block);
 		}
 

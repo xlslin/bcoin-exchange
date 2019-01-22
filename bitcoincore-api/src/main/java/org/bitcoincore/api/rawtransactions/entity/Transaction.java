@@ -1,8 +1,9 @@
-package org.bitcoincore.api.blockchain.entity;
+package org.bitcoincore.api.rawtransactions.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Transaction {
 
@@ -21,6 +22,12 @@ public class Transaction {
     @JsonProperty("vout")
     private List<Vout> vOut;
     private String hex;
+    @JsonProperty("blockhash")
+    private String blockHash;
+    private Integer confirmations;
+    private Long time;
+    @JsonProperty("blocktime")
+    private Long blockTime;
 
     public String getTxId() {
         return txId;
@@ -102,6 +109,51 @@ public class Transaction {
         this.hex = hex;
     }
 
+    public String getBlockHash() {
+        return blockHash;
+    }
+
+    public void setBlockHash(String blockHash) {
+        this.blockHash = blockHash;
+    }
+
+    public Integer getConfirmations() {
+        return confirmations;
+    }
+
+    public void setConfirmations(Integer confirmations) {
+        this.confirmations = confirmations;
+    }
+
+    public Long getTime() {
+        return time;
+    }
+
+    public void setTime(Long time) {
+        this.time = time;
+    }
+
+    public Long getBlockTime() {
+        return blockTime;
+    }
+
+    public void setBlockTime(Long blockTime) {
+        this.blockTime = blockTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Transaction that = (Transaction) o;
+        return Objects.equals(txId, that.txId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(txId);
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Transaction{");
@@ -115,6 +167,10 @@ public class Transaction {
         sb.append(", vIn=").append(vIn);
         sb.append(", vOut=").append(vOut);
         sb.append(", hex='").append(hex).append('\'');
+        sb.append(", blockHash='").append(blockHash).append('\'');
+        sb.append(", confirmations=").append(confirmations);
+        sb.append(", time=").append(time);
+        sb.append(", blockTime=").append(blockTime);
         sb.append('}');
         return sb.toString();
     }

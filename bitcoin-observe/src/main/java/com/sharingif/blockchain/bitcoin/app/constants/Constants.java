@@ -1,5 +1,7 @@
 package com.sharingif.blockchain.bitcoin.app.constants;
 
+import java.math.BigDecimal;
+
 /**
  * Constants
  *
@@ -11,18 +13,8 @@ package com.sharingif.blockchain.bitcoin.app.constants;
 public class Constants {
 
     /**
-     * 区块类型
+     * btc单位
      */
-    public static final String BLOCK_TYPE_ETHER = "Ether";
-
-    /**
-     * eth 合约转账最小gas
-     */
-    public static final String ETH_CONTRACT_TRANSFOR_GAS_LIMIT = "100000";
-
-    /**
-     * eth 转账gas price 添加金额
-     */
-    public static final String ETH_TRANSFOR_GAS_PRICE_ADD = "3000000000";
+    public static final BigDecimal BTC_UNIT = new BigDecimal("100000000");
 
 }

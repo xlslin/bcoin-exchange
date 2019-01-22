@@ -1,4 +1,4 @@
-package org.bitcoincore.api.blockchain.entity;
+package org.bitcoincore.api.rawtransactions.entity;
 
 public class ScriptSig {
 

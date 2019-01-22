@@ -1,6 +1,8 @@
-package org.bitcoincore.api.blockchain.entity;
+package org.bitcoincore.api.rawtransactions.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
 
 public class Vin {
 
@@ -10,6 +12,7 @@ public class Vin {
     private Integer vOut;
     private ScriptSig scriptSig;
     private String coinbase;
+    private List<String> txinwitness;
     private Long sequence;
 
     public String getTxId() {
@@ -44,6 +47,14 @@ public class Vin {
         this.coinbase = coinbase;
     }
 
+    public List<String> getTxinwitness() {
+        return txinwitness;
+    }
+
+    public void setTxinwitness(List<String> txinwitness) {
+        this.txinwitness = txinwitness;
+    }
+
     public Long getSequence() {
         return sequence;
     }
@@ -59,6 +70,7 @@ public class Vin {
         sb.append(", vOut=").append(vOut);
         sb.append(", scriptSig=").append(scriptSig);
         sb.append(", coinbase='").append(coinbase).append('\'');
+        sb.append(", txinwitness=").append(txinwitness);
         sb.append(", sequence=").append(sequence);
         sb.append('}');
         return sb.toString();
