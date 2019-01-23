@@ -3,6 +3,7 @@ package com.sharingif.blockchain.bitcoin.block.service.impl;
 
 import javax.annotation.Resource;
 
+import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChain;
 import org.springframework.stereotype.Service;
 
 import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
@@ -24,6 +25,31 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 	public void setTransactionBusinessDAO(TransactionBusinessDAO transactionBusinessDAO) {
 		super.setBaseDAO(transactionBusinessDAO);
 		this.transactionBusinessDAO = transactionBusinessDAO;
+	}
+
+	@Override
+	public void updateTxStatusToValidSettleStatusToReady(BigInteger blockNumber, String blockHash) {
+		TransactionBusiness transactionBusiness = new TransactionBusiness();
+		transactionBusiness.setBlockNumber(blockNumber);
+		transactionBusiness.setBlockHash(blockHash);
+
+		transactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
+		transactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_READY);
+
+		transactionBusinessDAO.updateByBlockNumberBlockHash(transactionBusiness);
+	}
+
+	@Override
+	public void updateTxStatusToInvalidSettleStatusToReady(BigInteger blockNumber, String blockHash) {
+		TransactionBusiness transactionBusiness = new TransactionBusiness();
+		transactionBusiness.setBlockNumber(blockNumber);
+		transactionBusiness.setBlockHash(blockHash);
+
+		transactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_INVALID);
+		transactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_READY);
+
+		transactionBusinessDAO.updateByBlockNumberBlockHash(transactionBusiness);
+
 	}
 
 

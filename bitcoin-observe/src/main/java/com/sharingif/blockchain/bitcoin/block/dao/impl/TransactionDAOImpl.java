@@ -9,5 +9,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class TransactionDAOImpl extends BaseDAOImpl<Transaction, String> implements TransactionDAO {
-	
+
+    @Override
+    public int updateByBlockNumberBlockHash(Transaction transaction) {
+        return update("updateByBlockNumberBlockHash", transaction);
+    }
+
 }

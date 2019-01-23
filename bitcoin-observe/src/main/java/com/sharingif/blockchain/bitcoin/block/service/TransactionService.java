@@ -18,5 +18,21 @@ public interface TransactionService extends IBaseService<Transaction, java.lang.
      * @param blockCreateTime
      */
     void analysis(org.bitcoincore.api.rawtransactions.entity.Transaction transaction, BigInteger blockNumber, String blockHash, Date blockCreateTime);
+
+    /**
+     * 修改指定区块的交易为有效
+     * @param blockNumber
+     * @param blockHash
+     * @param confirmBlockNumber
+     */
+    void updateTxStatusToBlockConfirmedValid(BigInteger blockNumber, String blockHash, int confirmBlockNumber);
+
+    /**
+     * 修改指定区块的交易为无效
+     * @param blockNumber
+     * @param blockHash
+     * @param confirmBlockNumber
+     */
+    void updateTxStatusToBlockConfirmedInvalid(BigInteger blockNumber, String blockHash, int confirmBlockNumber);
 	
 }

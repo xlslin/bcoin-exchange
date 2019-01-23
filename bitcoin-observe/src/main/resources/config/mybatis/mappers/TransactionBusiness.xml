@@ -330,6 +330,48 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		ORDER BY
 			ID
 	</select>
+
+	<update id="updateSettleStatusByAddressCoinTypeBlockNumberSettleStatus">
+	<![CDATA[
+		UPDATE
+			TRANSACTION_BUSINESS
+		SET
+			SETTLE_STATUS = #{status}
+		WHERE
+			(TX_FROM = #{txFrom} OR TX_TO = #{txTo})
+		AND
+			COIN_TYPE = #{coinType}
+		AND
+			BLOCK_NUMBER <= #{blockNumber}
+		AND
+			SETTLE_STATUS = #{settleStatus}
+	]]>
+	</update>
+
+	<select id="queryCountByAddressCoinTypeSettleStatus" resultType="Integer">
+		SELECT
+			COUNT(0)
+		FROM
+			TRANSACTION_BUSINESS
+		WHERE
+			(TX_FROM = #{txFrom} OR TX_TO = #{txTo})
+		AND
+			COIN_TYPE = #{coinType}
+		AND
+			SETTLE_STATUS != #{settleStatus}
+	</select>
+
+	<update id="updateByBlockNumberBlockHash">
+		UPDATE
+		TRANSACTION_BUSINESS
+			<set>
+				<include refid="transactionBusinessSetColumns" />
+			</set>
+		WHERE
+			BLOCK_NUMBER = #{blockNumber}
+		AND
+			BLOCK_HASH = #{blockHash}
+	</update>
 	
 </mapper>
 

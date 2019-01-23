@@ -20,4 +20,20 @@ public interface TransactionBusinessService extends IBaseService<TransactionBusi
      */
     TransactionBusiness getTransactionBusiness(BigInteger blockNumber, String blockHash, String txHash, BigInteger vioIndex, String type);
 
+    /**
+     * 修改状态为有效
+     * @param blockNumber
+     * @param blockHash
+     * @return
+     */
+    void updateTxStatusToValidSettleStatusToReady(BigInteger blockNumber, String blockHash);
+
+    /**
+     * 修改状态为无效
+     * @param blockNumber
+     * @param blockHash
+     * @return
+     */
+    void updateTxStatusToInvalidSettleStatusToReady(BigInteger blockNumber, String blockHash);
+
 }

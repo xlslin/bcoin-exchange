@@ -28,4 +28,12 @@ public class BlockChainScheduled {
         simpleDispatcherHandler.doDispatch(jobRequest);
     }
 
+    @Scheduled(fixedRate = 1000*1)
+    public synchronized void readyValidateBolck() {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setLookupPath("/blockChain/readyValidateBolck");
+
+        simpleDispatcherHandler.doDispatch(jobRequest);
+    }
+
 }

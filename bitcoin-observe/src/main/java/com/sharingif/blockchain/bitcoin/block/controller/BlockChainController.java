@@ -35,4 +35,14 @@ public class BlockChainController {
 		blockChainService.synchingData(jobRequest.getData());
 	}
 
+	@RequestMapping(value="readyValidateBolck", method= RequestMethod.POST)
+	public void readyValidateBolck() {
+		blockChainService.readyValidateBolck();
+	}
+
+	@RequestMapping(value="validateBolck", method= RequestMethod.POST)
+	public void validateBolck(JobRequest<String> jobRequest) {
+		blockChainService.validateBolck(jobRequest.getData());
+	}
+
 }

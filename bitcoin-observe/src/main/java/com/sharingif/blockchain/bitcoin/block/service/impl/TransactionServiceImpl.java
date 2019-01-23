@@ -303,4 +303,32 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			analysis(tx, blockNumber, blockHash, blockCreateTime);
 		}
 	}
+
+	@Override
+	public void updateTxStatusToBlockConfirmedValid(BigInteger blockNumber, String blockHash, int confirmBlockNumber) {
+		Transaction updateTransaction = new Transaction();
+		updateTransaction.setBlockNumber(blockNumber);
+		updateTransaction.setBlockHash(blockHash);
+
+		updateTransaction.setConfirmBlockNumber(confirmBlockNumber);
+		updateTransaction.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
+
+		transactionDAO.updateByBlockNumberBlockHash(updateTransaction);
+
+		transactionBusinessService.updateTxStatusToValidSettleStatusToReady(blockNumber, blockHash);
+	}
+
+	@Override
+	public void updateTxStatusToBlockConfirmedInvalid(BigInteger blockNumber, String blockHash, int confirmBlockNumber) {
+		Transaction updateTransaction = new Transaction();
+		updateTransaction.setBlockNumber(blockNumber);
+		updateTransaction.setBlockHash(blockHash);
+
+		updateTransaction.setConfirmBlockNumber(confirmBlockNumber);
+		updateTransaction.setTxStatus(BlockChain.STATUS_VERIFY_INVALID);
+
+		transactionDAO.updateByBlockNumberBlockHash(updateTransaction);
+
+		transactionBusinessService.updateTxStatusToInvalidSettleStatusToReady(blockNumber, blockHash);
+	}
 }
