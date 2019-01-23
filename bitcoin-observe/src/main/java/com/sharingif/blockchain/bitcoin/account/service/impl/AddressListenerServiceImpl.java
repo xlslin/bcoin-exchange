@@ -38,7 +38,7 @@ public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener,
 
 	@Override
 	public void add(AddressListenerAddReq req) {
-		String address = req.getAddress().toLowerCase();
+		String address = req.getAddress();
 
 		AddressListener addressListener = new AddressListener();
 		addressListener.setAddress(address);
@@ -50,7 +50,7 @@ public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener,
 
 	@Override
 	public boolean isWatch(String address) {
-		if(addressMap.containsKey(address.toLowerCase())) {
+		if(addressMap.containsKey(address)) {
 			return true;
 		}
 

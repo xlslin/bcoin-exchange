@@ -2,7 +2,9 @@ package com.sharingif.blockchain.bitcoin.account.controller;
 
 
 import com.sharingif.blockchain.bitcoin.account.service.AddressListenerService;
+import com.sharingif.blockchain.bitcoin.api.account.entity.AddressListenerAddReq;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
+import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
@@ -21,5 +23,14 @@ public class AddressListenerController {
 	public void setAddressListenerService(AddressListenerService addressListenerService) {
 		this.addressListenerService = addressListenerService;
 	}
-	
+
+	/**
+	 * 添加地址监听
+	 * @return
+	 */
+	@RequestMapping(value="add", method= RequestMethod.POST)
+	public void add(AddressListenerAddReq req) {
+		addressListenerService.add(req);
+	}
+
 }

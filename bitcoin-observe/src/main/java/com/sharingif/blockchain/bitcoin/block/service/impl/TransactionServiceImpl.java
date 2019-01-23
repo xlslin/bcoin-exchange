@@ -75,17 +75,19 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		add(transaction);
 	}
 
-	protected Boolean isDuplicationTransaction(BigInteger blockNumber, String blockHash, String txHash) {
-		Transaction transaction = new Transaction();
-		transaction.setBlockNumber(blockNumber);
-		transaction.setBlockHash(blockHash);
-		transaction.setTxHash(txHash);
+	protected Boolean isDuplicationTransaction(BigInteger blockNumber, String blockHash, String txHash, Transaction transaction) {
+		Transaction queryTransaction = new Transaction();
+		queryTransaction.setBlockNumber(blockNumber);
+		queryTransaction.setBlockHash(blockHash);
+		queryTransaction.setTxHash(txHash);
 
-		transaction = transactionDAO.query(transaction);
+		queryTransaction = transactionDAO.query(queryTransaction);
 
-		if(transaction == null) {
+		if(queryTransaction == null) {
 			return false;
 		}
+
+		transaction.setId(queryTransaction.getId());
 
 		return true;
 	}
@@ -265,7 +267,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 				Vout vout = utxoVin.getVout();
 				if(isWatch(vout, transaction)) {
 					if(!isAddUntreatedTransaction) {
-						isDuplicationTransaction = isDuplicationTransaction(transaction.getBlockNumber(), transaction.getBlockHash(), transaction.getTxHash());
+						isDuplicationTransaction = isDuplicationTransaction(transaction.getBlockNumber(), transaction.getBlockHash(), transaction.getTxHash(), transaction);
 						isAddUntreatedTransaction = isDuplicationTransaction;
 					}
 					if(!isAddUntreatedTransaction) {
@@ -281,7 +283,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 				Vout vout = vOutList.get(i);
 				if(isWatch(vout, transaction)) {
 					if(!isAddUntreatedTransaction) {
-						isDuplicationTransaction = isDuplicationTransaction(transaction.getBlockNumber(), transaction.getBlockHash(), transaction.getTxHash());
+						isDuplicationTransaction = isDuplicationTransaction(transaction.getBlockNumber(), transaction.getBlockHash(), transaction.getTxHash(), transaction);
 						isAddUntreatedTransaction = isDuplicationTransaction;
 					}
 					if(!isAddUntreatedTransaction) {
