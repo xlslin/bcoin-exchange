@@ -258,12 +258,16 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			transaction.setTxTime(blockCreateTime);
 			transaction.setConfirmBlockNumber(0);
 
-			boolean isDuplicationTransaction = isDuplicationTransaction(transaction.getBlockNumber(), transaction.getBlockHash(), transaction.getTxHash());
-			boolean isAddUntreatedTransaction = isDuplicationTransaction;
+			boolean isDuplicationTransaction = false;
+			boolean isAddUntreatedTransaction = false;
 			for(int i=0; i<utxoVinList.size(); i++) {
 				UtxoVin utxoVin = utxoVinList.get(i);
 				Vout vout = utxoVin.getVout();
 				if(isWatch(vout, transaction)) {
+					if(!isAddUntreatedTransaction) {
+						isDuplicationTransaction = isDuplicationTransaction(transaction.getBlockNumber(), transaction.getBlockHash(), transaction.getTxHash());
+						isAddUntreatedTransaction = isDuplicationTransaction;
+					}
 					if(!isAddUntreatedTransaction) {
 						addUntreatedTransaction(transaction);
 						isAddUntreatedTransaction = true;
@@ -276,6 +280,10 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			for(int i=0; i<vOutList.size(); i++) {
 				Vout vout = vOutList.get(i);
 				if(isWatch(vout, transaction)) {
+					if(!isAddUntreatedTransaction) {
+						isDuplicationTransaction = isDuplicationTransaction(transaction.getBlockNumber(), transaction.getBlockHash(), transaction.getTxHash());
+						isAddUntreatedTransaction = isDuplicationTransaction;
+					}
 					if(!isAddUntreatedTransaction) {
 						addUntreatedTransaction(transaction);
 						isAddUntreatedTransaction = true;

@@ -95,6 +95,15 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 	@Transactional
 	protected void persistenceTransaction(Transaction transaction, boolean isWatchFrom, boolean isWatchTo) {
+		// 数据是否重复，如果重复不处理
+		if(isDuplicationData(
+				transaction.getBlockNumber()
+				,transaction.getBlockHash()
+				,transaction.getTxHash()
+		)) {
+			return;
+		}
+
 		addUntreatedTransaction(transaction);
 
 		TransactionBusiness transactionBusiness = new TransactionBusiness();
@@ -187,15 +196,6 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			// tx to 为空，交易类型为创建合约
 			if(StringUtils.isTrimEmpty(tx.getTo())) {
 				logger.info("tx to is null, txhash:{}", tx.getHash());
-				return;
-			}
-
-			// 数据是否重复，如果重复不处理
-			if(isDuplicationData(
-					tx.getBlockNumber()
-					,tx.getBlockHash()
-					,tx.getHash()
-			)) {
 				return;
 			}
 
