@@ -11,5 +11,10 @@ public interface DepositService {
      */
     void addUntreated(TransactionBusiness transactionBusiness);
 
+    /**
+     * 充值确认,交易收据状态无效不处理,充值有效不处理，充值无效减去余额
+     * @param transactionBusiness
+     */
+    void depositConfirmed(TransactionBusiness transactionBusiness);
 
 }

@@ -65,6 +65,41 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		);
 
 	}
-	
+
+	protected void withdrawalSuccess(TransactionBusiness transactionBusiness) {
+		accountService.subtractFrozenBalance(
+				transactionBusiness.getTxFrom()
+				,transactionBusiness.getCoinType()
+				,transactionBusiness.getAmount()
+				,transactionBusiness.getTxFrom()
+				,transactionBusiness.getTxTo()
+				,transactionBusiness.getId()
+				,transactionBusiness.getTxTime()
+		);
+
+	}
+
+	protected void withdrawalFailure(TransactionBusiness transactionBusiness) {
+		accountService.unFrozenBalance(
+				transactionBusiness.getTxFrom()
+				,transactionBusiness.getCoinType()
+				,transactionBusiness.getAmount()
+				,transactionBusiness.getTxFrom()
+				,transactionBusiness.getTxTo()
+				,AccountJnl.TYPE_WITHDRAWAL_REBACK
+				,transactionBusiness.getId()
+				,transactionBusiness.getTxTime()
+		);
+
+	}
+
+	@Override
+	public void withdrawalConfirmed(TransactionBusiness transactionBusiness, String txStatus) {
+		if(BlockChain.STATUS_VERIFY_VALID.equals(txStatus)) {
+			withdrawalSuccess(transactionBusiness);
+		} else {
+			withdrawalFailure(transactionBusiness);
+		}
+	}
 	
 }

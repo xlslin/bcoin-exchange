@@ -13,5 +13,12 @@ public interface WithdrawalService extends IBaseService<Withdrawal, java.lang.St
      * @param transactionBusiness
      */
     void addUntreated(TransactionBusiness transactionBusiness);
+
+    /**
+     * 取现确认
+     * @param transactionBusiness
+     * @param txStatus
+     */
+    void withdrawalConfirmed(TransactionBusiness transactionBusiness, String txStatus);
 	
 }

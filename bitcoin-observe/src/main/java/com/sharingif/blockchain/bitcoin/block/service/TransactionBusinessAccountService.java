@@ -6,5 +6,13 @@ import com.sharingif.cube.support.service.base.IBaseService;
 
 
 public interface TransactionBusinessAccountService extends IBaseService<TransactionBusinessAccount, java.lang.String> {
-	
+
+    /**
+     * 添加交易业务账号
+     * @param address
+     * @param coinType
+     * @return
+     */
+    boolean addTransactionBusinessAccount(String address, String coinType);
+
 }

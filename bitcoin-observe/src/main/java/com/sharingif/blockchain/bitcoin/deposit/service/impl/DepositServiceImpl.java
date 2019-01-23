@@ -69,4 +69,22 @@ public class DepositServiceImpl implements DepositService {
         );
     }
 
+    protected void depositReback(TransactionBusiness transactionBusiness) {
+        accountService.subtractBalance(
+                transactionBusiness.getTxTo()
+                ,transactionBusiness.getCoinType()
+                ,transactionBusiness.getAmount()
+                ,transactionBusiness.getTxFrom()
+                ,transactionBusiness.getTxTo()
+                ,AccountJnl.TYPE_DEPOSIT_REBACK
+                ,transactionBusiness.getId()
+                ,transactionBusiness.getTxTime()
+        );
+    }
+
+    @Override
+    public void depositConfirmed(TransactionBusiness transactionBusiness) {
+        depositReback(transactionBusiness);
+    }
+
 }
