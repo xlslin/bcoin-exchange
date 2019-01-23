@@ -17,6 +17,23 @@ public interface TransactionBusinessService extends IBaseService<TransactionBusi
     int updateSettleStatusToSettling(String id);
 
     /**
+     * 修改状态为清算完成
+     * @param address
+     * @param coinType
+     * @param blockNumber
+     * @return
+     */
+    int updateSettleStatusToSettled(String address, String coinType, BigInteger blockNumber);
+
+    /**
+     * 根据地址、币种、查询未结算数据条数
+     * @param address
+     * @param coinType
+     * @return
+     */
+    int getUnsettledCountByAddressCoinTypeSettleStatus(String address, String coinType);
+
+    /**
      * 根据条件查询
      * @param blockNumber
      * @param blockHash

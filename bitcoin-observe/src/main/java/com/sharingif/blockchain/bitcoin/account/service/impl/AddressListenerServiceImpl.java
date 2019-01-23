@@ -4,7 +4,9 @@ package com.sharingif.blockchain.bitcoin.account.service.impl;
 import javax.annotation.Resource;
 
 import com.sharingif.blockchain.bitcoin.api.account.entity.AddressListenerAddReq;
+import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.sharingif.blockchain.bitcoin.account.model.entity.AddressListener;
@@ -22,6 +24,8 @@ public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener,
 	private Map<String,String> addressMap = new HashMap<>();
 
 	private AddressListenerDAO addressListenerDAO;
+	private BitCoinBlockService bitCoinBlockService;
+	private String btcWalletLabel;
 
 	public AddressListenerDAO getAddressListenerDAO() {
 		return addressListenerDAO;
@@ -31,6 +35,14 @@ public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener,
 		super.setBaseDAO(addressListenerDAO);
 		this.addressListenerDAO = addressListenerDAO;
 	}
+	@Resource
+	public void setAddressMap(Map<String, String> addressMap) {
+		this.addressMap = addressMap;
+	}
+	@Value("${btc.wallet.label}")
+	public void setBtcWalletLabel(String btcWalletLabel) {
+		this.btcWalletLabel = btcWalletLabel;
+	}
 
 	protected void addAddressMap(String address) {
 		addressMap.put(address, null);
@@ -39,6 +51,8 @@ public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener,
 	@Override
 	public void add(AddressListenerAddReq req) {
 		String address = req.getAddress();
+
+		bitCoinBlockService.importAddress(address, btcWalletLabel);
 
 		AddressListener addressListener = new AddressListener();
 		addressListener.setAddress(address);

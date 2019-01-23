@@ -57,6 +57,23 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 	}
 
 	@Override
+	public int updateSettleStatusToSettled(String address, String coinType, BigInteger blockNumber) {
+
+		return transactionBusinessDAO.updateSettleStatusByAddressCoinTypeBlockNumberSettleStatus(
+				TransactionBusiness.SETTLE_STATUS_FINISH
+				,address
+				,coinType
+				,blockNumber
+				,TransactionBusiness.SETTLE_STATUS_PROCESSING
+		);
+	}
+
+	@Override
+	public int getUnsettledCountByAddressCoinTypeSettleStatus(String address, String coinType) {
+		return transactionBusinessDAO.queryCountByAddressCoinTypeSettleStatus(address, coinType, TransactionBusiness.SETTLE_STATUS_FINISH);
+	}
+
+	@Override
 	public void updateTxStatusToValidSettleStatusToReady(BigInteger blockNumber, String blockHash) {
 		TransactionBusiness transactionBusiness = new TransactionBusiness();
 		transactionBusiness.setBlockNumber(blockNumber);

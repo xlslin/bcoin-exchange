@@ -48,4 +48,18 @@ public interface BitCoinBlockService {
      */
     Transaction getFullRawTransaction(String txid);
 
+    /**
+     * 导入观察地址
+     * @param address
+     * @param label
+     */
+    void importAddress(String address, String label);
+
+    /**
+     * 根据地址查询余额
+     * @param address
+     * @return
+     */
+    BigInteger getBalanceByAddress(String address);
+
 }
