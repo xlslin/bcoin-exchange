@@ -5,6 +5,9 @@ import javax.annotation.Resource;
 
 import com.sharingif.blockchain.bitcoin.account.model.entity.AccountJnl;
 import com.sharingif.blockchain.bitcoin.account.service.AccountService;
+import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinReq;
+import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinRsp;
+import com.sharingif.blockchain.bitcoin.app.InvalidAddressException;
 import com.sharingif.blockchain.bitcoin.block.dao.TransactionBusinessDAO;
 import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChain;
 import com.sharingif.blockchain.bitcoin.block.model.entity.Transaction;
@@ -14,6 +17,7 @@ import com.sharingif.cube.batch.core.JobModel;
 import com.sharingif.cube.batch.core.JobService;
 import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
 import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
+import org.bitcoinj.core.Base58;
 import org.springframework.stereotype.Service;
 
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
@@ -149,6 +153,38 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 //		Withdrawal withdrawal = getWithdrawalByTxHash(transactionBusiness.getTxHash());
 //		Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
 		initNotice(transactionBusiness, null, null);
+
+	}
+
+	@Override
+	public ApplyWithdrawalBitCoinRsp apply(ApplyWithdrawalBitCoinReq req) {
+		// 校验地址
+		String btcAddress = req.getAddress();
+		// 先判断长度是否是34
+		if(btcAddress.length() != 34) {
+			throw new InvalidAddressException();
+		}
+
+		try {
+			Base58.decodeChecked(btcAddress);
+		} catch (Exception e) {
+			throw new InvalidAddressException();
+		}
+
+        Withdrawal withdrawal = Withdrawal.convertApplyWithdrawalBitCoinReqToWithdrawal(req);
+        withdrawal.setStatus(Withdrawal.STATUS_UNTREATED);
+
+        withdrawalDAO.insert(withdrawal);
+
+        ApplyWithdrawalBitCoinRsp rsp = new ApplyWithdrawalBitCoinRsp();
+        rsp.setId(withdrawal.getId());
+        rsp.setWithdrawalId(withdrawal.getWithdrawalId());
+
+		return rsp;
+	}
+
+	@Override
+	public void withdrawal() {
 
 	}
 

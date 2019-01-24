@@ -1,6 +1,8 @@
 package com.sharingif.blockchain.bitcoin.withdrawal.controller;
 
 
+import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinReq;
+import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinRsp;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalService;
 import com.sharingif.cube.batch.core.request.JobRequest;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
@@ -39,15 +41,15 @@ public class WithdrawalController {
 		withdrawalService.finishNotice();
 	}
 
-//	@RequestMapping(value="ether", method= RequestMethod.POST)
-//	public WithdrawalEtherRsp ether(WithdrawalEtherReq req) {
-//		return withdrawalService.ether(req);
-//	}
-//
-//	@RequestMapping(value="withdrawalEther", method= RequestMethod.POST)
-//	public void withdrawalEther() {
-//		withdrawalService.withdrawalEther();
-//	}
+	@RequestMapping(value="apply", method= RequestMethod.POST)
+	public ApplyWithdrawalBitCoinRsp apply(ApplyWithdrawalBitCoinReq req) {
+		return withdrawalService.apply(req);
+	}
+
+	@RequestMapping(value="withdrawal", method= RequestMethod.POST)
+	public void withdrawal() {
+		withdrawalService.withdrawal();
+	}
 
 	@RequestMapping(value="readySuccessNotice", method= RequestMethod.POST)
 	public void readySuccessNotice() {

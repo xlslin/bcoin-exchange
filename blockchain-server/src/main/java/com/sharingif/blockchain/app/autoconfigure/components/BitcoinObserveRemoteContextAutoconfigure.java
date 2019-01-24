@@ -56,6 +56,7 @@ public class BitcoinObserveRemoteContextAutoconfigure {
         List<String> services = new ArrayList<String>();
 
         services.add("com.sharingif.blockchain.bitcoin.api.account.service.AddressListenerApiService");
+        services.add("com.sharingif.blockchain.bitcoin.api.withdrawal.service.WithdrawalBitCoinApiService");
 
         RemoteServices remoteServices = new RemoteServices();
         remoteServices.setRequestContextResolver(handlerMethodCommunicationTransportRequestContextResolver);

@@ -1,6 +1,8 @@
 package com.sharingif.blockchain.bitcoin.withdrawal.service;
 
 
+import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinReq;
+import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinRsp;
 import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
 import com.sharingif.cube.support.service.base.IBaseService;
@@ -24,6 +26,19 @@ public interface WithdrawalService extends IBaseService<Withdrawal, java.lang.St
      * @param id
      */
     void initNotice(String id);
+
+    /**
+     * BitCoin区块取现申请
+     * @param req
+     * @return
+     */
+    ApplyWithdrawalBitCoinRsp apply(ApplyWithdrawalBitCoinReq req);
+
+    /**
+     * 取现
+     * @param
+     */
+    void withdrawal();
 
     /**
      * 取现处理中

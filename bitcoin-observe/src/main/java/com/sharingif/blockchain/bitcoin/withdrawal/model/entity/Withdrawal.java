@@ -1,6 +1,7 @@
 package com.sharingif.blockchain.bitcoin.withdrawal.model.entity;
 
 
+import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinReq;
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
 import com.sharingif.cube.components.sequence.Sequence;
 
@@ -8,6 +9,35 @@ import java.math.BigInteger;
 import java.util.Date;
 
 public class Withdrawal implements java.io.Serializable, IObjectDateOperationHistory {
+
+	/**
+	 * 处理状态(TXWCL:提现未处理)
+	 */
+	public static final String STATUS_UNTREATED = "TXWCL";
+	/**
+	 * 处理状态(TXCLZ:提现处理中)
+	 */
+	public static final String STATUS_PROCESSING = "TXCLZ";
+	/**
+	 * 处理状态(TXCG:提现成功)
+	 */
+	public static final String STATUS_SUCCESS = "TXCG";
+	/**
+	 * 处理状态(TXSB:提现失败)
+	 */
+	public static final String STATUS_FAILURE = "TXSB";
+	/**
+	 * 处理状态(TXTZZ:提现通知中)
+	 */
+	public static final String STATUS_NOTICING = "TXTZZ";
+	/**
+	 * 处理状态(TXCGTZ:提现成功通知)
+	 */
+	public static final String STATUS_SUCCESS_NOTICED = "TXCGTZ";
+	/**
+	 * 处理状态(TXSBTZ:提现失败通知)
+	 */
+	public static final String STATUS_FAILURE_NOTICED = "TXSBTZ";
 	
 	//columns START
     /**
@@ -142,6 +172,15 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 	}
 	public Date getModifyTime() {
 		return this.modifyTime;
+	}
+
+	public static Withdrawal convertApplyWithdrawalBitCoinReqToWithdrawal(ApplyWithdrawalBitCoinReq req) {
+		Withdrawal withdrawal = new Withdrawal();
+		withdrawal.setWithdrawalId(req.getWithdrawalId());
+		withdrawal.setCoinType(req.getCoinType());
+		withdrawal.setTxTo(req.getAddress());
+		withdrawal.setAmount(req.getAmount());
+		return withdrawal;
 	}
 
 	public String toString() {
