@@ -1,14 +1,11 @@
 package com.sharingif.blockchain.bitcoin.withdrawal.controller;
 
 
-import java.util.Map;
+import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalTransactionService;
+import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
+import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalTransactionService;
 
 
 @Controller
