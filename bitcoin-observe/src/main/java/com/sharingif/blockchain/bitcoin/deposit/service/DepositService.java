@@ -12,9 +12,39 @@ public interface DepositService {
     void addUntreated(TransactionBusiness transactionBusiness);
 
     /**
-     * 充值确认,交易收据状态无效不处理,充值有效不处理，充值无效减去余额
+     * 准备充值通知
+     */
+    void readyInitNotice();
+
+    /**
+     * 初始化充值通知中
+     * @param id
+     */
+    void initNotice(String id);
+
+    /**
+     * 充值
+     * @param transactionBusiness
+     */
+    void deposit(TransactionBusiness transactionBusiness);
+
+    /**
+     * 充值确认,充值有效不处理，充值无效减去余额
      * @param transactionBusiness
      */
     void depositConfirmed(TransactionBusiness transactionBusiness);
+
+    /**
+     * 准备充值完成通知
+     * @return
+     */
+    void readyFinishNotice();
+
+    /**
+     * 充值完成通知
+     * @param id
+     * @return
+     */
+    void finishNotice(String id);
 
 }

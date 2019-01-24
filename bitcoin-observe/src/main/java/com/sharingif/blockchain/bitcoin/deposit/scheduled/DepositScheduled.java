@@ -19,5 +19,21 @@ public class DepositScheduled {
         this.simpleDispatcherHandler = simpleDispatcherHandler;
     }
 
+    @Scheduled(fixedRate = 1000*1)
+    public synchronized void readyInitNotice() {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setLookupPath("/deposit/readyInitNotice");
+
+        simpleDispatcherHandler.doDispatch(jobRequest);
+    }
+
+    @Scheduled(fixedRate = 1000*1)
+    public synchronized void readyFinishNotice() {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setLookupPath("/deposit/readyFinishNotice");
+
+        simpleDispatcherHandler.doDispatch(jobRequest);
+    }
+
 
 }
