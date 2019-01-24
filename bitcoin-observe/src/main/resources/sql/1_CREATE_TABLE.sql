@@ -202,7 +202,7 @@ ALTER TABLE WITHDRAWAL_VIN COMMENT '提现输入表';
 CREATE TABLE WITHDRAWAL_VOUT
 (
   ID                    CHAR(32) NOT NULL COMMENT 'id',
-  WITHDRAWAL_ID         CHAR(32) NOT NULL COMMENT '取现唯一编号',
+  WITHDRAWAL_ID         CHAR(32) NOT NULL COMMENT 'withdrawal id',
   TX_HASH               VARCHAR(100) COMMENT '交易hash',
   ADDRESS               VARCHAR(100) NOT NULL COMMENT '地址',
   VOUT                  INT COMMENT '交易输出位置',

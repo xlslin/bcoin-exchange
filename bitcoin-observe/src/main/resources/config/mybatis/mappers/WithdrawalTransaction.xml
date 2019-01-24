@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="withdrawalTransaction">
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="withdrawalTransactionColumns">
+    	<if test="null!=txHash">
+    		and TX_HASH = #{txHash}
+    	</if>
+    	<if test="null!=fee">
+    		and FEE = #{fee}
+    	</if>
+    	<if test="null!=status">
+    		and STATUS = #{status}
+    	</if>
+    	<if test="null!=createTime">
+    		and CREATE_TIME = #{createTime}
+    	</if>
+    	<if test="null!=modifyTime">
+    		and MODIFY_TIME = #{modifyTime}
+    	</if>
+	</sql>
+	
+	<sql id="withdrawalTransactionSetColumns">
+		    <if test="null!=txHash">
+		    TX_HASH = #{txHash},
+		    </if>
+		    <if test="null!=fee">
+		    FEE = #{fee},
+		    </if>
+		    <if test="null!=status">
+		    STATUS = #{status},
+		    </if>
+		    <if test="null!=createTime">
+		    CREATE_TIME = #{createTime},
+		    </if>
+		    <if test="null!=modifyTime">
+		    MODIFY_TIME = #{modifyTime},
+		    </if>
+	</sql>
+
+	<resultMap id="withdrawalTransactionResultMap" type="com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalTransaction">
+        <result property="txHash" column="TX_HASH"/>
+        <result property="fee" column="FEE"/>
+        <result property="status" column="STATUS"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+	</resultMap>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert">
+        INSERT INTO WITHDRAWAL_TRANSACTION (
+        	TX_HASH
+        	,FEE
+        	,STATUS
+        	,CREATE_TIME
+        	,MODIFY_TIME
+        ) VALUES (
+        	#{txHash}
+        	,#{fee}
+        	,#{status}
+        	,#{createTime}
+        	,#{modifyTime}
+        )
+	</insert>
+	
+	<delete id="deleteById">
+	    DELETE FROM
+	    	WITHDRAWAL_TRANSACTION 
+	    WHERE
+	    TX_HASH = #{id} 
+    </delete>
+    
+    <delete id="deleteByCondition">
+	    DELETE FROM
+	    	WITHDRAWAL_TRANSACTION 
+	    WHERE
+	    	1=1
+		    <include refid="withdrawalTransactionColumns" />
+    </delete>
+    
+	<update id="updateById">
+	    UPDATE
+	    	WITHDRAWAL_TRANSACTION 
+        <set>
+	        <include refid="withdrawalTransactionSetColumns" />
+		</set>
+	    WHERE
+	    TX_HASH = #{txHash} 
+	</update>
+	
+    <select id="queryById" resultMap="withdrawalTransactionResultMap">
+		SELECT
+			TX_HASH
+			,FEE
+			,STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			WITHDRAWAL_TRANSACTION 
+		WHERE 
+			TX_HASH = #{id} 
+	</select>
+	
+	<select id="queryList" resultMap="withdrawalTransactionResultMap">
+		SELECT
+			TX_HASH
+			,FEE
+			,STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			WITHDRAWAL_TRANSACTION
+		WHERE
+			1=1
+			<include refid="withdrawalTransactionColumns" />
+		ORDER BY
+			TX_HASH
+	</select>
+	
+	<select id="queryAll" resultMap="withdrawalTransactionResultMap">
+		SELECT
+			TX_HASH
+			,FEE
+			,STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			WITHDRAWAL_TRANSACTION 
+		ORDER BY
+			TX_HASH
+	</select>
+	
+	<select id="queryPaginationListCount" resultType="Integer">
+		SELECT
+			COUNT(0)
+		FROM
+			WITHDRAWAL_TRANSACTION 
+		WHERE
+			1=1 
+			<include refid="withdrawalTransactionColumns" />
+	</select>
+	
+	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="withdrawalTransactionResultMap">
+		SELECT
+			TX_HASH
+			,FEE
+			,STATUS
+			,CREATE_TIME
+			,MODIFY_TIME
+		FROM
+			WITHDRAWAL_TRANSACTION
+		WHERE
+			1=1
+			<include refid="withdrawalTransactionColumns" />
+		ORDER BY
+			TX_HASH
+	</select>
+	
+</mapper>
+
