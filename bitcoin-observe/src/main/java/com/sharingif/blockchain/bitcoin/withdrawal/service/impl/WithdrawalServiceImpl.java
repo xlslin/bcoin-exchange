@@ -193,12 +193,12 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 			withdrawalTotalBalance = withdrawalTotalBalance.add(withdrawal.getAmount());
 		}
 
-		// 根据取现总金额获取可取现的账号
+		// 根据取现总金额获取可取现的账号和unspent
 		List<AccountUnspent> accountUnspentList = accountService.getAccountListByBalance(CoinType.BTC.name(), withdrawalTotalBalance);
 		if(accountUnspentList == null) {
 			return;
 		}
-		// 更具账户查询UTXO
+
 
 
 
