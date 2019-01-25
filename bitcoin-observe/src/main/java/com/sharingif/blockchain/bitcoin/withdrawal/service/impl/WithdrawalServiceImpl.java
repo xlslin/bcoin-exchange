@@ -3,11 +3,14 @@ package com.sharingif.blockchain.bitcoin.withdrawal.service.impl;
 
 import javax.annotation.Resource;
 
+import com.sharingif.blockchain.bitcoin.account.model.entity.Account;
 import com.sharingif.blockchain.bitcoin.account.model.entity.AccountJnl;
+import com.sharingif.blockchain.bitcoin.account.model.entity.AccountUnspent;
 import com.sharingif.blockchain.bitcoin.account.service.AccountService;
 import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinReq;
 import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinRsp;
 import com.sharingif.blockchain.bitcoin.app.InvalidAddressException;
+import com.sharingif.blockchain.bitcoin.app.constants.CoinType;
 import com.sharingif.blockchain.bitcoin.block.dao.TransactionBusinessDAO;
 import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChain;
 import com.sharingif.blockchain.bitcoin.block.model.entity.Transaction;
@@ -183,9 +186,41 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		return rsp;
 	}
 
+	protected void withdrawalEther(List<Withdrawal> withdrawalList) {
+		// 取现总金额
+		BigInteger withdrawalTotalBalance = BigInteger.ZERO;
+		for(Withdrawal withdrawal : withdrawalList) {
+			withdrawalTotalBalance = withdrawalTotalBalance.add(withdrawal.getAmount());
+		}
+
+		// 根据取现总金额获取可取现的账号
+		List<AccountUnspent> accountUnspentList = accountService.getAccountListByBalance(CoinType.BTC.name(), withdrawalTotalBalance);
+		if(accountUnspentList == null) {
+			return;
+		}
+		// 更具账户查询UTXO
+
+
+
+	}
+
 	@Override
 	public void withdrawal() {
+		Withdrawal queryWithdrawal = new Withdrawal();
+		queryWithdrawal.setStatus(Withdrawal.STATUS_UNTREATED);
+		PaginationCondition<Withdrawal> paginationCondition = new PaginationCondition<Withdrawal>();
+		paginationCondition.setCondition(queryWithdrawal);
+		paginationCondition.setQueryCount(false);
+		paginationCondition.setCurrentPage(1);
+		paginationCondition.setPageSize(20);
 
+		PaginationRepertory<Withdrawal> withdrawalPaginationRepertory = withdrawalDAO.queryPagination(paginationCondition);
+		List<Withdrawal> withdrawalList = withdrawalPaginationRepertory.getPageItems();
+		if(withdrawalList == null || withdrawalList.isEmpty()) {
+			return;
+		}
+
+		withdrawalEther(withdrawalList);
 	}
 
 	@Override

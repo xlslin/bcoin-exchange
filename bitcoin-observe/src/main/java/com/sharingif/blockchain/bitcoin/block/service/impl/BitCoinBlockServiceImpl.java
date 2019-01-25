@@ -81,7 +81,7 @@ public class BitCoinBlockServiceImpl implements BitCoinBlockService {
 
         List<Unspent> unspentList = null;
         try {
-            unspentList = walletApiService.listUnspent(2,9999999, Arrays.asList(address), true, null);
+            unspentList = listUnspent(address);
         } catch (Exception e) {
             logger.error("get unspent list error", e);
             throw new CubeRuntimeException(e);
@@ -93,6 +93,11 @@ public class BitCoinBlockServiceImpl implements BitCoinBlockService {
             balance = balance.add(unspent.getAmount().multiply(Constants.BTC_UNIT).toBigInteger());
         }
         return balance;
+    }
+
+    @Override
+    public List<Unspent> listUnspent(String address) {
+        return walletApiService.listUnspent(2,9999999, Arrays.asList(address), true, null);
     }
 
 }

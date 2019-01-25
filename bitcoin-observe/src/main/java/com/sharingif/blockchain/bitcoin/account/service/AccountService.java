@@ -2,10 +2,12 @@ package com.sharingif.blockchain.bitcoin.account.service;
 
 
 import com.sharingif.blockchain.bitcoin.account.model.entity.Account;
+import com.sharingif.blockchain.bitcoin.account.model.entity.AccountUnspent;
 import com.sharingif.cube.support.service.base.IBaseService;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.List;
 
 
 public interface AccountService extends IBaseService<Account, java.lang.String> {
@@ -81,5 +83,13 @@ public interface AccountService extends IBaseService<Account, java.lang.String> 
      * @param transTime
      */
     void subtractFrozenBalance(String address, String coinType, BigInteger balance, String accountFrom, String accountTo, String txId, Date transTime);
+
+    /**
+     * 获取账户未花费spent列表，账户列表总余额大于balance
+     * @param coinType
+     * @param balance
+     * @return
+     */
+    List<AccountUnspent> getAccountListByBalance(String coinType, BigInteger balance);
 
 }

@@ -3,6 +3,8 @@ package com.sharingif.blockchain.bitcoin.account.dao;
 
 import com.sharingif.blockchain.bitcoin.account.model.entity.Account;
 import com.sharingif.blockchain.bitcoin.app.dao.BaseDAO;
+import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
+import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
 
 import java.math.BigInteger;
 
@@ -53,5 +55,12 @@ public interface AccountDAO extends BaseDAO<Account, String> {
      * @return
      */
     int updateSubFrozenAmountTotalOutByAddressCoinType(String address, String coinType, BigInteger frozenAmount);
+
+    /**
+     * 根据条件余额升序查询
+     * @param paginationCondition
+     * @return
+     */
+    PaginationRepertory<Account> queryPaginationListOrderByBalanceAsc(PaginationCondition<Account> paginationCondition);
 
 }

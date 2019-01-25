@@ -2,6 +2,8 @@ package com.sharingif.blockchain.bitcoin.block.service;
 
 import org.bitcoincore.api.blockchain.entity.Block;
 import org.bitcoincore.api.rawtransactions.entity.Transaction;
+import org.bitcoincore.api.wallet.entity.ListUnspentQueryOptions;
+import org.bitcoincore.api.wallet.entity.Unspent;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -61,5 +63,12 @@ public interface BitCoinBlockService {
      * @return
      */
     BigInteger getBalanceByAddress(String address);
+
+    /**
+     * 根据地址查询未花费的Spent
+     * @param address
+     * @return
+     */
+    List<Unspent> listUnspent(String address);
 
 }
