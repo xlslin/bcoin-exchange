@@ -1,7 +1,7 @@
-package com.sharingif.blockchain.crypto.api.bitcoin.service;
+package com.sharingif.blockchain.api.bitcoin.service;
 
-import com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageReq;
-import com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageRsp;
+import com.sharingif.blockchain.api.bitcoin.entity.SignMessageReq;
+import com.sharingif.blockchain.api.bitcoin.entity.SignMessageRsp;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 

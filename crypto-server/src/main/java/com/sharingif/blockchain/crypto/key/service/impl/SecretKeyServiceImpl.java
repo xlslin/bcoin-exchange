@@ -1,18 +1,20 @@
 package com.sharingif.blockchain.crypto.key.service.impl;
 
 
-import javax.annotation.Resource;
-
 import com.sharingif.blockchain.crypto.api.key.entity.BIP44AddressIndexReq;
 import com.sharingif.blockchain.crypto.api.key.entity.BIP44AddressIndexRsp;
 import com.sharingif.blockchain.crypto.app.components.Keystore;
 import com.sharingif.blockchain.crypto.app.constants.ErrorConstants;
-import com.sharingif.blockchain.crypto.btc.service.BtcService;
-import com.sharingif.blockchain.crypto.key.model.entity.ExtendedKey;
+import com.sharingif.blockchain.crypto.bitcoin.service.BitCoinService;
+import com.sharingif.blockchain.crypto.key.dao.SecretKeyDAO;
 import com.sharingif.blockchain.crypto.key.model.entity.Bip44KeyPath;
+import com.sharingif.blockchain.crypto.key.model.entity.ExtendedKey;
+import com.sharingif.blockchain.crypto.key.model.entity.SecretKey;
 import com.sharingif.blockchain.crypto.key.service.BIP44IndexService;
 import com.sharingif.blockchain.crypto.key.service.ExtendedKeyService;
+import com.sharingif.blockchain.crypto.key.service.SecretKeyService;
 import com.sharingif.cube.core.exception.validation.ValidationCubeException;
+import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
@@ -20,14 +22,10 @@ import org.bitcoinj.crypto.HDKeyDerivation;
 import org.bitcoinj.crypto.HDUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.sharingif.blockchain.crypto.key.model.entity.SecretKey;
-import com.sharingif.blockchain.crypto.key.dao.SecretKeyDAO;
-import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
-import com.sharingif.blockchain.crypto.key.service.SecretKeyService;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +35,7 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, java.lang.S
 	
 	private SecretKeyDAO secretKeyDAO;
 	private ExtendedKeyService extendedKeyService;
-	private BtcService btcService;
+	private BitCoinService bitCoinService;
 	private Keystore keystore;
 	private Map<Integer, BIP44IndexService> bip44IndexServiceMap;
 
@@ -54,8 +52,8 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, java.lang.S
 		this.extendedKeyService = extendedKeyService;
 	}
 	@Resource
-	public void setBtcService(BtcService btcService) {
-		this.btcService = btcService;
+	public void setBitCoinService(BitCoinService bitCoinService) {
+		this.bitCoinService = bitCoinService;
 	}
 	@Resource
 	public void setKeystore(Keystore keystore) {
@@ -77,7 +75,7 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, java.lang.S
 		// BIP44路径
 		Bip44KeyPath keyPath = new Bip44KeyPath(extendedKey.getExtendedKeyPath(), extendedKey.getCurrentIndexNumber());
 
-		NetworkParameters networkParameters = btcService.getNetworkParameters(keyPath.getCoinType());
+		NetworkParameters networkParameters = bitCoinService.getNetworkParameters(keyPath.getCoinType());
 
 		String changeDeterministicKeyBase58 = keystore.load(extendedKey.getFilePath(), req.getChangeExtendedKeyPassword());
 		DeterministicKey changeDeterministicKey = DeterministicKey.deserializeB58(changeDeterministicKeyBase58, networkParameters);

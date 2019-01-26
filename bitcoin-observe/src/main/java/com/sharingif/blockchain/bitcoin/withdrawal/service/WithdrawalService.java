@@ -17,6 +17,13 @@ public interface WithdrawalService extends IBaseService<Withdrawal, java.lang.St
     void addUntreated(TransactionBusiness transactionBusiness);
 
     /**
+     * 修改状态为处理中
+     * @param id
+     * @return
+     */
+    int updateStatusToProcessing(String id);
+
+    /**
      * 准备提现通知
      */
     void readyInitNotice();

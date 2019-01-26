@@ -11,19 +11,19 @@ public class SecretKey implements java.io.Serializable, IObjectDateOperationHist
     /**
      * 地址			db_column: ADDRESS 
      */	
-	private java.lang.String address;
+	private String address;
     /**
      * 扩展密钥id			db_column: EXTENDED_KEY_ID 
      */	
-	private java.lang.String extendedKeyId;
+	private String extendedKeyId;
     /**
      * key路径			db_column: KEY_PATH 
      */	
-	private java.lang.String keyPath;
+	private String keyPath;
     /**
      * 文件路径			db_column: FILE_PATH 
      */	
-	private java.lang.String filePath;
+	private String filePath;
     /**
      * 创建时间			db_column: CREATE_TIME 
      */	
@@ -34,28 +34,28 @@ public class SecretKey implements java.io.Serializable, IObjectDateOperationHist
 	private Date modifyTime;
 	//columns END
 
-	public void setAddress(java.lang.String address) {
+	public void setAddress(String address) {
 		this.address = address;
 	}
-	public java.lang.String getAddress() {
+	public String getAddress() {
 		return this.address;
 	}
-	public void setExtendedKeyId(java.lang.String extendedKeyId) {
+	public void setExtendedKeyId(String extendedKeyId) {
 		this.extendedKeyId = extendedKeyId;
 	}
-	public java.lang.String getExtendedKeyId() {
+	public String getExtendedKeyId() {
 		return this.extendedKeyId;
 	}
-	public void setKeyPath(java.lang.String keyPath) {
+	public void setKeyPath(String keyPath) {
 		this.keyPath = keyPath;
 	}
-	public java.lang.String getKeyPath() {
+	public String getKeyPath() {
 		return this.keyPath;
 	}
-	public void setFilePath(java.lang.String filePath) {
+	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
-	public java.lang.String getFilePath() {
+	public String getFilePath() {
 		return this.filePath;
 	}
 	public void setCreateTime(Date createTime) {

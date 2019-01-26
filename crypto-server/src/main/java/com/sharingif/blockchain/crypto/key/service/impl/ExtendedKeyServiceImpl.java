@@ -5,10 +5,10 @@ import com.sharingif.blockchain.crypto.api.key.entity.BIP44ChangeReq;
 import com.sharingif.blockchain.crypto.api.key.entity.BIP44ChangeRsp;
 import com.sharingif.blockchain.crypto.app.components.Keystore;
 import com.sharingif.blockchain.crypto.app.constants.ErrorConstants;
-import com.sharingif.blockchain.crypto.btc.service.BtcService;
+import com.sharingif.blockchain.crypto.bitcoin.service.BitCoinService;
 import com.sharingif.blockchain.crypto.key.dao.ExtendedKeyDAO;
-import com.sharingif.blockchain.crypto.key.model.entity.ExtendedKey;
 import com.sharingif.blockchain.crypto.key.model.entity.Bip44KeyPath;
+import com.sharingif.blockchain.crypto.key.model.entity.ExtendedKey;
 import com.sharingif.blockchain.crypto.key.service.ExtendedKeyService;
 import com.sharingif.blockchain.crypto.mnemonic.model.entity.Mnemonic;
 import com.sharingif.blockchain.crypto.mnemonic.service.MnemonicService;
@@ -36,7 +36,7 @@ public class ExtendedKeyServiceImpl extends BaseServiceImpl<ExtendedKey, java.la
 	private ExtendedKeyDAO extendedKeyDAO;
 	private Keystore keystore;
 	private MnemonicService mnemonicService;
-	private BtcService btcService;
+	private BitCoinService bitCoinService;
 
 	@Resource
 	public void setExtendedKeyDAO(ExtendedKeyDAO extendedKeyDAO) {
@@ -52,10 +52,9 @@ public class ExtendedKeyServiceImpl extends BaseServiceImpl<ExtendedKey, java.la
 		this.mnemonicService = mnemonicService;
 	}
 	@Resource
-	public void setBtcService(BtcService btcService) {
-		this.btcService = btcService;
+	public void setBitCoinService(BitCoinService bitCoinService) {
+		this.bitCoinService = bitCoinService;
 	}
-
 
 	@Override
 	public BIP44ChangeRsp change(BIP44ChangeReq req) {
@@ -75,7 +74,7 @@ public class ExtendedKeyServiceImpl extends BaseServiceImpl<ExtendedKey, java.la
 		DeterministicKeyChain chain = DeterministicKeyChain.builder().seed(seed).build();
 		List<ChildNumber> childNumberList = HDUtils.parsePath(keyPath.getBitcoinjPath());
 		DeterministicKey changeDeterministicKey = chain.getKeyByPath(childNumberList, true);
-		NetworkParameters networkParameters = btcService.getNetworkParameters(req.getCoinType());
+		NetworkParameters networkParameters = bitCoinService.getNetworkParameters(req.getCoinType());
 		String deterministicKeyStr = changeDeterministicKey.serializePrivB58(networkParameters);
 
 		String mnemonicPath = mnemonicObject.getMnemonicDirectory();

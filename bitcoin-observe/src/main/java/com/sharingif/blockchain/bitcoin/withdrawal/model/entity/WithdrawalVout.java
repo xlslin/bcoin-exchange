@@ -2,6 +2,7 @@ package com.sharingif.blockchain.bitcoin.withdrawal.model.entity;
 
 
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+import com.sharingif.cube.components.sequence.Sequence;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -11,7 +12,8 @@ public class WithdrawalVout implements java.io.Serializable, IObjectDateOperatio
 	//columns START
     /**
      * id			db_column: ID 
-     */	
+     */
+	@Sequence(ref="uuidSequenceGenerator")
 	private String id;
     /**
      * 取现唯一编号			db_column: WITHDRAWAL_ID 

@@ -431,8 +431,6 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
 
         BigInteger nonce = ethereumBlockService.ethGetTransactionCount(account.getAddress());
 
-        updateStatusToProcessing(withdrawal.getId());
-
         String hexValue;
         if(CoinType.ETH.name().equals(withdrawal.getCoinType())) {
             SignMessageReq req = new SignMessageReq();
@@ -459,7 +457,14 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
             hexValue = rsp.getHexValue();
         }
 
+        updateStatusToProcessing(withdrawal.getId());
+
         String txHash = ethereumBlockService.ethSendRawTransaction(hexValue);
+
+        if(StringUtils.isTrimEmpty(txHash)) {
+            logger.error("withdrawal generate txhash is null, withdrawal:{}", withdrawal);
+            return;
+        }
 
         Withdrawal updateWithdrawal = new Withdrawal();
         updateWithdrawal.setId(withdrawal.getId());

@@ -59,6 +59,7 @@ public class BlockchainServerRemoteContextAutoconfigure {
         List<String> services = new ArrayList<String>();
 
         services.add("com.sharingif.blockchain.api.ether.service.EtherApiService");
+        services.add("com.sharingif.blockchain.api.bitcoin.service.BitCoinApiService");
 
         RemoteServices remoteServices = new RemoteServices();
         remoteServices.setRequestContextResolver(handlerMethodCommunicationTransportRequestContextResolver);

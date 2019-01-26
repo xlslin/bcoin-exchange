@@ -3,9 +3,11 @@ package com.sharingif.blockchain.bitcoin.block.service.impl;
 import com.sharingif.blockchain.bitcoin.app.constants.Constants;
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
 import com.sharingif.cube.core.exception.CubeRuntimeException;
+import com.sharingif.cube.core.exception.validation.ValidationCubeException;
 import org.bitcoincore.api.blockchain.entity.Block;
-import org.bitcoincore.api.rawtransactions.entity.Transaction;
 import org.bitcoincore.api.blockchain.service.BlockChainApiService;
+import org.bitcoincore.api.rawtransactions.entity.SignRawTransaction;
+import org.bitcoincore.api.rawtransactions.entity.Transaction;
 import org.bitcoincore.api.rawtransactions.service.RawTransactionsApiService;
 import org.bitcoincore.api.wallet.entity.Unspent;
 import org.bitcoincore.api.wallet.service.WalletApiService;
@@ -98,6 +100,21 @@ public class BitCoinBlockServiceImpl implements BitCoinBlockService {
     @Override
     public List<Unspent> listUnspent(String address) {
         return walletApiService.listUnspent(2,9999999, Arrays.asList(address), true, null);
+    }
+
+    @Override
+    public String signRawTransaction(String hexstring) {
+        SignRawTransaction signRawTransaction = rawTransactionsApiService.signRawTransaction(hexstring, null, null, "ALL");
+        if(signRawTransaction.getComplete()) {
+            return signRawTransaction.getHex();
+        }
+
+        throw new ValidationCubeException(signRawTransaction.getErrors().getError());
+    }
+
+    @Override
+    public String sendRawTransaction(String hexstring) {
+        return rawTransactionsApiService.sendRawTransaction(hexstring, false);
     }
 
 }

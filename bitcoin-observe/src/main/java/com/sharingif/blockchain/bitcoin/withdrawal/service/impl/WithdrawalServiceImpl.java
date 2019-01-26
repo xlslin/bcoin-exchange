@@ -1,9 +1,8 @@
 package com.sharingif.blockchain.bitcoin.withdrawal.service.impl;
 
 
-import javax.annotation.Resource;
-
-import com.sharingif.blockchain.bitcoin.account.model.entity.Account;
+import com.sharingif.blockchain.api.bitcoin.entity.*;
+import com.sharingif.blockchain.api.bitcoin.service.BitCoinApiService;
 import com.sharingif.blockchain.bitcoin.account.model.entity.AccountJnl;
 import com.sharingif.blockchain.bitcoin.account.model.entity.AccountUnspent;
 import com.sharingif.blockchain.bitcoin.account.service.AccountService;
@@ -11,25 +10,31 @@ import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBit
 import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinRsp;
 import com.sharingif.blockchain.bitcoin.app.InvalidAddressException;
 import com.sharingif.blockchain.bitcoin.app.constants.CoinType;
+import com.sharingif.blockchain.bitcoin.app.constants.Constants;
 import com.sharingif.blockchain.bitcoin.block.dao.TransactionBusinessDAO;
 import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChain;
 import com.sharingif.blockchain.bitcoin.block.model.entity.Transaction;
 import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
+import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
+import com.sharingif.blockchain.bitcoin.withdrawal.dao.WithdrawalDAO;
+import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
+import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalService;
+import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalTransactionService;
 import com.sharingif.cube.batch.core.JobConfig;
 import com.sharingif.cube.batch.core.JobModel;
 import com.sharingif.cube.batch.core.JobService;
+import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
 import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
+import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
+import org.bitcoincore.api.wallet.entity.Unspent;
 import org.bitcoinj.core.Base58;
 import org.springframework.stereotype.Service;
-
-import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
-import com.sharingif.blockchain.bitcoin.withdrawal.dao.WithdrawalDAO;
-import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
-import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalService;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -42,6 +47,9 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	private JobConfig withdrawalSuccessNoticeJobConfig;
 	private JobConfig withdrawalFailureNoticeJobConfig;
 	private JobService jobService;
+	private BitCoinApiService bitCoinApiService;
+	private BitCoinBlockService bitCoinBlockService;
+	private WithdrawalTransactionService withdrawalTransactionService;
 
 	public WithdrawalDAO getWithdrawalDAO() {
 		return withdrawalDAO;
@@ -75,6 +83,18 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	public void setJobService(JobService jobService) {
 		this.jobService = jobService;
 	}
+	@Resource
+	public void setBitCoinApiService(BitCoinApiService bitCoinApiService) {
+		this.bitCoinApiService = bitCoinApiService;
+	}
+	@Resource
+	public void setBitCoinBlockService(BitCoinBlockService bitCoinBlockService) {
+		this.bitCoinBlockService = bitCoinBlockService;
+	}
+	@Resource
+	public void setWithdrawalTransactionService(WithdrawalTransactionService withdrawalTransactionService) {
+		this.withdrawalTransactionService = withdrawalTransactionService;
+	}
 
 	@Override
 	public void addUntreated(TransactionBusiness transactionBusiness) {
@@ -87,6 +107,16 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		transactionBusinessDAO.insert(transactionBusiness);
 
 		withdrawal(transactionBusiness);
+	}
+
+	@Override
+	public int updateStatusToProcessing(String id) {
+		Withdrawal withdrawal = new Withdrawal();
+		withdrawal.setId(id);
+
+		withdrawal.setStatus(Withdrawal.STATUS_PROCESSING);
+
+		return withdrawalDAO.updateById(withdrawal);
 	}
 
 	@Transactional
@@ -186,7 +216,46 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		return rsp;
 	}
 
-	protected void withdrawalEther(List<Withdrawal> withdrawalList) {
+	@Transactional
+	protected void updateStatusToProcessing(List<Withdrawal> withdrawalList) {
+		for(Withdrawal withdrawal : withdrawalList) {
+			updateStatusToProcessing(withdrawal.getId());
+		}
+	}
+
+	@Transactional
+	protected void updateWithdrawal(String txHash, BigInteger totalFee, List<AccountUnspent> accountUnspentList, List<Withdrawal> withdrawalList) {
+		withdrawalTransactionService.addWithdrawalTransaction(txHash, totalFee, accountUnspentList, withdrawalList);
+
+		BigInteger withdrawalFee = totalFee.divide(new BigInteger(String.valueOf(withdrawalList.size())));
+
+		for(int i=0; i<withdrawalList.size()-1; i++) {
+			Withdrawal withdrawal = withdrawalList.get(i);
+
+			Withdrawal updateWithdrawal = new Withdrawal();
+			updateWithdrawal.setId(withdrawal.getId());
+
+			updateWithdrawal.setTxHash(txHash);
+			updateWithdrawal.setFee(withdrawalFee);
+
+			withdrawalDAO.updateById(updateWithdrawal);
+
+			totalFee = totalFee.subtract(withdrawalFee);
+		}
+
+		Withdrawal withdrawal = withdrawalList.get(withdrawalList.size()-1);
+
+		Withdrawal updateWithdrawal = new Withdrawal();
+		updateWithdrawal.setId(withdrawal.getId());
+
+		updateWithdrawal.setTxHash(txHash);
+		updateWithdrawal.setFee(totalFee);
+
+		withdrawalDAO.updateById(updateWithdrawal);
+
+	}
+
+	protected void withdrawal(List<Withdrawal> withdrawalList) {
 		// 取现总金额
 		BigInteger withdrawalTotalBalance = BigInteger.ZERO;
 		for(Withdrawal withdrawal : withdrawalList) {
@@ -199,9 +268,55 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 			return;
 		}
 
+		BigInteger fee = Constants.BTC_COIN_TRANSFOR_FEE;
 
+		SignMessageReq req = new SignMessageReq();
+		req.setFee(fee);
 
+		List<SignMessageVinReq> vinList = new ArrayList<SignMessageVinReq>(accountUnspentList.size());
+		for(AccountUnspent accountUnspent : accountUnspentList) {
+			SignMessageVinReq signMessageVinReq = new SignMessageVinReq();
+			signMessageVinReq.setFromAddress(accountUnspent.getAccount().getAddress());
 
+			List<Unspent> unspentList = accountUnspent.getUnspentList();
+			List<SignMessageUnspentReq> signMessageUnspentReqList =  new ArrayList<SignMessageUnspentReq>(unspentList.size());
+			for(Unspent unspent : unspentList) {
+				SignMessageUnspentReq signMessageUnspentReq = new SignMessageUnspentReq();
+				signMessageUnspentReq.setTxId(unspent.getTxId());
+				signMessageUnspentReq.setVout(unspent.getvOut());
+				signMessageUnspentReq.setScriptPubKey(unspent.getScriptPubKey());
+				signMessageUnspentReq.setAmount(unspent.getAmount().toBigInteger());
+
+				signMessageUnspentReqList.add(signMessageUnspentReq);
+			}
+
+			signMessageVinReq.setUnspentList(signMessageUnspentReqList);
+
+			vinList.add(signMessageVinReq);
+		}
+
+		List<SignMessageVoutReq> voutList = new ArrayList<SignMessageVoutReq>(withdrawalList.size());
+		for(Withdrawal withdrawal : withdrawalList) {
+			SignMessageVoutReq signMessageVoutReq = new SignMessageVoutReq();
+			signMessageVoutReq.setToAddress(withdrawal.getTxTo());
+			signMessageVoutReq.setAmount(withdrawal.getAmount());
+
+			voutList.add(signMessageVoutReq);
+		}
+
+		SignMessageRsp rsp = bitCoinApiService.signMessage(req);
+		String hexstring = bitCoinBlockService.signRawTransaction(rsp.getHexValue());
+
+		updateStatusToProcessing(withdrawalList);
+
+		String txHash = bitCoinBlockService.sendRawTransaction(hexstring);
+
+		if(StringUtils.isTrimEmpty(txHash)) {
+			logger.error("withdrawal generate txhash is null, withdrawalList:{}", withdrawalList);
+			return;
+		}
+
+		updateWithdrawal(txHash, fee, accountUnspentList, withdrawalList);
 	}
 
 	@Override
@@ -220,7 +335,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 			return;
 		}
 
-		withdrawalEther(withdrawalList);
+		withdrawal(withdrawalList);
 	}
 
 	@Override

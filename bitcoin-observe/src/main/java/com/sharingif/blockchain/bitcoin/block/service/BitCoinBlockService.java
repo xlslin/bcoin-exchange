@@ -1,6 +1,7 @@
 package com.sharingif.blockchain.bitcoin.block.service;
 
 import org.bitcoincore.api.blockchain.entity.Block;
+import org.bitcoincore.api.rawtransactions.entity.SignRawTransaction;
 import org.bitcoincore.api.rawtransactions.entity.Transaction;
 import org.bitcoincore.api.wallet.entity.ListUnspentQueryOptions;
 import org.bitcoincore.api.wallet.entity.Unspent;
@@ -70,5 +71,19 @@ public interface BitCoinBlockService {
      * @return
      */
     List<Unspent> listUnspent(String address);
+
+    /**
+     * 签名交易
+     * @param hexstring
+     * @return
+     */
+    String signRawTransaction(String hexstring);
+
+    /**
+     * 发送签名交易
+     * @param hexstring
+     * @return
+     */
+    String sendRawTransaction(String hexstring);
 
 }

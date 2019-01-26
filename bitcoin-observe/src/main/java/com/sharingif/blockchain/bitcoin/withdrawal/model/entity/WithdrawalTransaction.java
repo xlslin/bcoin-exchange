@@ -7,6 +7,19 @@ import java.math.BigInteger;
 import java.util.Date;
 
 public class WithdrawalTransaction implements java.io.Serializable, IObjectDateOperationHistory {
+
+	/**
+	 * 处理状态(WCL:未处理)
+	 */
+	public static final String STATUS_UNTREATED = "WCL";
+	/**
+	 * 处理状态(CLZ:处理中)
+	 */
+	public static final String STATUS_PROCESSING = "CLZ";
+	/**
+	 * 处理状态(YCL:已处理)
+	 */
+	public static final String STATUS_PROCESSED = "YCL";
 	
 	//columns START
     /**

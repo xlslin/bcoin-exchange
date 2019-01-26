@@ -1,4 +1,4 @@
-package com.sharingif.blockchain.crypto.api.bitcoin.entity;
+package com.sharingif.blockchain.api.bitcoin.entity;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -14,10 +14,6 @@ import java.util.List;
 public class SignMessageReq {
 
     /**
-     * 找零地址
-     */
-    private String changeAddress;
-    /**
      * 手续费
      */
     private BigInteger fee;
@@ -29,14 +25,6 @@ public class SignMessageReq {
      * vout
      */
     private List<SignMessageVoutReq> voutList;
-
-    public String getChangeAddress() {
-        return changeAddress;
-    }
-
-    public void setChangeAddress(String changeAddress) {
-        this.changeAddress = changeAddress;
-    }
 
     public BigInteger getFee() {
         return fee;
@@ -65,8 +53,7 @@ public class SignMessageReq {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("SignMessageReq{");
-        sb.append("changeAddress='").append(changeAddress).append('\'');
-        sb.append(", fee=").append(fee);
+        sb.append("fee=").append(fee);
         sb.append(", vinList=").append(vinList);
         sb.append(", voutList=").append(voutList);
         sb.append('}');

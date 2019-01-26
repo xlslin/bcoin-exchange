@@ -213,6 +213,9 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 		BigInteger queryAccounTotalBalance = BigInteger.ZERO;
 		for(Account account : queryAccountList) {
 			List<Unspent> unspentList = bitCoinBlockService.listUnspent(account.getAddress());
+			if(unspentList == null || unspentList.isEmpty()) {
+				continue;
+			}
 			for(Unspent unspent : unspentList) {
 				queryAccounTotalBalance = queryAccounTotalBalance.add(unspent.getAmount().multiply(Constants.BTC_UNIT).toBigInteger());
 			}

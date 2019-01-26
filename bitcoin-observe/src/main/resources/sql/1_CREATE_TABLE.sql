@@ -176,8 +176,8 @@ ALTER TABLE WITHDRAWAL COMMENT '提现表';
 
 CREATE TABLE WITHDRAWAL_TRANSACTION
 (
-  TX_HASH               VARCHAR(100) COMMENT '交易hash',
-  FEE                   DECIMAL(65,0) COMMENT '手续费',
+  TX_HASH               VARCHAR(100) NOT NULL COMMENT '交易hash',
+  FEE                   DECIMAL(65,0) NOT NULL COMMENT '手续费',
   STATUS                VARCHAR(20) NOT NULL COMMENT '处理状态(WCL:未处理、CLZ:处理中、YCL:已处理)',
   CREATE_TIME           TIMESTAMP NULL COMMENT '创建时间',
   MODIFY_TIME           TIMESTAMP NULL COMMENT '修改时间',
@@ -188,7 +188,7 @@ ALTER TABLE WITHDRAWAL_TRANSACTION COMMENT '提现交易表';
 CREATE TABLE WITHDRAWAL_VIN
 (
   ID                    CHAR(32) NOT NULL COMMENT 'id',
-  TX_HASH               VARCHAR(100) COMMENT '交易hash',
+  TX_HASH               VARCHAR(100) NOT NULL COMMENT '交易hash',
   ADDRESS               VARCHAR(100) NOT NULL COMMENT '地址',
   TX_ID                 VARCHAR(100) NOT NULL COMMENT '交易id',
   VOUT                  INT COMMENT '交易输出位置',
@@ -203,7 +203,7 @@ CREATE TABLE WITHDRAWAL_VOUT
 (
   ID                    CHAR(32) NOT NULL COMMENT 'id',
   WITHDRAWAL_ID         CHAR(32) NOT NULL COMMENT 'withdrawal id',
-  TX_HASH               VARCHAR(100) COMMENT '交易hash',
+  TX_HASH               VARCHAR(100) NOT NULL COMMENT '交易hash',
   ADDRESS               VARCHAR(100) NOT NULL COMMENT '地址',
   VOUT                  INT COMMENT '交易输出位置',
   AMOUNT                DECIMAL(65,0) NOT NULL COMMENT '金额',
