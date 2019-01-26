@@ -333,7 +333,6 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         updateWithdrawal.setGasUsed(transaction.getGasUsed());
         updateWithdrawal.setGasPrice(transaction.getGasPrice());
         updateWithdrawal.setFee(transactionBusiness.getFee());
-        updateWithdrawal.setAmount(BigInteger.ZERO);
         updateWithdrawal.setTxTime(transaction.getTxTime());
         updateWithdrawal.setStatus(Withdrawal.STATUS_SUCCESS);
 
