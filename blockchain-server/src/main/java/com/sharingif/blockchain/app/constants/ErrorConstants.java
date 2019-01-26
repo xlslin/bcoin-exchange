@@ -18,4 +18,15 @@ public class ErrorConstants {
      * B44IP币种不支持
      */
     public static final String BIP44_COIN_TYPE_DOES_NOT_EXIST="001001";
+
+    /**
+     * 未设置bitcoin找零ExtendedKey
+     */
+    public static final String NOT_SET_UP_BTC_CHANGE_EXTENDEDKEY = "001002";
+
+    /**
+     * 未生成bitcoin找零地址
+     */
+    public static final String NOT_GENERATED_BTC_CHANGE_ADDRESS = "001003";
+
 }

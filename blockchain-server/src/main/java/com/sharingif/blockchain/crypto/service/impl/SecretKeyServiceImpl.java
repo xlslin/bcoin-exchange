@@ -4,6 +4,7 @@ import com.sharingif.blockchain.account.service.AddressListenerService;
 import com.sharingif.blockchain.account.service.BitCoinService;
 import com.sharingif.blockchain.api.crypto.entity.BIP44AddressIndexReq;
 import com.sharingif.blockchain.api.crypto.entity.BIP44AddressIndexRsp;
+import com.sharingif.blockchain.app.constants.ErrorConstants;
 import com.sharingif.blockchain.crypto.api.key.service.BIP44ApiService;
 import com.sharingif.blockchain.crypto.dao.SecretKeyDAO;
 import com.sharingif.blockchain.crypto.model.entity.Bip44KeyPath;
@@ -11,12 +12,14 @@ import com.sharingif.blockchain.crypto.model.entity.ExtendedKey;
 import com.sharingif.blockchain.crypto.model.entity.SecretKey;
 import com.sharingif.blockchain.crypto.service.ExtendedKeyService;
 import com.sharingif.blockchain.crypto.service.SecretKeyService;
+import com.sharingif.cube.core.exception.validation.ValidationCubeException;
 import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.security.confidentiality.encrypt.TextEncryptor;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * SecretKeyServiceImpl
@@ -132,6 +135,24 @@ public class SecretKeyServiceImpl extends BaseServiceImpl<SecretKey, String> imp
         secretKey.setAddress(address);
 
         return secretKeyDAO.query(secretKey);
+    }
+
+    @Override
+    public SecretKey getBitCoinChangeAddress() {
+        ExtendedKey extendedKey = extendedKeyService.getBitCoinChangeExtendedKey();
+        if(extendedKey == null) {
+            throw new ValidationCubeException(ErrorConstants.NOT_SET_UP_BTC_CHANGE_EXTENDEDKEY);
+        }
+
+        SecretKey querySecretKey = new SecretKey();
+        querySecretKey.setExtendedKeyId(extendedKey.getId());
+        List<SecretKey> secretKeyList = secretKeyDAO.queryList(querySecretKey);
+
+        if(secretKeyList == null || secretKeyList.isEmpty()) {
+            throw new ValidationCubeException(ErrorConstants.NOT_GENERATED_BTC_CHANGE_ADDRESS);
+        }
+
+        return secretKeyList.get(0);
     }
 
 }

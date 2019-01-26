@@ -29,4 +29,10 @@ public interface ExtendedKeyService extends IBaseService<ExtendedKey, String> {
      */
     ExtendedKey getExtendedKey(String coinType);
 
+    /**
+     * 获取bitcoin找零ExtendedKey
+     * @return
+     */
+    ExtendedKey getBitCoinChangeExtendedKey();
+
 }

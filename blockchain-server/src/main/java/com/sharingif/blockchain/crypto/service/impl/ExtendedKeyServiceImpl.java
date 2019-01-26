@@ -4,12 +4,14 @@ import com.sharingif.blockchain.account.model.entity.BitCoin;
 import com.sharingif.blockchain.account.service.BitCoinService;
 import com.sharingif.blockchain.api.crypto.entity.BIP44ChangeReq;
 import com.sharingif.blockchain.api.crypto.entity.BIP44ChangeRsp;
+import com.sharingif.blockchain.app.constants.CoinType;
 import com.sharingif.blockchain.app.constants.ErrorConstants;
 import com.sharingif.blockchain.crypto.api.key.service.BIP44ApiService;
 import com.sharingif.blockchain.crypto.dao.ExtendedKeyDAO;
 import com.sharingif.blockchain.crypto.model.entity.ExtendedKey;
 import com.sharingif.blockchain.crypto.model.entity.Bip44KeyPath;
 import com.sharingif.blockchain.crypto.model.entity.Mnemonic;
+import com.sharingif.blockchain.crypto.model.entity.SecretKey;
 import com.sharingif.blockchain.crypto.service.ExtendedKeyService;
 import com.sharingif.blockchain.crypto.service.MnemonicService;
 import com.sharingif.cube.core.exception.validation.ValidationCubeException;
@@ -128,4 +130,25 @@ public class ExtendedKeyServiceImpl extends BaseServiceImpl<ExtendedKey, String>
 
         return extendedKey;
     }
+
+    @Override
+    public ExtendedKey getBitCoinChangeExtendedKey() {
+        ExtendedKey extendedKey = getExtendedKey(CoinType.BTC.name());
+
+        Bip44KeyPath bip44KeyPath = new Bip44KeyPath(extendedKey.getExtendedKeyPath());
+
+        Bip44KeyPath bitCoinChangeBip44KeyPath = new Bip44KeyPath(
+                new Integer(bip44KeyPath.getCoinType())
+                ,new Integer(bip44KeyPath.getAccount())
+                ,new Integer(bip44KeyPath.getChange())+1
+                ,null
+        );
+
+        ExtendedKey queryBitCoinChangeExtendedKey = new ExtendedKey();
+        queryBitCoinChangeExtendedKey.setExtendedKeyPath(bitCoinChangeBip44KeyPath.getPath());
+        ExtendedKey bitCoinChangeExtendedKey = extendedKeyDAO.query(queryBitCoinChangeExtendedKey);
+
+        return bitCoinChangeExtendedKey;
+    }
+
 }

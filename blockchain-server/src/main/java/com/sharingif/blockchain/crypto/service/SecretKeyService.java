@@ -44,4 +44,10 @@ public interface SecretKeyService extends IBaseService<SecretKey, String> {
      */
     SecretKey getSecretKeyByAddress(String address);
 
+    /**
+     * 获取bitcoin找零账户
+     * @return
+     */
+    SecretKey getBitCoinChangeAddress();
+
 }

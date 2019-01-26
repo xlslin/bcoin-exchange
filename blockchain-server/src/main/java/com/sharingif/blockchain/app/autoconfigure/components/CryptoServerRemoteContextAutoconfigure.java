@@ -69,6 +69,7 @@ public class CryptoServerRemoteContextAutoconfigure {
         services.add("com.sharingif.blockchain.crypto.api.mnemonic.service.MnemonicApiService");
         services.add("com.sharingif.blockchain.crypto.api.key.service.BIP44ApiService");
         services.add("com.sharingif.blockchain.crypto.api.ether.service.EtherApiService");
+        services.add("com.sharingif.blockchain.crypto.api.bitcoin.service.BitCoinApiService");
 
         RemoteServices remoteServices = new RemoteServices();
         remoteServices.setRequestContextResolver(handlerMethodCommunicationTransportRequestContextResolver);
