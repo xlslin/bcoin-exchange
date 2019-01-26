@@ -198,32 +198,14 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     }
 
     @Transactional
-    protected void initNotice(TransactionBusiness transactionBusiness, Withdrawal withdrawal, Transaction transaction) {
+    protected void initNotice(TransactionBusiness transactionBusiness, Transaction transaction) {
         TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
         updateTransactionBusiness.setId(transactionBusiness.getId());
         updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
 
         transactionBusinessDAO.updateById(updateTransactionBusiness);
 
-        if(withdrawal == null) {
-            return;
-        }
-
-        // 分叉数据不处理，防止通知提现失败导致重复提现
-        if(BlockChain.STATUS_VERIFY_INVALID.equals(transactionBusiness.getTxStatus())) {
-            return;
-        }
-
-        Withdrawal updateWithdrawal = new Withdrawal();
-        updateWithdrawal.setId(withdrawal.getId());
-        updateWithdrawal.setGasLimit(transaction.getGasLimit());
-        updateWithdrawal.setGasUsed(transaction.getGasUsed());
-        updateWithdrawal.setGasPrice(transaction.getGasPrice());
-        updateWithdrawal.setFee(transactionBusiness.getFee());
-        updateWithdrawal.setAmount(BigInteger.ZERO);
-        updateWithdrawal.setTxTime(transaction.getTxTime());
-
-        withdrawalDAO.updateById(updateWithdrawal);
+        // TODO发送通知信息
 
     }
 
@@ -234,9 +216,8 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
             return;
         }
 
-        Withdrawal withdrawal = getWithdrawalByTxHash(transactionBusiness.getTxHash());
         Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
-        initNotice(transactionBusiness, withdrawal, transaction);
+        initNotice(transactionBusiness, transaction);
 
     }
 
@@ -330,7 +311,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     }
 
     @Transactional
-    protected void finishNotice(TransactionBusiness transactionBusiness, Withdrawal withdrawal) {
+    protected void finishNotice(TransactionBusiness transactionBusiness, Transaction transaction, Withdrawal withdrawal) {
         TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
         updateTransactionBusiness.setId(transactionBusiness.getId());
         updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_FINISH_NOTICED);
@@ -348,6 +329,12 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
 
         Withdrawal updateWithdrawal = new Withdrawal();
         updateWithdrawal.setId(withdrawal.getId());
+        updateWithdrawal.setGasLimit(transaction.getGasLimit());
+        updateWithdrawal.setGasUsed(transaction.getGasUsed());
+        updateWithdrawal.setGasPrice(transaction.getGasPrice());
+        updateWithdrawal.setFee(transactionBusiness.getFee());
+        updateWithdrawal.setAmount(BigInteger.ZERO);
+        updateWithdrawal.setTxTime(transaction.getTxTime());
         updateWithdrawal.setStatus(Withdrawal.STATUS_SUCCESS);
 
         withdrawalDAO.updateById(updateWithdrawal);
@@ -373,8 +360,9 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         }
 
         for (TransactionBusiness transactionBusiness : transactionBusinessList) {
+            Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
             Withdrawal withdrawal = getWithdrawalByTxHash(transactionBusiness.getTxHash());
-            finishNotice(transactionBusiness,withdrawal);
+            finishNotice(transactionBusiness, transaction, withdrawal);
         }
     }
 
