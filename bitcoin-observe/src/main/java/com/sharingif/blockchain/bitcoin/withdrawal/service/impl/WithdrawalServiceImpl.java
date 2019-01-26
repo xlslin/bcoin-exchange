@@ -13,7 +13,6 @@ import com.sharingif.blockchain.bitcoin.app.constants.CoinType;
 import com.sharingif.blockchain.bitcoin.app.constants.Constants;
 import com.sharingif.blockchain.bitcoin.block.dao.TransactionBusinessDAO;
 import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChain;
-import com.sharingif.blockchain.bitcoin.block.model.entity.Transaction;
 import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
 import com.sharingif.blockchain.bitcoin.withdrawal.dao.WithdrawalDAO;
@@ -21,7 +20,6 @@ import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalService;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalTransactionService;
 import com.sharingif.cube.batch.core.JobConfig;
-import com.sharingif.cube.batch.core.JobModel;
 import com.sharingif.cube.batch.core.JobService;
 import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
@@ -117,76 +115,6 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		withdrawal.setStatus(Withdrawal.STATUS_PROCESSING);
 
 		return withdrawalDAO.updateById(withdrawal);
-	}
-
-	@Transactional
-	protected void readyInitNotice(TransactionBusiness transactionBusiness) {
-
-		JobModel jobModel = new JobModel();
-		jobModel.setLookupPath(withdrawalInitNoticeNoticeJobConfig.getLookupPath());
-		jobModel.setDataId(transactionBusiness.getId());
-		jobModel.setPlanExecuteTime(transactionBusiness.getTxTime());
-		jobService.add(null, jobModel);
-
-		TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
-		updateTransactionBusiness.setId(transactionBusiness.getId());
-		updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICE);
-
-		transactionBusinessDAO.updateById(updateTransactionBusiness);
-	}
-
-	@Override
-	public void readyInitNotice() {
-		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-		queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
-		queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
-		PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
-		paginationCondition.setCondition(queryTransactionBusiness);
-		paginationCondition.setQueryCount(false);
-		paginationCondition.setCurrentPage(1);
-		paginationCondition.setPageSize(20);
-
-		PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessDAO.queryPagination(paginationCondition);
-		List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
-		if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
-			return;
-		}
-
-		for (TransactionBusiness transactionBusiness : transactionBusinessList) {
-			readyInitNotice(transactionBusiness);
-		}
-	}
-
-	@Transactional
-	protected void initNotice(TransactionBusiness transactionBusiness, Withdrawal withdrawal, Transaction transaction) {
-		TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
-		updateTransactionBusiness.setId(transactionBusiness.getId());
-		updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
-
-		transactionBusinessDAO.updateById(updateTransactionBusiness);
-
-		if(withdrawal == null) {
-			return;
-		}
-
-		// 分叉数据不处理，防止通知提现失败导致重复提现
-		if(BlockChain.STATUS_VERIFY_INVALID.equals(transactionBusiness.getTxStatus())) {
-			return;
-		}
-
-	}
-
-	@Override
-	public void initNotice(String id) {
-		TransactionBusiness transactionBusiness = transactionBusinessDAO.queryById(id);
-		if(!TransactionBusiness.STATUS_INIT_NOTICE.equals(transactionBusiness.getStatus())) {
-			return;
-		}
-
-//		Withdrawal withdrawal = getWithdrawalByTxHash(transactionBusiness.getTxHash());
-//		Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
-		initNotice(transactionBusiness, null, null);
-
 	}
 
 	@Override
@@ -386,55 +314,6 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 			withdrawalSuccess(transactionBusiness);
 		} else {
 			withdrawalFailure(transactionBusiness);
-		}
-	}
-
-	@Transactional
-	protected void finishNotice(TransactionBusiness transactionBusiness, Withdrawal withdrawal) {
-		TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
-		updateTransactionBusiness.setId(transactionBusiness.getId());
-		updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_FINISH_NOTICED);
-
-		transactionBusinessDAO.updateById(updateTransactionBusiness);
-
-		if(withdrawal == null) {
-			return;
-		}
-
-		// 分叉无效数据不做处理
-		if(BlockChain.STATUS_VERIFY_INVALID.equals(transactionBusiness.getTxStatus())) {
-			return;
-		}
-
-		Withdrawal updateWithdrawal = new Withdrawal();
-		updateWithdrawal.setId(withdrawal.getId());
-//		updateWithdrawal.setStatus(Withdrawal.STATUS_SUCCESS);
-
-		withdrawalDAO.updateById(updateWithdrawal);
-
-	}
-
-	@Override
-	public void finishNotice() {
-		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-		queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
-		queryTransactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_FINISH);
-		queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
-		PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
-		paginationCondition.setCondition(queryTransactionBusiness);
-		paginationCondition.setQueryCount(false);
-		paginationCondition.setCurrentPage(1);
-		paginationCondition.setPageSize(20);
-
-		PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessDAO.queryPagination(paginationCondition);
-		List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
-		if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
-			return;
-		}
-
-		for (TransactionBusiness transactionBusiness : transactionBusinessList) {
-//			Withdrawal withdrawal = getWithdrawalByTxHash(transactionBusiness.getTxHash());
-			finishNotice(transactionBusiness,null);
 		}
 	}
 	

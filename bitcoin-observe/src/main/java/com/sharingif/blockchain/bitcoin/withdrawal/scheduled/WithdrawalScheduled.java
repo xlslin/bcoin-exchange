@@ -20,41 +20,9 @@ public class WithdrawalScheduled {
     }
 
     @Scheduled(fixedRate = 1000*1)
-    public synchronized void readyInitNotice() {
-        JobRequest jobRequest = new JobRequest();
-        jobRequest.setLookupPath("/withdrawal/readyInitNotice");
-
-        simpleDispatcherHandler.doDispatch(jobRequest);
-    }
-
-    @Scheduled(fixedRate = 1000*1)
-    public synchronized void finishNotice() {
-        JobRequest jobRequest = new JobRequest();
-        jobRequest.setLookupPath("/withdrawal/finishNotice");
-
-        simpleDispatcherHandler.doDispatch(jobRequest);
-    }
-
-    @Scheduled(fixedRate = 1000*1)
     public synchronized void withdrawalEther() {
         JobRequest jobRequest = new JobRequest();
         jobRequest.setLookupPath("/withdrawal/withdrawalEther");
-
-        simpleDispatcherHandler.doDispatch(jobRequest);
-    }
-
-    @Scheduled(fixedRate = 1000*1)
-    public synchronized void readySuccessNotice() {
-        JobRequest jobRequest = new JobRequest();
-        jobRequest.setLookupPath("/withdrawal/readySuccessNotice");
-
-        simpleDispatcherHandler.doDispatch(jobRequest);
-    }
-
-    @Scheduled(fixedRate = 1000*1)
-    public synchronized void readyFailureNotice() {
-        JobRequest jobRequest = new JobRequest();
-        jobRequest.setLookupPath("/withdrawal/readyFailureNotice");
 
         simpleDispatcherHandler.doDispatch(jobRequest);
     }

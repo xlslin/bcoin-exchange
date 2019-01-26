@@ -55,4 +55,13 @@ public class WithdrawalTransactionServiceImpl extends BaseServiceImpl<Withdrawal
 
 		withdrawalVoutService.addWithdrawalVout(txHash, withdrawalList);
 	}
+
+	@Override
+	public WithdrawalTransaction getUntreated(String txHash) {
+		WithdrawalTransaction withdrawalTransaction = new WithdrawalTransaction();
+		withdrawalTransaction.setTxHash(txHash);
+		withdrawalTransaction.setStatus(WithdrawalTransaction.STATUS_UNTREATED);
+
+		return withdrawalTransactionDAO.query(withdrawalTransaction);
+	}
 }
