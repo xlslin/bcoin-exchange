@@ -37,6 +37,7 @@ import org.web3j.utils.Numeric;
 
 import javax.annotation.Resource;
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -160,64 +161,60 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     }
 
     @Transactional
-    protected void readyInitNotice(TransactionBusiness transactionBusiness) {
+    protected void readyInitNotice(Withdrawal withdrawal) {
 
         JobModel jobModel = new JobModel();
         jobModel.setLookupPath(withdrawalInitNoticeNoticeJobConfig.getLookupPath());
-        jobModel.setDataId(transactionBusiness.getId());
-        jobModel.setPlanExecuteTime(transactionBusiness.getTxTime());
+        jobModel.setDataId(withdrawal.getId());
+        jobModel.setPlanExecuteTime(new Date());
         jobService.add(null, jobModel);
 
-        TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
-        updateTransactionBusiness.setId(transactionBusiness.getId());
-        updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICE);
+        Withdrawal updateWithdrawal = new Withdrawal();
+        updateWithdrawal.setId(withdrawal.getId());
+        updateWithdrawal.setStatus(Withdrawal.STATUS_INIT_NOTICE);
 
-        transactionBusinessDAO.updateById(updateTransactionBusiness);
+        withdrawalDAO.updateById(updateWithdrawal);
     }
 
     @Override
     public void readyInitNotice() {
-        TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-        queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
-        queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
-        PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
-        paginationCondition.setCondition(queryTransactionBusiness);
+        Withdrawal queryWithdrawal = new Withdrawal();
+        queryWithdrawal.setStatus(Withdrawal.STATUS_PROCESSING);
+        PaginationCondition<Withdrawal> paginationCondition = new PaginationCondition<>();
+        paginationCondition.setCondition(queryWithdrawal);
         paginationCondition.setQueryCount(false);
         paginationCondition.setCurrentPage(1);
         paginationCondition.setPageSize(20);
 
-        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessDAO.queryPagination(paginationCondition);
-        List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
-        if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
+        PaginationRepertory<Withdrawal> withdrawalPaginationRepertory = withdrawalDAO.queryPagination(paginationCondition);
+        List<Withdrawal> withdrawalList = withdrawalPaginationRepertory.getPageItems();
+        if(withdrawalList == null || withdrawalList.isEmpty()) {
             return;
         }
 
-        for (TransactionBusiness transactionBusiness : transactionBusinessList) {
-            readyInitNotice(transactionBusiness);
+        for (Withdrawal withdrawal : withdrawalList) {
+            readyInitNotice(withdrawal);
         }
     }
 
-    @Transactional
-    protected void initNotice(TransactionBusiness transactionBusiness, Transaction transaction) {
-        TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
-        updateTransactionBusiness.setId(transactionBusiness.getId());
-        updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
-
-        transactionBusinessDAO.updateById(updateTransactionBusiness);
-
+    protected void initNotice(Withdrawal withdrawal) {
         // TODO发送通知信息
 
+        Withdrawal updateWithdrawal = new Withdrawal();
+        updateWithdrawal.setId(withdrawal.getId());
+        updateWithdrawal.setStatus(Withdrawal.STATUS_INIT_NOTICED);
+
+        withdrawalDAO.updateById(updateWithdrawal);
     }
 
     @Override
     public void initNotice(String id) {
-        TransactionBusiness transactionBusiness = transactionBusinessDAO.queryById(id);
-        if(!TransactionBusiness.STATUS_INIT_NOTICE.equals(transactionBusiness.getStatus())) {
+        Withdrawal withdrawal = withdrawalDAO.queryById(id);
+        if(!Withdrawal.STATUS_INIT_NOTICED.equals(withdrawal.getStatus())) {
             return;
         }
 
-        Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
-        initNotice(transactionBusiness, transaction);
+        initNotice(withdrawal);
 
     }
 
@@ -343,7 +340,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     @Override
     public void finishNotice() {
         TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-        queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
+        queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
         queryTransactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_FINISH);
         queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
         PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
