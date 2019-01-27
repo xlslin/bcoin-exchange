@@ -43,6 +43,17 @@ public interface WithdrawalService extends IBaseService<Withdrawal, java.lang.St
     void withdrawal(TransactionBusiness transactionBusiness);
 
     /**
+     * 准备提现通知
+     */
+    void readyInitNotice();
+
+    /**
+     * 初始化提现通知
+     * @param id
+     */
+    void initNotice(String id);
+
+    /**
      * 取现确认
      * @param transactionBusiness
      * @param txStatus

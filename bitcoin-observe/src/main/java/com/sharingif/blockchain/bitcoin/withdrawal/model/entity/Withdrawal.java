@@ -19,6 +19,14 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 	 */
 	public static final String STATUS_PROCESSING = "TXCLZ";
 	/**
+	 * 处理状态(CSHTZZ:初始化通知中)
+	 */
+	public static final String STATUS_INIT_NOTICE = "CSHTZZ";
+	/**
+	 * 处理状态(CSHTZCG:初始化通知成功)
+	 */
+	public static final String STATUS_INIT_NOTICED = "CSHTZCG";
+	/**
 	 * 处理状态(TXCG:提现成功)
 	 */
 	public static final String STATUS_SUCCESS = "TXCG";
@@ -78,7 +86,7 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
      */	
 	private BigInteger fee;
     /**
-     * 处理状态(TXWCL:提现未处理、TXCLZ:提现处理中、TXCG:提现成功、TXSB:提现失败、TXTZZ:提现通知中、TXCGTZ:提现成功通知、TXSBTZ:提现失败通知)			db_column: STATUS 
+     * 处理状态(TXWCL:提现未处理、TXCLZ:提现处理中、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、TXCG:提现成功、TXSB:提现失败、TXTZZ:提现通知中、TXCGTZ:提现成功通知、TXSBTZ:提现失败通知)			db_column: STATUS
      */	
 	private String status;
     /**

@@ -165,7 +165,7 @@ CREATE TABLE WITHDRAWAL
   TX_TO                 VARCHAR(100) NOT NULL COMMENT 'TO地址',
   AMOUNT                DECIMAL(65,0) NOT NULL COMMENT '金额',
   FEE                   DECIMAL(65,0) COMMENT '手续费',
-  STATUS                VARCHAR(20) NOT NULL COMMENT '处理状态(TXWCL:提现未处理、TXCLZ:提现处理中、TXCG:提现成功、TXSB:提现失败、TXTZZ:提现通知中、TXCGTZ:提现成功通知、TXSBTZ:提现失败通知)',
+  STATUS                VARCHAR(20) NOT NULL COMMENT '处理状态(TXWCL:提现未处理、TXCLZ:提现处理中、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、TXCG:提现成功、TXSB:提现失败、TXTZZ:提现通知中、TXCGTZ:提现成功通知、TXSBTZ:提现失败通知)',
   TX_TIME               TIMESTAMP NULL COMMENT '交易时间',
   CREATE_TIME           TIMESTAMP NULL COMMENT '创建时间',
   MODIFY_TIME           TIMESTAMP NULL COMMENT '修改时间',
@@ -178,7 +178,7 @@ CREATE TABLE WITHDRAWAL_TRANSACTION
 (
   TX_HASH               VARCHAR(100) NOT NULL COMMENT '交易hash',
   FEE                   DECIMAL(65,0) NOT NULL COMMENT '手续费',
-  STATUS                VARCHAR(20) NOT NULL COMMENT '处理状态(WCL:未处理、CLZ:处理中、YCL:已处理)',
+  STATUS                VARCHAR(20) NOT NULL COMMENT '处理状态(TXCLZ:提现处理中、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、TXCG:提现成功、TXSB:提现失败、TXTZZ:提现通知中、TXCGTZ:提现成功通知、TXSBTZ:提现失败通知)',
   CREATE_TIME           TIMESTAMP NULL COMMENT '创建时间',
   MODIFY_TIME           TIMESTAMP NULL COMMENT '修改时间',
   PRIMARY KEY (TX_HASH)

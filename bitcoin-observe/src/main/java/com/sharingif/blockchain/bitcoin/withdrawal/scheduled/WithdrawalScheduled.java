@@ -22,7 +22,15 @@ public class WithdrawalScheduled {
     @Scheduled(fixedRate = 1000*1)
     public synchronized void withdrawalEther() {
         JobRequest jobRequest = new JobRequest();
-        jobRequest.setLookupPath("/withdrawal/withdrawalEther");
+        jobRequest.setLookupPath("/withdrawal/withdrawal");
+
+        simpleDispatcherHandler.doDispatch(jobRequest);
+    }
+
+    @Scheduled(fixedRate = 1000*1)
+    public synchronized void readyInitNotice() {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setLookupPath("/withdrawal/readyInitNotice");
 
         simpleDispatcherHandler.doDispatch(jobRequest);
     }

@@ -43,4 +43,12 @@ public class WithdrawalVoutServiceImpl extends BaseServiceImpl<WithdrawalVout, j
 			withdrawalVoutDAO.insert(withdrawalVout);
 		}
 	}
+
+	@Override
+	public List<WithdrawalVout> getWithdrawalVoutByTxHash(String txHash) {
+		WithdrawalVout withdrawalVout = new WithdrawalVout();
+		withdrawalVout.setTxHash(txHash);
+
+		return withdrawalVoutDAO.queryList(withdrawalVout);
+	}
 }

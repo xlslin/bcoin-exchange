@@ -6,16 +6,22 @@ import javax.annotation.Resource;
 import com.sharingif.blockchain.bitcoin.account.model.entity.AccountUnspent;
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalVin;
+import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalVout;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalVinService;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalVoutService;
+import com.sharingif.cube.batch.core.JobModel;
+import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
+import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
 import org.springframework.stereotype.Service;
 
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalTransaction;
 import com.sharingif.blockchain.bitcoin.withdrawal.dao.WithdrawalTransactionDAO;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalTransactionService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -37,6 +43,10 @@ public class WithdrawalTransactionServiceImpl extends BaseServiceImpl<Withdrawal
 	public void setWithdrawalVinService(WithdrawalVinService withdrawalVinService) {
 		this.withdrawalVinService = withdrawalVinService;
 	}
+	@Override
+	public WithdrawalVoutService getWithdrawalVoutService() {
+		return withdrawalVoutService;
+	}
 	@Resource
 	public void setWithdrawalVoutService(WithdrawalVoutService withdrawalVoutService) {
 		this.withdrawalVoutService = withdrawalVoutService;
@@ -47,7 +57,7 @@ public class WithdrawalTransactionServiceImpl extends BaseServiceImpl<Withdrawal
 		WithdrawalTransaction withdrawalTransaction = new WithdrawalTransaction();
 		withdrawalTransaction.setTxHash(txHash);
 		withdrawalTransaction.setFee(fee);
-		withdrawalTransaction.setStatus(WithdrawalTransaction.STATUS_UNTREATED);
+		withdrawalTransaction.setStatus(Withdrawal.STATUS_PROCESSING);
 
 		withdrawalTransactionDAO.insert(withdrawalTransaction);
 
@@ -57,11 +67,21 @@ public class WithdrawalTransactionServiceImpl extends BaseServiceImpl<Withdrawal
 	}
 
 	@Override
-	public WithdrawalTransaction getUntreated(String txHash) {
+	public int updateStatusToInitNotice(String txHash) {
 		WithdrawalTransaction withdrawalTransaction = new WithdrawalTransaction();
 		withdrawalTransaction.setTxHash(txHash);
-		withdrawalTransaction.setStatus(WithdrawalTransaction.STATUS_UNTREATED);
+		withdrawalTransaction.setStatus(Withdrawal.STATUS_INIT_NOTICE);
 
-		return withdrawalTransactionDAO.query(withdrawalTransaction);
+		return withdrawalTransactionDAO.updateById(withdrawalTransaction);
 	}
+
+	@Override
+	public int updateStatusToInitNoticed(String txHash) {
+		WithdrawalTransaction withdrawalTransaction = new WithdrawalTransaction();
+		withdrawalTransaction.setTxHash(txHash);
+		withdrawalTransaction.setStatus(Withdrawal.STATUS_INIT_NOTICED);
+
+		return withdrawalTransactionDAO.updateById(withdrawalTransaction);
+	}
+
 }

@@ -17,9 +17,12 @@ import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
 import com.sharingif.blockchain.bitcoin.withdrawal.dao.WithdrawalDAO;
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
+import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalTransaction;
+import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalVout;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalService;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalTransactionService;
 import com.sharingif.cube.batch.core.JobConfig;
+import com.sharingif.cube.batch.core.JobModel;
 import com.sharingif.cube.batch.core.JobService;
 import com.sharingif.cube.core.util.StringUtils;
 import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
@@ -33,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -279,6 +283,82 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 				,transactionBusiness.getTxTime()
 		);
 
+	}
+
+	@Transactional
+	protected void readyInitNotice(WithdrawalTransaction withdrawalTransaction, List<WithdrawalVout> withdrawalVoutList) {
+		for(WithdrawalVout withdrawalVout : withdrawalVoutList) {
+			JobModel jobModel = new JobModel();
+			jobModel.setLookupPath(withdrawalInitNoticeNoticeJobConfig.getLookupPath());
+			jobModel.setDataId(withdrawalVout.getWithdrawalId());
+			jobModel.setPlanExecuteTime(new Date());
+			jobService.add(null, jobModel);
+
+			Withdrawal updateWithdrawal = new Withdrawal();
+			updateWithdrawal.setId(withdrawalVout.getWithdrawalId());
+			updateWithdrawal.setStatus(Withdrawal.STATUS_INIT_NOTICE);
+
+			withdrawalDAO.updateById(updateWithdrawal);
+		}
+
+		withdrawalTransactionService.updateStatusToInitNotice(withdrawalTransaction.getTxHash());
+	}
+
+	@Override
+	public void readyInitNotice() {
+		WithdrawalTransaction queryWithdrawalTransaction = new WithdrawalTransaction();
+		queryWithdrawalTransaction.setStatus(Withdrawal.STATUS_PROCESSING);
+
+		PaginationCondition<WithdrawalTransaction> paginationCondition = new PaginationCondition<>();
+		paginationCondition.setCondition(queryWithdrawalTransaction);
+		paginationCondition.setQueryCount(false);
+		paginationCondition.setCurrentPage(1);
+		paginationCondition.setPageSize(20);
+
+		PaginationRepertory<WithdrawalTransaction> withdrawalPaginationRepertory = withdrawalTransactionService.getPagination(paginationCondition);
+		List<WithdrawalTransaction> withdrawalTransactionList = withdrawalPaginationRepertory.getPageItems();
+		if(withdrawalTransactionList == null || withdrawalTransactionList.isEmpty()) {
+			return;
+		}
+
+		for (WithdrawalTransaction withdrawalTransaction : withdrawalTransactionList) {
+			List<WithdrawalVout> withdrawalVoutList = withdrawalTransactionService.getWithdrawalVoutService().getWithdrawalVoutByTxHash(withdrawalTransaction.getTxHash());
+			readyInitNotice(withdrawalTransaction, withdrawalVoutList);
+		}
+
+	}
+
+	@Transactional
+	protected void initNotice(String withdrawalId, String txHash) {
+		Withdrawal updateWithdrawal = new Withdrawal();
+		updateWithdrawal.setId(withdrawalId);
+		updateWithdrawal.setStatus(Withdrawal.STATUS_INIT_NOTICED);
+
+		withdrawalDAO.updateById(updateWithdrawal);
+
+		Withdrawal queryWithdrawal = new Withdrawal();
+		queryWithdrawal.setTxHash(txHash);
+		queryWithdrawal.setStatus(Withdrawal.STATUS_INIT_NOTICE);
+		List<Withdrawal> withdrawalList = withdrawalDAO.queryListForUpdate(queryWithdrawal);
+		if(withdrawalList == null || withdrawalList.isEmpty()) {
+			withdrawalTransactionService.updateStatusToInitNoticed(txHash);
+		}
+	}
+
+	protected void initNotice(Withdrawal withdrawal) {
+		// TODO发送通知信息
+
+		initNotice(withdrawal.getId(), withdrawal.getTxHash());
+	}
+
+	@Override
+	public void initNotice(String id) {
+		Withdrawal withdrawal = withdrawalDAO.queryById(id);
+		if(!Withdrawal.STATUS_INIT_NOTICED.equals(withdrawal.getStatus())) {
+			return;
+		}
+
+		initNotice(withdrawal);
 	}
 
 	protected void withdrawalSuccess(TransactionBusiness transactionBusiness) {

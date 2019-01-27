@@ -13,6 +13,12 @@ import java.util.List;
 public interface WithdrawalTransactionService extends IBaseService<WithdrawalTransaction, java.lang.String> {
 
     /**
+     * 返回WithdrawalVoutService
+     * @return
+     */
+    WithdrawalVoutService getWithdrawalVoutService();
+
+    /**
      * 添加取现交易
      * @param txHash
      * @param fee
@@ -22,10 +28,17 @@ public interface WithdrawalTransactionService extends IBaseService<WithdrawalTra
     void addWithdrawalTransaction(String txHash, BigInteger fee, List<AccountUnspent> accountUnspentList, List<Withdrawal> withdrawalList);
 
     /**
-     * 根据txHash查询未处理交易
+     * 根据交易hash修改状态为"初始化通知中"
      * @param txHash
      * @return
      */
-    WithdrawalTransaction getUntreated(String txHash);
+    int updateStatusToInitNotice(String txHash);
+
+    /**
+     * 根据交易hash修改状态为"初始化通知成功"
+     * @param txHash
+     * @return
+     */
+    int updateStatusToInitNoticed(String txHash);
 	
 }

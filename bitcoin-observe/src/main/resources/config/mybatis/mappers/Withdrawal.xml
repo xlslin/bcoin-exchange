@@ -265,6 +265,29 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		ORDER BY
 			ID
 	</select>
+
+	<select id="queryListForUpdate" resultMap="withdrawalResultMap">
+		SELECT
+		ID
+		,WITHDRAWAL_ID
+		,TX_HASH
+		,COIN_TYPE
+		,TX_FROM
+		,TX_TO
+		,CONTRACT_ADDRESS
+		,AMOUNT
+		,FEE
+		,STATUS
+		,TX_TIME
+		,CREATE_TIME
+		,MODIFY_TIME
+		FROM
+		WITHDRAWAL
+		WHERE
+		1=1
+		<include refid="withdrawalColumns" />
+		FOR UPDATE
+	</select>
 	
 </mapper>
 
