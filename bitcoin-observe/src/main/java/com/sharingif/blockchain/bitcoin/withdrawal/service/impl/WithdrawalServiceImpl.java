@@ -18,6 +18,7 @@ import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
 import com.sharingif.blockchain.bitcoin.withdrawal.dao.WithdrawalDAO;
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalTransaction;
+import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalVin;
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalVout;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalService;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalTransactionService;
@@ -322,7 +323,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		}
 
 		for (WithdrawalTransaction withdrawalTransaction : withdrawalTransactionList) {
-			List<WithdrawalVout> withdrawalVoutList = withdrawalTransactionService.getWithdrawalVoutService().getWithdrawalVoutByTxHash(withdrawalTransaction.getTxHash());
+			List<WithdrawalVout> withdrawalVoutList = withdrawalTransactionService.getWithdrawalVoutService().getByTxHash(withdrawalTransaction.getTxHash());
 			readyInitNotice(withdrawalTransaction, withdrawalVoutList);
 		}
 
@@ -395,6 +396,95 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		} else {
 			withdrawalFailure(transactionBusiness);
 		}
+	}
+
+	protected boolean updateWithdrawalTransactionStatusToSuccess(TransactionBusiness transactionBusiness) {
+		List<WithdrawalVin> withdrawalVinList = withdrawalTransactionService.getWithdrawalVinService().getByTxHash(transactionBusiness.getTxHash());
+		int transactionBusinessCount = 0;
+		for (WithdrawalVin queryWithdrawalVin : withdrawalVinList) {
+			if (queryWithdrawalVin.getAddress().equals(transactionBusiness.getTxFrom())) {
+				continue;
+			}
+
+			TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
+			queryTransactionBusiness.setTxHash(transactionBusiness.getTxHash());
+			queryTransactionBusiness.setTxFrom(queryWithdrawalVin.getAddress());
+			queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
+			queryTransactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
+
+			List<TransactionBusiness> transactionBusinessList = transactionBusinessDAO.queryList(queryTransactionBusiness);
+			if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
+				return false;
+			}
+
+			for(TransactionBusiness tb : transactionBusinessList) {
+				if(TransactionBusiness.STATUS_UNTREATED.equals(tb.getStatus()) && queryWithdrawalVin.getAddress().equals(tb.getTxFrom())) {
+					transactionBusinessCount++;
+				} else {
+					return false;
+				}
+
+			}
+
+		}
+
+		if(transactionBusinessCount == 1) {
+			return true;
+		}
+
+		return false;
+	}
+
+	@Transactional
+	protected void finishNotice(TransactionBusiness transactionBusiness, boolean updateWithdrawalTransactionStatusToSuccess) {
+		TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
+		updateTransactionBusiness.setId(transactionBusiness.getId());
+		updateTransactionBusiness.setStatus(TransactionBusiness.STATUS_FINISH_NOTICED);
+
+		transactionBusinessDAO.updateById(updateTransactionBusiness);
+
+		if(updateWithdrawalTransactionStatusToSuccess) {
+			withdrawalTransactionService.updateStatusToSuccess(transactionBusiness.getTxHash());
+
+			Withdrawal updateWithdrawal = new Withdrawal();
+			updateWithdrawal.setTxHash(transactionBusiness.getTxHash());
+			updateWithdrawal.setStatus(Withdrawal.STATUS_SUCCESS);
+
+			withdrawalDAO.updateByTxHash(updateWithdrawal);
+		}
+	}
+
+	@Override
+	public void finishNotice() {
+		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
+		queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
+		queryTransactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_FINISH);
+		queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
+		PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
+		paginationCondition.setCondition(queryTransactionBusiness);
+		paginationCondition.setQueryCount(false);
+		paginationCondition.setCurrentPage(1);
+		paginationCondition.setPageSize(20);
+
+		PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessDAO.queryPagination(paginationCondition);
+		List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
+		if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
+			return;
+		}
+
+		for (TransactionBusiness transactionBusiness : transactionBusinessList) {
+
+			boolean updateWithdrawalTransactionStatusToSuccess = false;
+			if(BlockChain.STATUS_VERIFY_VALID.equals(transactionBusiness.getTxStatus())) {
+				WithdrawalTransaction withdrawalTransaction = withdrawalTransactionService.getById(transactionBusiness.getTxHash());
+				if(withdrawalTransaction != null) {
+					updateWithdrawalTransactionStatusToSuccess(transactionBusiness);
+				}
+			}
+
+			finishNotice(transactionBusiness, updateWithdrawalTransactionStatusToSuccess);
+		}
+
 	}
 	
 }

@@ -16,4 +16,9 @@ public class WithdrawalDAOImpl extends BaseDAOImpl<Withdrawal, String> implement
     public List<Withdrawal> queryListForUpdate(Withdrawal withdrawal) {
         return selectList("queryListForUpdate", withdrawal);
     }
+
+    @Override
+    public int updateByTxHash(Withdrawal withdrawal) {
+        return update("updateByTxHash", withdrawal);
+    }
 }

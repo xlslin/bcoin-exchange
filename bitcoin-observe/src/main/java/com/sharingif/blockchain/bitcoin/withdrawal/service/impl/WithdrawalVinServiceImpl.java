@@ -49,4 +49,12 @@ public class WithdrawalVinServiceImpl extends BaseServiceImpl<WithdrawalVin, jav
 
 		}
 	}
+
+	@Override
+	public List<WithdrawalVin> getByTxHash(String txHash) {
+		WithdrawalVin withdrawalVin = new WithdrawalVin();
+		withdrawalVin.setTxHash(txHash);
+
+		return withdrawalVinDAO.queryList(withdrawalVin);
+	}
 }

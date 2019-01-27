@@ -22,6 +22,6 @@ public interface WithdrawalVoutService extends IBaseService<WithdrawalVout, java
      * @param txHash
      * @return
      */
-    List<WithdrawalVout> getWithdrawalVoutByTxHash(String txHash);
+    List<WithdrawalVout> getByTxHash(String txHash);
 	
 }

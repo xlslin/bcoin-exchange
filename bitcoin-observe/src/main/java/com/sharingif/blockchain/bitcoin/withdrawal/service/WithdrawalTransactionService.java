@@ -13,6 +13,11 @@ import java.util.List;
 public interface WithdrawalTransactionService extends IBaseService<WithdrawalTransaction, java.lang.String> {
 
     /**
+     * WithdrawalVinService
+     * @return
+     */
+    WithdrawalVinService getWithdrawalVinService();
+    /**
      * 返回WithdrawalVoutService
      * @return
      */
@@ -40,5 +45,12 @@ public interface WithdrawalTransactionService extends IBaseService<WithdrawalTra
      * @return
      */
     int updateStatusToInitNoticed(String txHash);
+
+    /**
+     * 根据交易hash修改状态为"提现成功"
+     * @param txHash
+     * @return
+     */
+    int updateStatusToSuccess(String txHash);
 	
 }

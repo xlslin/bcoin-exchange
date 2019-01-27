@@ -46,4 +46,9 @@ public class WithdrawalController {
 		withdrawalService.initNotice(jobRequest.getData());
 	}
 
+	@RequestMapping(value="finishNotice", method= RequestMethod.POST)
+	public void finishNotice() {
+		withdrawalService.finishNotice();
+	}
+
 }

@@ -16,4 +16,11 @@ public interface WithdrawalDAO extends BaseDAO<Withdrawal, String> {
      */
     List<Withdrawal> queryListForUpdate(Withdrawal withdrawal);
 
+    /**
+     * 根据交易hash修改
+     * @param withdrawal
+     * @return
+     */
+    int updateByTxHash(Withdrawal withdrawal);
+
 }

@@ -39,11 +39,15 @@ public class WithdrawalTransactionServiceImpl extends BaseServiceImpl<Withdrawal
 		super.setBaseDAO(withdrawalTransactionDAO);
 		this.withdrawalTransactionDAO = withdrawalTransactionDAO;
 	}
+	@Override
+	public WithdrawalVinService getWithdrawalVinService() {
+		return withdrawalVinService;
+	}
 	@Resource
 	public void setWithdrawalVinService(WithdrawalVinService withdrawalVinService) {
 		this.withdrawalVinService = withdrawalVinService;
 	}
-	@Override
+
 	public WithdrawalVoutService getWithdrawalVoutService() {
 		return withdrawalVoutService;
 	}
@@ -80,6 +84,15 @@ public class WithdrawalTransactionServiceImpl extends BaseServiceImpl<Withdrawal
 		WithdrawalTransaction withdrawalTransaction = new WithdrawalTransaction();
 		withdrawalTransaction.setTxHash(txHash);
 		withdrawalTransaction.setStatus(Withdrawal.STATUS_INIT_NOTICED);
+
+		return withdrawalTransactionDAO.updateById(withdrawalTransaction);
+	}
+
+	@Override
+	public int updateStatusToSuccess(String txHash) {
+		WithdrawalTransaction withdrawalTransaction = new WithdrawalTransaction();
+		withdrawalTransaction.setTxHash(txHash);
+		withdrawalTransaction.setStatus(Withdrawal.STATUS_SUCCESS);
 
 		return withdrawalTransactionDAO.updateById(withdrawalTransaction);
 	}
