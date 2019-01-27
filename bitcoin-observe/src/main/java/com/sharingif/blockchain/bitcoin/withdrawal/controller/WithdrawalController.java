@@ -51,4 +51,24 @@ public class WithdrawalController {
 		withdrawalService.finishNotice();
 	}
 
+	@RequestMapping(value="readySuccessNotice", method= RequestMethod.POST)
+	public void readySuccessNotice() {
+		withdrawalService.readyWithdrawalSuccessNotice();
+	}
+
+	@RequestMapping(value="successNotice", method= RequestMethod.POST)
+	public void successNotice(JobRequest<String> jobRequest) {
+		withdrawalService.withdrawalSuccessNotice(jobRequest.getData());
+	}
+
+	@RequestMapping(value="readyFailureNotice", method= RequestMethod.POST)
+	public void readyFailureNotice() {
+		withdrawalService.readyWithdrawalFailureNotice();
+	}
+
+	@RequestMapping(value="failureNotice", method= RequestMethod.POST)
+	public void failureNotice(JobRequest<String> jobRequest) {
+		withdrawalService.withdrawalFailureNotice(jobRequest.getData());
+	}
+
 }

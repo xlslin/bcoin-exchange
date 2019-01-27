@@ -123,6 +123,36 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	}
 
 	@Override
+	public int updateStatusToNoticing(String id) {
+		Withdrawal withdrawal = new Withdrawal();
+		withdrawal.setId(id);
+
+		withdrawal.setStatus(Withdrawal.STATUS_NOTICING);
+
+		return withdrawalDAO.updateById(withdrawal);
+	}
+
+	@Override
+	public int updateStatusToSuccessNoticed(String id) {
+		Withdrawal withdrawal = new Withdrawal();
+		withdrawal.setId(id);
+
+		withdrawal.setStatus(Withdrawal.STATUS_SUCCESS_NOTICED);
+
+		return withdrawalDAO.updateById(withdrawal);
+	}
+
+	@Override
+	public int updateStatusToFailureNoticed(String id) {
+		Withdrawal withdrawal = new Withdrawal();
+		withdrawal.setId(id);
+
+		withdrawal.setStatus(Withdrawal.STATUS_FAILURE_NOTICED);
+
+		return withdrawalDAO.updateById(withdrawal);
+	}
+
+	@Override
 	public ApplyWithdrawalBitCoinRsp apply(ApplyWithdrawalBitCoinReq req) {
 		// 校验地址
 		String btcAddress = req.getAddress();
@@ -485,6 +515,65 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 			finishNotice(transactionBusiness, updateWithdrawalTransactionStatusToSuccess);
 		}
 
+	}
+
+	@Transactional
+	protected void readyWithdrawalNotice(Withdrawal withdrawal, JobConfig jobConfig) {
+		updateStatusToNoticing(withdrawal.getId());
+
+		JobModel jobModel = new JobModel();
+		jobModel.setLookupPath(jobConfig.getLookupPath());
+		jobModel.setDataId(withdrawal.getId());
+		jobModel.setPlanExecuteTime(withdrawal.getTxTime());
+		jobService.add(null, jobModel);
+	}
+
+	protected void readyWithdrawalNotice(String status, JobConfig jobConfig) {
+		Withdrawal queryWithdrawal = new Withdrawal();
+		queryWithdrawal.setStatus(status);
+		PaginationCondition<Withdrawal> paginationCondition = new PaginationCondition<Withdrawal>();
+		paginationCondition.setCondition(queryWithdrawal);
+		paginationCondition.setQueryCount(false);
+		paginationCondition.setCurrentPage(1);
+		paginationCondition.setPageSize(20);
+
+		PaginationRepertory<Withdrawal> withdrawalPaginationRepertory = withdrawalDAO.queryPagination(paginationCondition);
+		List<Withdrawal> withdrawalList = withdrawalPaginationRepertory.getPageItems();
+		if(withdrawalList == null || withdrawalList.isEmpty()) {
+			return;
+		}
+
+		for(Withdrawal withdrawal : withdrawalList) {
+			readyWithdrawalNotice(withdrawal, jobConfig);
+		}
+	}
+
+	@Override
+	public void readyWithdrawalSuccessNotice() {
+		readyWithdrawalNotice(Withdrawal.STATUS_SUCCESS, withdrawalSuccessNoticeJobConfig);
+	}
+
+	@Override
+	public void withdrawalSuccessNotice(String id) {
+		// TODO发送通知信息
+		Withdrawal withdrawal = getById(id);
+
+
+		updateStatusToSuccessNoticed(id);
+	}
+
+	@Override
+	public void readyWithdrawalFailureNotice() {
+		readyWithdrawalNotice(Withdrawal.STATUS_FAILURE, withdrawalFailureNoticeJobConfig);
+	}
+
+	@Override
+	public void withdrawalFailureNotice(String id) {
+		// TODO发送通知信息
+		Withdrawal withdrawal = getById(id);
+
+
+		updateStatusToFailureNoticed(id);
 	}
 	
 }

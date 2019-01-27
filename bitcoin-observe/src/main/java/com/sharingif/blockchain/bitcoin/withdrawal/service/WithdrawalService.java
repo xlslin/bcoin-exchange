@@ -24,6 +24,27 @@ public interface WithdrawalService extends IBaseService<Withdrawal, java.lang.St
     int updateStatusToProcessing(String id);
 
     /**
+     * 修改状态为提现通知中
+     * @param id
+     * @return
+     */
+    int updateStatusToNoticing(String id);
+
+    /**
+     * 修改状态为提现成功通知
+     * @param id
+     * @return
+     */
+    int updateStatusToSuccessNoticed(String id);
+
+    /**
+     * 修改状态为提现失败通知
+     * @param id
+     * @return
+     */
+    int updateStatusToFailureNoticed(String id);
+
+    /**
      * BitCoin区块取现申请
      * @param req
      * @return
@@ -66,5 +87,26 @@ public interface WithdrawalService extends IBaseService<Withdrawal, java.lang.St
      */
     void finishNotice();
 
-	
+    /**
+     * 准备提现成功通知
+     */
+    void readyWithdrawalSuccessNotice();
+
+    /**
+     * 提现成功通知
+     * @param id
+     */
+    void withdrawalSuccessNotice(String id);
+
+    /**
+     * 准备提现失败通知
+     */
+    void readyWithdrawalFailureNotice();
+
+    /**
+     * 提现失败通知
+     * @param id
+     */
+    void withdrawalFailureNotice(String id);
+
 }

@@ -43,4 +43,20 @@ public class WithdrawalScheduled {
         simpleDispatcherHandler.doDispatch(jobRequest);
     }
 
+    @Scheduled(fixedRate = 1000*1)
+    public synchronized void readySuccessNotice() {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setLookupPath("/withdrawal/readySuccessNotice");
+
+        simpleDispatcherHandler.doDispatch(jobRequest);
+    }
+
+    @Scheduled(fixedRate = 1000*1)
+    public synchronized void readyFailureNotice() {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setLookupPath("/withdrawal/readyFailureNotice");
+
+        simpleDispatcherHandler.doDispatch(jobRequest);
+    }
+
 }
