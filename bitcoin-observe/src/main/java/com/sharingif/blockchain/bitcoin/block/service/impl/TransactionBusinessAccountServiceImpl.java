@@ -46,7 +46,6 @@ public class TransactionBusinessAccountServiceImpl extends BaseServiceImpl<Trans
 		this.transactionBusinessService = transactionBusinessService;
 	}
 
-	@Transactional
 	@Override
 	public boolean addTransactionBusinessAccount(String address, String coinType) {
 		TransactionBusinessAccount queryTransactionBusinessAccount = new TransactionBusinessAccount();
