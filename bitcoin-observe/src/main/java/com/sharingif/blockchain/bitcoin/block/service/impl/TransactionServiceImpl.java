@@ -93,7 +93,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	}
 
 	/**
-	 * 处理输入交易金额
+	 * 处理vin中的vout
 	 * @param vInList
 	 * @return
 	 */
@@ -198,47 +198,51 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	}
 
 	@Transactional
-	protected void withdrawal(int vioIndex, Vout vout, Transaction transaction, boolean isDuplicationTransaction) {
+	protected void withdrawal(TransactionBusiness transactionBusiness) {
+		withdrawalService.addUntreated(transactionBusiness);
+	}
+
+	protected void withdrawal(int vioIndex, Vout vout, Transaction transaction) {
 		TransactionBusiness transactionBusiness = handleTransactionBusiness(vout, transaction);
 		transactionBusiness.setTxFrom(vout.getScriptPubKey().getAddresses().get(0));
 		transactionBusiness.setVioIndex(new BigInteger(String.valueOf(vioIndex)));
 
-		if(isDuplicationTransaction) {
-			TransactionBusiness queryTransactionBusiness = transactionBusinessService.getTransactionBusiness(
-					transactionBusiness.getBlockNumber()
-					,transactionBusiness.getBlockHash()
-					,transactionBusiness.getTxHash()
-					,transactionBusiness.getVioIndex()
-					,TransactionBusiness.TYPE_WITHDRAWAL
-			);
-			if(queryTransactionBusiness != null) {
-				return;
-			}
+		TransactionBusiness queryTransactionBusiness = transactionBusinessService.getTransactionBusiness(
+				transactionBusiness.getBlockNumber()
+				,transactionBusiness.getBlockHash()
+				,transactionBusiness.getTxHash()
+				,transactionBusiness.getVioIndex()
+				,TransactionBusiness.TYPE_WITHDRAWAL
+		);
+		if(queryTransactionBusiness != null) {
+			return;
 		}
 
-		withdrawalService.addUntreated(transactionBusiness);
+		withdrawal(transactionBusiness);
 	}
 
 	@Transactional
-	protected void deposit(int vioIndex, Vout vout, Transaction transaction, boolean isDuplicationTransaction) {
+	protected void deposit(TransactionBusiness transactionBusiness) {
+		depositService.addUntreated(transactionBusiness);
+	}
+
+	protected void deposit(int vioIndex, Vout vout, Transaction transaction) {
 		TransactionBusiness transactionBusiness = handleTransactionBusiness(vout, transaction);
 		transactionBusiness.setTxTo(vout.getScriptPubKey().getAddresses().get(0));
 		transactionBusiness.setVioIndex(new BigInteger(String.valueOf(vioIndex)));
 
-		if(isDuplicationTransaction) {
-			TransactionBusiness queryTransactionBusiness = transactionBusinessService.getTransactionBusiness(
-					transactionBusiness.getBlockNumber()
-					,transactionBusiness.getBlockHash()
-					,transactionBusiness.getTxHash()
-					,transactionBusiness.getVioIndex()
-					,TransactionBusiness.TYPE_DEPOSIT
-			);
-			if(queryTransactionBusiness != null) {
-				return;
-			}
+		TransactionBusiness queryTransactionBusiness = transactionBusinessService.getTransactionBusiness(
+				transactionBusiness.getBlockNumber()
+				,transactionBusiness.getBlockHash()
+				,transactionBusiness.getTxHash()
+				,transactionBusiness.getVioIndex()
+				,TransactionBusiness.TYPE_DEPOSIT
+		);
+		if(queryTransactionBusiness != null) {
+			return;
 		}
 
-		depositService.addUntreated(transactionBusiness);
+		deposit(transactionBusiness);
 	}
 
 	@Override
@@ -260,22 +264,20 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			transaction.setTxTime(blockCreateTime);
 			transaction.setConfirmBlockNumber(0);
 
-			boolean isDuplicationTransaction = false;
 			boolean isAddUntreatedTransaction = false;
 			for(int i=0; i<utxoVinList.size(); i++) {
 				UtxoVin utxoVin = utxoVinList.get(i);
 				Vout vout = utxoVin.getVout();
 				if(isWatch(vout, transaction)) {
 					if(!isAddUntreatedTransaction) {
-						isDuplicationTransaction = isDuplicationTransaction(transaction.getBlockNumber(), transaction.getBlockHash(), transaction.getTxHash(), transaction);
-						isAddUntreatedTransaction = isDuplicationTransaction;
+						isAddUntreatedTransaction = isDuplicationTransaction(transaction.getBlockNumber(), transaction.getBlockHash(), transaction.getTxHash(), transaction);
 					}
 					if(!isAddUntreatedTransaction) {
 						addUntreatedTransaction(transaction);
 						isAddUntreatedTransaction = true;
 					}
 
-					withdrawal(i, vout, transaction, isDuplicationTransaction);
+					withdrawal(i, vout, transaction);
 				}
 
 			}
@@ -283,15 +285,14 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 				Vout vout = vOutList.get(i);
 				if(isWatch(vout, transaction)) {
 					if(!isAddUntreatedTransaction) {
-						isDuplicationTransaction = isDuplicationTransaction(transaction.getBlockNumber(), transaction.getBlockHash(), transaction.getTxHash(), transaction);
-						isAddUntreatedTransaction = isDuplicationTransaction;
+						isAddUntreatedTransaction = isDuplicationTransaction(transaction.getBlockNumber(), transaction.getBlockHash(), transaction.getTxHash(), transaction);
 					}
 					if(!isAddUntreatedTransaction) {
 						addUntreatedTransaction(transaction);
 						isAddUntreatedTransaction = true;
 					}
 
-					deposit(i, vout, transaction, isDuplicationTransaction);
+					deposit(i, vout, transaction);
 				}
 			}
 
