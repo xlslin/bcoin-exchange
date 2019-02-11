@@ -3,6 +3,7 @@ package com.sharingif.blockchain.bitcoin.block.controller;
 
 import com.sharingif.blockchain.bitcoin.block.service.TransactionBusinessAccountService;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
+import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
@@ -20,6 +21,11 @@ public class TransactionBusinessAccountController {
 	@Resource
 	public void setTransactionBusinessAccountService(TransactionBusinessAccountService transactionBusinessAccountService) {
 		this.transactionBusinessAccountService = transactionBusinessAccountService;
+	}
+
+	@RequestMapping(value="settleAccounts", method= RequestMethod.POST)
+	public void settleAccounts() {
+		transactionBusinessAccountService.settleAccounts();
 	}
 	
 }
