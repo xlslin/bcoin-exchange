@@ -68,12 +68,9 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, j
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	protected void updateBlockChainSyncBlockChain(BigInteger blockNumber, Block block) {
-		BlockChainSync queryBlockChainSync = new BlockChainSync();
-		queryBlockChainSync.setType(BlockChainSync.TYPE_SYNC);
-		queryBlockChainSync = blockChainSyncDAO.query(queryBlockChainSync);
 
 		BlockChainSync updateBlockChainSync = new BlockChainSync();
-		updateBlockChainSync.setId(queryBlockChainSync.getId());
+		updateBlockChainSync.setType(BlockChainSync.TYPE_SYNC);
 		updateBlockChainSync.setBlockNumber(blockNumber);
 		blockChainSyncDAO.updateById(updateBlockChainSync);
 

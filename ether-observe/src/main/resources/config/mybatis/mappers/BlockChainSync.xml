@@ -161,6 +161,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		ORDER BY
 			ID
 	</select>
+
+	<update id="updateByType">
+		UPDATE
+		BLOCK_CHAIN_SYNC
+		<set>
+			<include refid="blockChainSyncSetColumns" />
+		</set>
+		WHERE
+		TYPE = #{type}
+	</update>
 	
 </mapper>
 

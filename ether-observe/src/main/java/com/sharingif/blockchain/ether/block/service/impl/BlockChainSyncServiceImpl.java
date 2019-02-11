@@ -59,14 +59,10 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, S
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	protected void updateBlockChainSyncBlockChain(EthBlock.Block block) {
-		BlockChainSync queryBlockChainSync = new BlockChainSync();
-		queryBlockChainSync.setType(BlockChainSync.TYPE_SYNC);
-		queryBlockChainSync = blockChainSyncDAO.query(queryBlockChainSync);
-
 		BlockChainSync updateBlockChainSync = new BlockChainSync();
-		updateBlockChainSync.setId(queryBlockChainSync.getId());
 		updateBlockChainSync.setBlockNumber(block.getNumber());
-		blockChainSyncDAO.updateById(updateBlockChainSync);
+		updateBlockChainSync.setType(BlockChainSync.TYPE_SYNC);
+		blockChainSyncDAO.updateByType(updateBlockChainSync);
 
 		blockChainService.addUntreatedStatus(block.getNumber(), block.getHash(), block.getTimestamp());
 	}
