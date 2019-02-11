@@ -57,4 +57,9 @@ public class WithdrawalVinServiceImpl extends BaseServiceImpl<WithdrawalVin, jav
 
 		return withdrawalVinDAO.queryList(withdrawalVin);
 	}
+
+	@Override
+	public int getCountByTxHash(String txHash) {
+		return withdrawalVinDAO.queryCountByTxHash(txHash);
+	}
 }

@@ -200,6 +200,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		ORDER BY
 			ID
 	</select>
+
+	<select id="queryCountByTxHash" resultType="Integer">
+		SELECT
+			COUNT(0)
+		FROM
+			WITHDRAWAL_VIN
+		WHERE
+			TX_HASH = #{txHash}
+	</select>
 	
 </mapper>
 

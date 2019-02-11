@@ -372,6 +372,15 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		AND
 			BLOCK_HASH = #{blockHash}
 	</update>
+
+	<select id="queryCountByStatus" resultType="Integer">
+		SELECT
+			COUNT(0)
+		FROM
+			TRANSACTION_BUSINESS
+		WHERE
+			STATUS = #{status}
+	</select>
 	
 </mapper>
 

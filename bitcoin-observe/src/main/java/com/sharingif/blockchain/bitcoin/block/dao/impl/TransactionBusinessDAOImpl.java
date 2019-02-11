@@ -43,4 +43,9 @@ public class TransactionBusinessDAOImpl extends BaseDAOImpl<TransactionBusiness,
         return update("updateByBlockNumberBlockHash", transactionBusiness);
     }
 
+    @Override
+    public int queryCountByStatus(String status) {
+        return query("queryCountByStatus", status, Integer.TYPE);
+    }
+
 }

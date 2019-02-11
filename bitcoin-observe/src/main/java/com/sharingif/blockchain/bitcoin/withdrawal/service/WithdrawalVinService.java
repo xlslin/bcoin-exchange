@@ -23,5 +23,12 @@ public interface WithdrawalVinService extends IBaseService<WithdrawalVin, java.l
      * @return
      */
     List<WithdrawalVin> getByTxHash(String txHash);
+
+    /**
+     * 根据hash查询条数
+     * @param txHash
+     * @return
+     */
+    int getCountByTxHash(String txHash);
 	
 }

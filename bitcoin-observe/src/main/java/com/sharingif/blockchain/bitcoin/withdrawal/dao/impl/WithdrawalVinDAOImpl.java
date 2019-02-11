@@ -9,5 +9,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class WithdrawalVinDAOImpl extends BaseDAOImpl<WithdrawalVin, String> implements WithdrawalVinDAO {
-	
+
+    @Override
+    public int queryCountByTxHash(String txHash) {
+        return query("queryCountByTxHash", txHash, Integer.TYPE);
+    }
 }
