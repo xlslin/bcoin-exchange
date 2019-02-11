@@ -319,11 +319,6 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
             return;
         }
 
-        // 分叉无效数据不做处理
-        if(BlockChain.STATUS_VERIFY_INVALID.equals(transactionBusiness.getTxStatus())) {
-            return;
-        }
-
         Withdrawal updateWithdrawal = new Withdrawal();
         updateWithdrawal.setId(withdrawal.getId());
         updateWithdrawal.setGasLimit(transaction.getGasLimit());
@@ -341,6 +336,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     public void finishNotice() {
         TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
         queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
+        queryTransactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_INVALID);
         queryTransactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_FINISH);
         queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
         PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
