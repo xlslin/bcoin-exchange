@@ -57,6 +57,8 @@ public class BtcServiceImpl implements BtcService {
                 cryptoUnspentList.add(cryptoSignMessageUnspentReq);
             }
             cryptoSignMessageVinReq.setUnspentList(cryptoUnspentList);
+
+            cryptoVinList.add(cryptoSignMessageVinReq);
         }
         cryptoSignMessageReq.setVinList(cryptoVinList);
 
