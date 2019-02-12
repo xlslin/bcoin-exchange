@@ -450,6 +450,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 
 			Withdrawal updateWithdrawal = new Withdrawal();
 			updateWithdrawal.setTxHash(transactionBusiness.getTxHash());
+			updateWithdrawal.setTxTime(transactionBusiness.getTxTime());
 			updateWithdrawal.setStatus(Withdrawal.STATUS_SUCCESS);
 
 			withdrawalDAO.updateByTxHash(updateWithdrawal);

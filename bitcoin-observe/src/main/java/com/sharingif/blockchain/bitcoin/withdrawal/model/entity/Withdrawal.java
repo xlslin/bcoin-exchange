@@ -66,17 +66,9 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
      */	
 	private String coinType;
     /**
-     * FORM地址			db_column: TX_FROM 
-     */	
-	private String txFrom;
-    /**
      * TO地址			db_column: TX_TO 
      */	
 	private String txTo;
-    /**
-     * 合约地址			db_column: CONTRACT_ADDRESS 
-     */	
-	private String contractAddress;
     /**
      * 金额			db_column: AMOUNT 
      */	
@@ -127,23 +119,11 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 	public String getCoinType() {
 		return this.coinType;
 	}
-	public void setTxFrom(String txFrom) {
-		this.txFrom = txFrom;
-	}
-	public String getTxFrom() {
-		return this.txFrom;
-	}
 	public void setTxTo(String txTo) {
 		this.txTo = txTo;
 	}
 	public String getTxTo() {
 		return this.txTo;
-	}
-	public void setContractAddress(String contractAddress) {
-		this.contractAddress = contractAddress;
-	}
-	public String getContractAddress() {
-		return this.contractAddress;
 	}
 	public void setAmount(BigInteger amount) {
 		this.amount = amount;
@@ -197,9 +177,7 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 					.append("WithdrawalId=").append(getWithdrawalId()).append(", ")
 					.append("TxHash=").append(getTxHash()).append(", ")
 					.append("CoinType=").append(getCoinType()).append(", ")
-					.append("TxFrom=").append(getTxFrom()).append(", ")
 					.append("TxTo=").append(getTxTo()).append(", ")
-					.append("ContractAddress=").append(getContractAddress()).append(", ")
 					.append("Amount=").append(getAmount()).append(", ")
 					.append("Fee=").append(getFee()).append(", ")
 					.append("Status=").append(getStatus()).append(", ")

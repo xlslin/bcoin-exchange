@@ -21,14 +21,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=coinType">
     		and COIN_TYPE = #{coinType}
     	</if>
-    	<if test="null!=txFrom">
-    		and TX_FROM = #{txFrom}
-    	</if>
     	<if test="null!=txTo">
     		and TX_TO = #{txTo}
-    	</if>
-    	<if test="null!=contractAddress">
-    		and CONTRACT_ADDRESS = #{contractAddress}
     	</if>
     	<if test="null!=amount">
     		and AMOUNT = #{amount}
@@ -63,14 +57,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=coinType">
 		    COIN_TYPE = #{coinType},
 		    </if>
-		    <if test="null!=txFrom">
-		    TX_FROM = #{txFrom},
-		    </if>
 		    <if test="null!=txTo">
 		    TX_TO = #{txTo},
-		    </if>
-		    <if test="null!=contractAddress">
-		    CONTRACT_ADDRESS = #{contractAddress},
 		    </if>
 		    <if test="null!=amount">
 		    AMOUNT = #{amount},
@@ -97,9 +85,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         <result property="withdrawalId" column="WITHDRAWAL_ID"/>
         <result property="txHash" column="TX_HASH"/>
         <result property="coinType" column="COIN_TYPE"/>
-        <result property="txFrom" column="TX_FROM"/>
         <result property="txTo" column="TX_TO"/>
-        <result property="contractAddress" column="CONTRACT_ADDRESS"/>
         <result property="amount" column="AMOUNT"/>
         <result property="fee" column="FEE"/>
         <result property="status" column="STATUS"/>
@@ -115,9 +101,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,WITHDRAWAL_ID
         	,TX_HASH
         	,COIN_TYPE
-        	,TX_FROM
         	,TX_TO
-        	,CONTRACT_ADDRESS
         	,AMOUNT
         	,FEE
         	,STATUS
@@ -129,9 +113,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,#{withdrawalId}
         	,#{txHash}
         	,#{coinType}
-        	,#{txFrom}
         	,#{txTo}
-        	,#{contractAddress}
         	,#{amount}
         	,#{fee}
         	,#{status}
@@ -172,9 +154,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,WITHDRAWAL_ID
 			,TX_HASH
 			,COIN_TYPE
-			,TX_FROM
 			,TX_TO
-			,CONTRACT_ADDRESS
 			,AMOUNT
 			,FEE
 			,STATUS
@@ -193,9 +173,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,WITHDRAWAL_ID
 			,TX_HASH
 			,COIN_TYPE
-			,TX_FROM
 			,TX_TO
-			,CONTRACT_ADDRESS
 			,AMOUNT
 			,FEE
 			,STATUS
@@ -217,9 +195,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,WITHDRAWAL_ID
 			,TX_HASH
 			,COIN_TYPE
-			,TX_FROM
 			,TX_TO
-			,CONTRACT_ADDRESS
 			,AMOUNT
 			,FEE
 			,STATUS
@@ -248,9 +224,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,WITHDRAWAL_ID
 			,TX_HASH
 			,COIN_TYPE
-			,TX_FROM
 			,TX_TO
-			,CONTRACT_ADDRESS
 			,AMOUNT
 			,FEE
 			,STATUS
@@ -268,35 +242,35 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<select id="queryListForUpdate" resultMap="withdrawalResultMap">
 		SELECT
-		ID
-		,WITHDRAWAL_ID
-		,TX_HASH
-		,COIN_TYPE
-		,TX_FROM
-		,TX_TO
-		,CONTRACT_ADDRESS
-		,AMOUNT
-		,FEE
-		,STATUS
-		,TX_TIME
-		,CREATE_TIME
-		,MODIFY_TIME
+			ID
+			,WITHDRAWAL_ID
+			,TX_HASH
+			,COIN_TYPE
+			,TX_FROM
+			,TX_TO
+			,CONTRACT_ADDRESS
+			,AMOUNT
+			,FEE
+			,STATUS
+			,TX_TIME
+			,CREATE_TIME
+			,MODIFY_TIME
 		FROM
-		WITHDRAWAL
+			WITHDRAWAL
 		WHERE
-		1=1
-		<include refid="withdrawalColumns" />
+			1=1
+			<include refid="withdrawalColumns" />
 		FOR UPDATE
 	</select>
 
 	<update id="updateByTxHash">
 		UPDATE
-		WITHDRAWAL
+			WITHDRAWAL
 		<set>
 			<include refid="withdrawalSetColumns" />
 		</set>
 		WHERE
-		TX_HASH = #{txHash}
+			TX_HASH = #{txHash}
 	</update>
 	
 </mapper>
