@@ -72,7 +72,7 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, j
 		BlockChainSync updateBlockChainSync = new BlockChainSync();
 		updateBlockChainSync.setType(BlockChainSync.TYPE_SYNC);
 		updateBlockChainSync.setBlockNumber(blockNumber);
-		blockChainSyncDAO.updateById(updateBlockChainSync);
+		blockChainSyncDAO.updateByType(updateBlockChainSync);
 
 		blockChainService.addUntreatedStatus(blockNumber, block.getHash(), BigInteger.valueOf(block.getTime()));
 	}

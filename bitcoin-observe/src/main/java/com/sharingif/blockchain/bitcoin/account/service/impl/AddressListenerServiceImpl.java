@@ -35,6 +35,10 @@ public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener,
 		super.setBaseDAO(addressListenerDAO);
 		this.addressListenerDAO = addressListenerDAO;
 	}
+	@Resource
+	public void setBitCoinBlockService(BitCoinBlockService bitCoinBlockService) {
+		this.bitCoinBlockService = bitCoinBlockService;
+	}
 	@Value("${btc.wallet.label}")
 	public void setBtcWalletLabel(String btcWalletLabel) {
 		this.btcWalletLabel = btcWalletLabel;
