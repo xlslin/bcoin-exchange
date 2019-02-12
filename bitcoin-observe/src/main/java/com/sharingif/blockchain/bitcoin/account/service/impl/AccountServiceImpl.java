@@ -207,6 +207,11 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 
 		for(Account account : queryAccountList) {
 
+			List<Unspent> unspentList = bitCoinBlockService.listUnspent(account.getAddress());
+			if(unspentList == null || unspentList.isEmpty()) {
+				continue;
+			}
+
 			List<Unspent> accountUnspentUnspentList = new ArrayList<Unspent>();
 			AccountUnspent accountUnspent = new AccountUnspent();
 			accountUnspent.setAccount(account);
@@ -214,10 +219,6 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 
 			accountUnspentList.add(accountUnspent);
 
-			List<Unspent> unspentList = bitCoinBlockService.listUnspent(account.getAddress());
-			if(unspentList == null || unspentList.isEmpty()) {
-				continue;
-			}
 			for(Unspent unspent : unspentList) {
 				unspent.setAmount(unspent.getAmount().multiply(Constants.BTC_UNIT));
 				accounTotalBalance = accounTotalBalance.add(unspent.getAmount().toBigInteger());
