@@ -8,7 +8,7 @@ import com.sharingif.blockchain.bitcoin.account.model.entity.AccountUnspent;
 import com.sharingif.blockchain.bitcoin.account.service.AccountService;
 import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinReq;
 import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinRsp;
-import com.sharingif.blockchain.bitcoin.app.InvalidAddressException;
+import com.sharingif.blockchain.bitcoin.app.exception.InvalidAddressException;
 import com.sharingif.blockchain.bitcoin.app.constants.CoinType;
 import com.sharingif.blockchain.bitcoin.app.constants.Constants;
 import com.sharingif.blockchain.bitcoin.block.dao.TransactionBusinessDAO;
