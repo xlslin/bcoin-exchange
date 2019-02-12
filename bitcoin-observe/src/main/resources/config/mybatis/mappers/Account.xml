@@ -314,6 +314,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<include refid="accountColumns" />
 		ORDER BY
 		Balance
+		,ID
 	</select>
 	
 </mapper>

@@ -156,9 +156,9 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		// 校验地址
 		String btcAddress = req.getAddress();
 		// 先判断长度是否是34
-		if(btcAddress.length() != 34) {
-			throw new InvalidAddressException();
-		}
+//		if(btcAddress.length() != 34) {
+//			throw new InvalidAddressException();
+//		}
 
 		try {
 			Base58.decodeChecked(btcAddress);
@@ -239,10 +239,15 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 
 		List<SignMessageVinReq> vinList = new ArrayList<SignMessageVinReq>(accountUnspentList.size());
 		for(AccountUnspent accountUnspent : accountUnspentList) {
+			List<Unspent> unspentList = accountUnspent.getUnspentList();
+
+			if(unspentList == null || unspentList.isEmpty()) {
+				continue;
+			}
+
 			SignMessageVinReq signMessageVinReq = new SignMessageVinReq();
 			signMessageVinReq.setFromAddress(accountUnspent.getAccount().getAddress());
 
-			List<Unspent> unspentList = accountUnspent.getUnspentList();
 			List<SignMessageUnspentReq> signMessageUnspentReqList =  new ArrayList<SignMessageUnspentReq>(unspentList.size());
 			for(Unspent unspent : unspentList) {
 				SignMessageUnspentReq signMessageUnspentReq = new SignMessageUnspentReq();
@@ -258,6 +263,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 
 			vinList.add(signMessageVinReq);
 		}
+		req.setVinList(vinList);
 
 		List<SignMessageVoutReq> voutList = new ArrayList<SignMessageVoutReq>(withdrawalList.size());
 		for(Withdrawal withdrawal : withdrawalList) {
@@ -267,9 +273,10 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 
 			voutList.add(signMessageVoutReq);
 		}
+		req.setVoutList(voutList);
 
 		SignMessageRsp rsp = bitCoinApiService.signMessage(req);
-		String hexstring = bitCoinBlockService.signRawTransaction(rsp.getHexValue());
+		String hexstring = rsp.getHexValue();
 
 		updateStatusToProcessing(withdrawalList);
 

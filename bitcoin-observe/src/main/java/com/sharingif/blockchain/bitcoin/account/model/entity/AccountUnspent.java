@@ -9,11 +9,6 @@ public class AccountUnspent {
     private Account account;
     private List<Unspent> unspentList;
 
-    public AccountUnspent(Account account, List<Unspent> unspentList) {
-        this.account = account;
-        this.unspentList = unspentList;
-    }
-
     public Account getAccount() {
         return account;
     }

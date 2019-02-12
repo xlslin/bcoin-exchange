@@ -203,27 +203,44 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 
 	}
 
-	protected List<AccountUnspent> getAccountListByBalance(PaginationCondition<Account> paginationCondition, BigInteger balance, List<AccountUnspent> accountUnspentList, BigInteger accounTotalBalance) {
-		PaginationRepertory<Account> accountPaginationRepertory = accountDAO.queryPaginationListOrderByBalanceAsc(paginationCondition);
-		List<Account> queryAccountList = accountPaginationRepertory.getPageItems();
-		if(queryAccountList == null || queryAccountList.isEmpty()) {
-			return null;
-		}
+	protected BigInteger getAccountListByBalance(BigInteger balance, BigInteger accounTotalBalance, List<AccountUnspent> accountUnspentList, List<Account> queryAccountList) {
 
-		BigInteger queryAccounTotalBalance = BigInteger.ZERO;
 		for(Account account : queryAccountList) {
+
+			List<Unspent> accountUnspentUnspentList = new ArrayList<Unspent>();
+			AccountUnspent accountUnspent = new AccountUnspent();
+			accountUnspent.setAccount(account);
+			accountUnspent.setUnspentList(accountUnspentUnspentList);
+
+			accountUnspentList.add(accountUnspent);
+
 			List<Unspent> unspentList = bitCoinBlockService.listUnspent(account.getAddress());
 			if(unspentList == null || unspentList.isEmpty()) {
 				continue;
 			}
 			for(Unspent unspent : unspentList) {
-				queryAccounTotalBalance = queryAccounTotalBalance.add(unspent.getAmount().multiply(Constants.BTC_UNIT).toBigInteger());
+				unspent.setAmount(unspent.getAmount().multiply(Constants.BTC_UNIT));
+				accounTotalBalance = accounTotalBalance.add(unspent.getAmount().toBigInteger());
+				accountUnspentUnspentList.add(unspent);
+
+				if(accounTotalBalance.compareTo(balance) > 0) {
+					return accounTotalBalance;
+				}
 			}
 
-			accountUnspentList.add(new AccountUnspent(account, unspentList));
 		}
 
-		accounTotalBalance = accounTotalBalance.add(queryAccounTotalBalance);
+		return accounTotalBalance;
+	}
+
+	protected List<AccountUnspent> getAccountListByBalance(PaginationCondition<Account> paginationCondition, BigInteger balance, List<AccountUnspent> accountUnspentList, BigInteger accounTotalBalance) {
+		PaginationRepertory<Account> accountPaginationRepertory = accountDAO.queryPaginationListOrderByBalanceAsc(paginationCondition);
+		List<Account> queryAccountList = accountPaginationRepertory.getPageItems();
+
+		if(queryAccountList == null || queryAccountList.isEmpty()) {
+			return null;
+		}
+		accounTotalBalance = getAccountListByBalance(balance, accounTotalBalance, accountUnspentList, queryAccountList);
 
 		if(accounTotalBalance.compareTo(balance) > 0) {
 			return accountUnspentList;
