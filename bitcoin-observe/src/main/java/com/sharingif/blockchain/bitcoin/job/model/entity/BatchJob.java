@@ -3,6 +3,7 @@ package com.sharingif.blockchain.bitcoin.job.model.entity;
 
 import com.sharingif.cube.batch.core.request.JobRequest;
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+import com.sharingif.cube.components.sequence.Sequence;
 
 import java.util.Date;
 
@@ -32,16 +33,17 @@ public class BatchJob implements java.io.Serializable, IObjectDateOperationHisto
 	//columns START
     /**
      * 主键ID			db_column: ID 
-     */	
-	private java.lang.String id;
+     */
+	@Sequence(ref="uuidSequenceGenerator")
+	private String id;
     /**
      * 父级JOB ID			db_column: PARENT_JOB_ID 
      */	
-	private java.lang.String parentJobId;
+	private String parentJobId;
     /**
      * 交易名			db_column: LOOKUP_PATH 
      */	
-	private java.lang.String lookupPath;
+	private String lookupPath;
     /**
      * 计划执行时间			db_column: PLAN_EXECUTE_TIME 
      */	
@@ -53,27 +55,27 @@ public class BatchJob implements java.io.Serializable, IObjectDateOperationHisto
     /**
      * 执行次数			db_column: EXECUTE_COUNT 
      */	
-	private java.lang.Integer executeCount;
+	private Integer executeCount;
     /**
      * 数据ID			db_column: DATA_ID 
      */	
-	private java.lang.String dataId;
+	private String dataId;
     /**
      * 状态(0:待处理、1:队列中、2:处理中、3:处理完成、4:处理失败)			db_column: STATUS 
      */	
-	private java.lang.String status;
+	private String status;
     /**
      * 错误码			db_column: ERROR_MESSAGE_CODE 
      */	
-	private java.lang.String errorMessageCode;
+	private String errorMessageCode;
     /**
      * 本地错误消息			db_column: ERROR_LOCALIZED_MESSAGE 
      */	
-	private java.lang.String errorLocalizedMessage;
+	private String errorLocalizedMessage;
     /**
      * 错误原因			db_column: ERROR_CAUSE 
      */	
-	private java.lang.String errorCause;
+	private String errorCause;
     /**
      * 创建时间			db_column: CREATE_TIME 
      */	
@@ -84,22 +86,22 @@ public class BatchJob implements java.io.Serializable, IObjectDateOperationHisto
 	private Date modifyTime;
 	//columns END
 
-	public void setId(java.lang.String id) {
+	public void setId(String id) {
 		this.id = id;
 	}
-	public java.lang.String getId() {
+	public String getId() {
 		return this.id;
 	}
-	public void setParentJobId(java.lang.String parentJobId) {
+	public void setParentJobId(String parentJobId) {
 		this.parentJobId = parentJobId;
 	}
-	public java.lang.String getParentJobId() {
+	public String getParentJobId() {
 		return this.parentJobId;
 	}
-	public void setLookupPath(java.lang.String lookupPath) {
+	public void setLookupPath(String lookupPath) {
 		this.lookupPath = lookupPath;
 	}
-	public java.lang.String getLookupPath() {
+	public String getLookupPath() {
 		return this.lookupPath;
 	}
 	public void setPlanExecuteTime(Date planExecuteTime) {
@@ -114,40 +116,40 @@ public class BatchJob implements java.io.Serializable, IObjectDateOperationHisto
 	public Date getActualExecuteTime() {
 		return this.actualExecuteTime;
 	}
-	public void setExecuteCount(java.lang.Integer executeCount) {
+	public void setExecuteCount(Integer executeCount) {
 		this.executeCount = executeCount;
 	}
-	public java.lang.Integer getExecuteCount() {
+	public Integer getExecuteCount() {
 		return this.executeCount;
 	}
-	public void setDataId(java.lang.String dataId) {
+	public void setDataId(String dataId) {
 		this.dataId = dataId;
 	}
-	public java.lang.String getDataId() {
+	public String getDataId() {
 		return this.dataId;
 	}
-	public void setStatus(java.lang.String status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
-	public java.lang.String getStatus() {
+	public String getStatus() {
 		return this.status;
 	}
-	public void setErrorMessageCode(java.lang.String errorMessageCode) {
+	public void setErrorMessageCode(String errorMessageCode) {
 		this.errorMessageCode = errorMessageCode;
 	}
-	public java.lang.String getErrorMessageCode() {
+	public String getErrorMessageCode() {
 		return this.errorMessageCode;
 	}
-	public void setErrorLocalizedMessage(java.lang.String errorLocalizedMessage) {
+	public void setErrorLocalizedMessage(String errorLocalizedMessage) {
 		this.errorLocalizedMessage = errorLocalizedMessage;
 	}
-	public java.lang.String getErrorLocalizedMessage() {
+	public String getErrorLocalizedMessage() {
 		return this.errorLocalizedMessage;
 	}
-	public void setErrorCause(java.lang.String errorCause) {
+	public void setErrorCause(String errorCause) {
 		this.errorCause = errorCause;
 	}
-	public java.lang.String getErrorCause() {
+	public String getErrorCause() {
 		return this.errorCause;
 	}
 	public void setCreateTime(Date createTime) {
