@@ -7,12 +7,15 @@ import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import org.springframework.stereotype.Controller;
 
+import javax.annotation.Resource;
+
 @Controller
 @RequestMapping(value="bitcoin")
 public class BitCoinController {
 
     private BitCoinService bitCoinService;
 
+    @Resource
     public void setBitCoinService(BitCoinService bitCoinService) {
         this.bitCoinService = bitCoinService;
     }
