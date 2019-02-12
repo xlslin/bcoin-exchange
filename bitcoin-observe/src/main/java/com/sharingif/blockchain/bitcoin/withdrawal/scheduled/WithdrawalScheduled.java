@@ -19,7 +19,7 @@ public class WithdrawalScheduled {
         this.simpleDispatcherHandler = simpleDispatcherHandler;
     }
 
-    @Scheduled(fixedRate = 1000*60*5)
+    @Scheduled(fixedRate = 1000*60*1)
     public synchronized void withdrawalEther() {
         JobRequest jobRequest = new JobRequest();
         jobRequest.setLookupPath("/withdrawal/withdrawal");
