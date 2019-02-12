@@ -11,12 +11,15 @@ public class Unspent {
     @JsonProperty("vout")
     private Integer vOut;
     private String address;
+    private String label;
     private String account;
     private String scriptPubKey;
     private String redeemScript;
     private BigDecimal amount;
     private Integer confirmations;
     private Boolean spendable;
+    private Boolean solvable;
+    private Boolean safe;
 
     public String getTxId() {
         return txId;
@@ -40,6 +43,14 @@ public class Unspent {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getAccount() {
@@ -90,18 +101,37 @@ public class Unspent {
         this.spendable = spendable;
     }
 
+    public Boolean getSolvable() {
+        return solvable;
+    }
+
+    public void setSolvable(Boolean solvable) {
+        this.solvable = solvable;
+    }
+
+    public Boolean getSafe() {
+        return safe;
+    }
+
+    public void setSafe(Boolean safe) {
+        this.safe = safe;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Unspent{");
         sb.append("txId='").append(txId).append('\'');
         sb.append(", vOut=").append(vOut);
         sb.append(", address='").append(address).append('\'');
+        sb.append(", label='").append(label).append('\'');
         sb.append(", account='").append(account).append('\'');
         sb.append(", scriptPubKey='").append(scriptPubKey).append('\'');
         sb.append(", redeemScript='").append(redeemScript).append('\'');
         sb.append(", amount=").append(amount);
         sb.append(", confirmations=").append(confirmations);
         sb.append(", spendable=").append(spendable);
+        sb.append(", solvable=").append(solvable);
+        sb.append(", safe=").append(safe);
         sb.append('}');
         return sb.toString();
     }
