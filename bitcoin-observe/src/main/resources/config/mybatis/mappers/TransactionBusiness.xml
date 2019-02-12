@@ -373,12 +373,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			BLOCK_HASH = #{blockHash}
 	</update>
 
-	<select id="queryCountByStatus" resultType="Integer">
+	<select id="queryCountByTypeStatus" resultType="Integer">
 		SELECT
 			COUNT(0)
 		FROM
 			TRANSACTION_BUSINESS
 		WHERE
+			TYPE = #{type}
+		AND
 			STATUS = #{status}
 	</select>
 	

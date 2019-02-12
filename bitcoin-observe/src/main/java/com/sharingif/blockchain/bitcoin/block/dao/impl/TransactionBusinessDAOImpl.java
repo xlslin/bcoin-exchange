@@ -7,6 +7,7 @@ import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.Map;
 
 
 @Repository
@@ -44,8 +45,12 @@ public class TransactionBusinessDAOImpl extends BaseDAOImpl<TransactionBusiness,
     }
 
     @Override
-    public int queryCountByStatus(String status) {
-        return query("queryCountByStatus", status, Integer.TYPE);
+    public int queryCountByTypeStatus(String type, String status) {
+        TransactionBusiness transactionBusiness = new TransactionBusiness();
+        transactionBusiness.setType(type);
+        transactionBusiness.setStatus(status);
+
+        return query("queryCountByTypeStatus", transactionBusiness, Integer.TYPE);
     }
 
 }

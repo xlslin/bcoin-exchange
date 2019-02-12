@@ -443,7 +443,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		}
 
 		int withdrawalVinCount = withdrawalTransactionService.getWithdrawalVinService().getCountByTxHash(transactionBusiness.getTxHash());
-		int transactionBusinessCount = transactionBusinessDAO.queryCountByStatus(TransactionBusiness.STATUS_FINISH_NOTICED);
+		int transactionBusinessCount = transactionBusinessDAO.queryCountByTypeStatus(TransactionBusiness.TYPE_WITHDRAWAL ,TransactionBusiness.STATUS_FINISH_NOTICED);
 
 		if(withdrawalVinCount == transactionBusinessCount) {
 			withdrawalTransactionService.updateStatusToSuccess(transactionBusiness.getTxHash());
