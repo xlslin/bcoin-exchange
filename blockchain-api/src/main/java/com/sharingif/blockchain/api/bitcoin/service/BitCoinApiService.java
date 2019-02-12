@@ -5,7 +5,7 @@ import com.sharingif.blockchain.api.bitcoin.entity.SignMessageRsp;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 
-@RequestMapping(value="bitcoin")
+@RequestMapping(value="btc")
 public interface BitCoinApiService {
 
     /**

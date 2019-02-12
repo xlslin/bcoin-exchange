@@ -26,7 +26,7 @@ public class BitCoinController {
 
 
 	/**
-	 * 生成change ExtendedKey
+	 * 添加币种
 	 * @return
 	 */
 	@RequestMapping(value="add", method= RequestMethod.POST)

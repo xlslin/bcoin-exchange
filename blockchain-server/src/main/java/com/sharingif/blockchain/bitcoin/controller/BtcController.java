@@ -2,7 +2,7 @@ package com.sharingif.blockchain.bitcoin.controller;
 
 import com.sharingif.blockchain.api.bitcoin.entity.SignMessageReq;
 import com.sharingif.blockchain.api.bitcoin.entity.SignMessageRsp;
-import com.sharingif.blockchain.bitcoin.service.BitCoinService;
+import com.sharingif.blockchain.bitcoin.service.BtcService;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import org.springframework.stereotype.Controller;
@@ -10,14 +10,14 @@ import org.springframework.stereotype.Controller;
 import javax.annotation.Resource;
 
 @Controller
-@RequestMapping(value="bitcoin")
-public class BitCoinController {
+@RequestMapping(value="btc")
+public class BtcController {
 
-    private BitCoinService bitCoinService;
+    private BtcService btcService;
 
     @Resource
-    public void setBitCoinService(BitCoinService bitCoinService) {
-        this.bitCoinService = bitCoinService;
+    public void setBtcService(BtcService btcService) {
+        this.btcService = btcService;
     }
 
     /**
@@ -27,7 +27,7 @@ public class BitCoinController {
     @RequestMapping(value="signMessage", method= RequestMethod.POST)
     public SignMessageRsp signMessage(SignMessageReq req) {
 
-        return bitCoinService.signMessage(req);
+        return btcService.signMessage(req);
     }
 
 }

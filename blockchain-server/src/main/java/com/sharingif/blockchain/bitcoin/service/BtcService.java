@@ -3,7 +3,7 @@ package com.sharingif.blockchain.bitcoin.service;
 import com.sharingif.blockchain.api.bitcoin.entity.SignMessageReq;
 import com.sharingif.blockchain.api.bitcoin.entity.SignMessageRsp;
 
-public interface BitCoinService {
+public interface BtcService {
 
     /**
      * 转账签名

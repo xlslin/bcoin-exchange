@@ -1,7 +1,7 @@
 package com.sharingif.blockchain.bitcoin.service.impl;
 
 import com.sharingif.blockchain.api.bitcoin.entity.*;
-import com.sharingif.blockchain.bitcoin.service.BitCoinService;
+import com.sharingif.blockchain.bitcoin.service.BtcService;
 import com.sharingif.blockchain.crypto.api.bitcoin.service.BitCoinApiService;
 import com.sharingif.blockchain.crypto.model.entity.SecretKey;
 import com.sharingif.blockchain.crypto.service.SecretKeyService;
@@ -13,7 +13,7 @@ import java.util.List;
 
 
 @Service
-public class BitCoinServiceImpl implements BitCoinService {
+public class BtcServiceImpl implements BtcService {
 
     private SecretKeyService secretKeyService;
     private BitCoinApiService bitCoinApiService;
