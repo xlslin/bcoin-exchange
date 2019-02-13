@@ -12,6 +12,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=id">
     		and ID = #{id}
     	</if>
+    	<if test="null!=transactionBusinessId">
+    		and TRANSACTION_BUSINESS_ID = #{transactionBusinessId}
+    	</if>
     	<if test="null!=withdrawalId">
     		and WITHDRAWAL_ID = #{withdrawalId}
     	</if>
@@ -63,6 +66,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=id">
 		    ID = #{id},
 		    </if>
+		    <if test="null!=transactionBusinessId">
+		    TRANSACTION_BUSINESS_ID = #{transactionBusinessId},
+		    </if>
 		    <if test="null!=withdrawalId">
 		    WITHDRAWAL_ID = #{withdrawalId},
 		    </if>
@@ -112,6 +118,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 
 	<resultMap id="withdrawalResultMap" type="com.sharingif.blockchain.ether.withdrawal.model.entity.Withdrawal">
         <result property="id" column="ID"/>
+        <result property="transactionBusinessId" column="TRANSACTION_BUSINESS_ID"/>
         <result property="withdrawalId" column="WITHDRAWAL_ID"/>
         <result property="txHash" column="TX_HASH"/>
         <result property="coinType" column="COIN_TYPE"/>
@@ -133,6 +140,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<insert id="insert">
         INSERT INTO WITHDRAWAL (
         	ID
+        	,TRANSACTION_BUSINESS_ID
         	,WITHDRAWAL_ID
         	,TX_HASH
         	,COIN_TYPE
@@ -150,6 +158,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,MODIFY_TIME
         ) VALUES (
         	#{id}
+        	,#{transactionBusinessId}
         	,#{withdrawalId}
         	,#{txHash}
         	,#{coinType}
@@ -196,6 +205,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     <select id="queryById" resultMap="withdrawalResultMap">
 		SELECT
 			ID
+			,TRANSACTION_BUSINESS_ID
 			,WITHDRAWAL_ID
 			,TX_HASH
 			,COIN_TYPE
@@ -220,6 +230,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryList" resultMap="withdrawalResultMap">
 		SELECT
 			ID
+			,TRANSACTION_BUSINESS_ID
 			,WITHDRAWAL_ID
 			,TX_HASH
 			,COIN_TYPE
@@ -247,6 +258,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryAll" resultMap="withdrawalResultMap">
 		SELECT
 			ID
+			,TRANSACTION_BUSINESS_ID
 			,WITHDRAWAL_ID
 			,TX_HASH
 			,COIN_TYPE
@@ -281,6 +293,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryPaginationList" parameterType="PaginationCondition" resultMap="withdrawalResultMap">
 		SELECT
 			ID
+			,TRANSACTION_BUSINESS_ID
 			,WITHDRAWAL_ID
 			,TX_HASH
 			,COIN_TYPE

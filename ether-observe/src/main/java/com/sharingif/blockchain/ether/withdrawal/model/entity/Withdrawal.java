@@ -3,7 +3,6 @@ package com.sharingif.blockchain.ether.withdrawal.model.entity;
 
 import com.sharingif.blockchain.ether.api.withdrawal.entity.WithdrawalEtherReq;
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
-import com.sharingif.cube.components.sequence.Sequence;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -50,9 +49,12 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 	//columns START
     /**
      * id			db_column: ID 
-     */
-	@Sequence(ref="uuidSequenceGenerator")
+     */	
 	private String id;
+    /**
+     * 交易业务表唯一编号			db_column: TRANSACTION_BUSINESS_ID 
+     */	
+	private String transactionBusinessId;
     /**
      * 取现唯一编号			db_column: WITHDRAWAL_ID 
      */	
@@ -98,7 +100,7 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
      */	
 	private BigInteger fee;
     /**
-     * 处理状态(TXWCL:提现未处理、TXCLZ:提现处理中、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、TXCG:提现成功、TXSB:提现失败、TXTZZ:提现通知中、TXCGTZ:提现成功通知、TXSBTZ:提现失败通知)			db_column: STATUS
+     * 处理状态(TXWCL:提现未处理、TXCLZ:提现处理中、CSHTZZ:初始化通知中、CSHTZCG:初始化通知成功、TXCG:提现成功、TXSB:提现失败、TXTZZ:提现通知中、TXCGTZ:提现成功通知、TXSBTZ:提现失败通知)			db_column: STATUS 
      */	
 	private String status;
     /**
@@ -120,6 +122,12 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 	}
 	public String getId() {
 		return this.id;
+	}
+	public void setTransactionBusinessId(String transactionBusinessId) {
+		this.transactionBusinessId = transactionBusinessId;
+	}
+	public String getTransactionBusinessId() {
+		return this.transactionBusinessId;
 	}
 	public void setWithdrawalId(String withdrawalId) {
 		this.withdrawalId = withdrawalId;
@@ -227,6 +235,7 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 	public String toString() {
 		return new StringBuilder("Withdrawal [")
 			.append("Id=").append(getId()).append(", ")
+					.append("TransactionBusinessId=").append(getTransactionBusinessId()).append(", ")
 					.append("WithdrawalId=").append(getWithdrawalId()).append(", ")
 					.append("TxHash=").append(getTxHash()).append(", ")
 					.append("CoinType=").append(getCoinType()).append(", ")

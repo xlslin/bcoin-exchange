@@ -1,10 +1,7 @@
 package com.sharingif.blockchain.ether.withdrawal.service.impl;
 
 
-import com.sharingif.blockchain.api.ether.entity.Erc20SignMessageReq;
-import com.sharingif.blockchain.api.ether.entity.Erc20SignMessageRsp;
-import com.sharingif.blockchain.api.ether.entity.SignMessageReq;
-import com.sharingif.blockchain.api.ether.entity.SignMessageRsp;
+import com.sharingif.blockchain.api.ether.entity.*;
 import com.sharingif.blockchain.api.ether.service.EtherApiService;
 import com.sharingif.blockchain.ether.account.model.entity.Account;
 import com.sharingif.blockchain.ether.account.model.entity.AccountJnl;
@@ -197,16 +194,6 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         }
     }
 
-    protected void initNotice(Withdrawal withdrawal) {
-        // TODO发送通知信息
-
-        Withdrawal updateWithdrawal = new Withdrawal();
-        updateWithdrawal.setId(withdrawal.getId());
-        updateWithdrawal.setStatus(Withdrawal.STATUS_INIT_NOTICED);
-
-        withdrawalDAO.updateById(updateWithdrawal);
-    }
-
     @Override
     public void initNotice(String id) {
         Withdrawal withdrawal = withdrawalDAO.queryById(id);
@@ -214,7 +201,21 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
             return;
         }
 
-        initNotice(withdrawal);
+        DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
+        req.setId(withdrawal.getId());
+        req.setTxHash(withdrawal.getTxHash());
+        req.setCoinType(withdrawal.getCoinType());
+        req.setTxTo(withdrawal.getTxTo());
+        req.setAmount(withdrawal.getAmount());
+        req.setContractAddress(withdrawal.getContractAddress());
+        req.setStatus(DepositWithdrawalNoticeReq.STATUS_PROCESSING);
+        etherApiService.depositWithdrawalNotice(req);
+
+        Withdrawal updateWithdrawal = new Withdrawal();
+        updateWithdrawal.setId(withdrawal.getId());
+        updateWithdrawal.setStatus(Withdrawal.STATUS_INIT_NOTICED);
+
+        withdrawalDAO.updateById(updateWithdrawal);
 
     }
 
@@ -321,6 +322,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
 
         Withdrawal updateWithdrawal = new Withdrawal();
         updateWithdrawal.setId(withdrawal.getId());
+        updateWithdrawal.setTransactionBusinessId(transactionBusiness.getId());
         updateWithdrawal.setGasLimit(transaction.getGasLimit());
         updateWithdrawal.setGasUsed(transaction.getGasUsed());
         updateWithdrawal.setGasPrice(transaction.getGasPrice());
@@ -516,6 +518,29 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     public void withdrawalSuccessNotice(String id) {
         Withdrawal withdrawal = getById(id);
 
+        TransactionBusiness transactionBusiness = transactionBusinessDAO.queryById(withdrawal.getTransactionBusinessId());
+        Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
+
+        DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
+        req.setId(transactionBusiness.getId());
+        req.setBlockNumber(transaction.getBlockNumber());
+        req.setBlockHash(transaction.getBlockHash());
+        req.setTxHash(transaction.getTxHash());
+        req.setTxIndex(transaction.getTxIndex());
+        req.setCoinType(transactionBusiness.getCoinType());
+        req.setTxFrom(transactionBusiness.getTxFrom());
+        req.setTxTo(transactionBusiness.getTxTo());
+        req.setAmount(transactionBusiness.getAmount());
+        req.setNonce(transaction.getNonce());
+        req.setTxTime(transaction.getTxTime().getTime());
+        req.setGasLimit(transaction.getGasLimit());
+        req.setGasUsed(transaction.getGasUsed());
+        req.setGasPrice(transaction.getGasPrice());
+        req.setActualFee(transaction.getActualFee());
+        req.setContractAddress(transaction.getContractAddress());
+        req.setStatus(DepositWithdrawalNoticeReq.STATUS_SUCCESS);
+        etherApiService.depositWithdrawalNotice(req);
+
         updateStatusToSuccessNoticed(id);
     }
 
@@ -527,6 +552,29 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     @Override
     public void withdrawalFailureNotice(String id) {
         Withdrawal withdrawal = getById(id);
+
+        TransactionBusiness transactionBusiness = transactionBusinessDAO.queryById(withdrawal.getTransactionBusinessId());
+        Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
+
+        DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
+        req.setId(transactionBusiness.getId());
+        req.setBlockNumber(transaction.getBlockNumber());
+        req.setBlockHash(transaction.getBlockHash());
+        req.setTxHash(transaction.getTxHash());
+        req.setTxIndex(transaction.getTxIndex());
+        req.setCoinType(transactionBusiness.getCoinType());
+        req.setTxFrom(transactionBusiness.getTxFrom());
+        req.setTxTo(transactionBusiness.getTxTo());
+        req.setAmount(transactionBusiness.getAmount());
+        req.setNonce(transaction.getNonce());
+        req.setTxTime(transaction.getTxTime().getTime());
+        req.setGasLimit(transaction.getGasLimit());
+        req.setGasUsed(transaction.getGasUsed());
+        req.setGasPrice(transaction.getGasPrice());
+        req.setActualFee(transaction.getActualFee());
+        req.setContractAddress(transaction.getContractAddress());
+        req.setStatus(DepositWithdrawalNoticeReq.STATUS_FAIL);
+        etherApiService.depositWithdrawalNotice(req);
 
         updateStatusToFailureNoticed(id);
     }
