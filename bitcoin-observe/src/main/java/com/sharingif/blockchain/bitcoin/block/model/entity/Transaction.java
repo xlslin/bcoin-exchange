@@ -28,6 +28,10 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
      */	
 	private String txHash;
     /**
+     * tx index			db_column: TX_INDEX 
+     */	
+	private BigInteger txIndex;
+    /**
      * 交易手续费			db_column: TX_FEE 
      */	
 	private BigInteger txFee;
@@ -77,6 +81,12 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
 	public String getTxHash() {
 		return this.txHash;
 	}
+	public void setTxIndex(BigInteger txIndex) {
+		this.txIndex = txIndex;
+	}
+	public BigInteger getTxIndex() {
+		return this.txIndex;
+	}
 	public void setTxFee(BigInteger txFee) {
 		this.txFee = txFee;
 	}
@@ -120,6 +130,7 @@ public class Transaction implements java.io.Serializable, IObjectDateOperationHi
 					.append("BlockNumber=").append(getBlockNumber()).append(", ")
 					.append("BlockHash=").append(getBlockHash()).append(", ")
 					.append("TxHash=").append(getTxHash()).append(", ")
+					.append("TxIndex=").append(getTxIndex()).append(", ")
 					.append("TxFee=").append(getTxFee()).append(", ")
 					.append("TxTime=").append(getTxTime()).append(", ")
 					.append("ConfirmBlockNumber=").append(getConfirmBlockNumber()).append(", ")

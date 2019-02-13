@@ -1,9 +1,6 @@
 package com.sharingif.blockchain.api.ether.service;
 
-import com.sharingif.blockchain.api.ether.entity.Erc20SignMessageReq;
-import com.sharingif.blockchain.api.ether.entity.Erc20SignMessageRsp;
-import com.sharingif.blockchain.api.ether.entity.SignMessageReq;
-import com.sharingif.blockchain.api.ether.entity.SignMessageRsp;
+import com.sharingif.blockchain.api.ether.entity.*;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 
@@ -33,5 +30,12 @@ public interface EtherApiService {
      */
     @RequestMapping(value="erc20SignMessage", method= RequestMethod.POST)
     Erc20SignMessageRsp erc20SignMessage(Erc20SignMessageReq req);
+
+    /**
+     * 充值提现通知
+     * @param req
+     */
+    @RequestMapping(value="depositWithdrawalNotice", method= RequestMethod.POST)
+    void depositWithdrawalNotice(DepositWithdrawalNoticeReq req);
 
 }

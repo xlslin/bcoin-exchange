@@ -1,5 +1,6 @@
 package com.sharingif.blockchain.api.bitcoin.service;
 
+import com.sharingif.blockchain.api.bitcoin.entity.DepositWithdrawalNoticeReq;
 import com.sharingif.blockchain.api.bitcoin.entity.SignMessageReq;
 import com.sharingif.blockchain.api.bitcoin.entity.SignMessageRsp;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
@@ -15,5 +16,12 @@ public interface BitCoinApiService {
      */
     @RequestMapping(value="signMessage", method= RequestMethod.POST)
     SignMessageRsp signMessage(SignMessageReq req);
+
+    /**
+     * 充值提现通知
+     * @param req
+     */
+    @RequestMapping(value="depositWithdrawalNotice", method= RequestMethod.POST)
+    void depositWithdrawalNotice(DepositWithdrawalNoticeReq req);
 
 }

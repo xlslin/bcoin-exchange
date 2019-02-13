@@ -21,6 +21,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     	<if test="null!=txHash">
     		and TX_HASH = #{txHash}
     	</if>
+    	<if test="null!=txIndex">
+    		and TX_INDEX = #{txIndex}
+    	</if>
     	<if test="null!=txFee">
     		and TX_FEE = #{txFee}
     	</if>
@@ -54,6 +57,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		    <if test="null!=txHash">
 		    TX_HASH = #{txHash},
 		    </if>
+		    <if test="null!=txIndex">
+		    TX_INDEX = #{txIndex},
+		    </if>
 		    <if test="null!=txFee">
 		    TX_FEE = #{txFee},
 		    </if>
@@ -79,6 +85,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         <result property="blockNumber" column="BLOCK_NUMBER"/>
         <result property="blockHash" column="BLOCK_HASH"/>
         <result property="txHash" column="TX_HASH"/>
+        <result property="txIndex" column="TX_INDEX"/>
         <result property="txFee" column="TX_FEE"/>
         <result property="txTime" column="TX_TIME"/>
         <result property="confirmBlockNumber" column="CONFIRM_BLOCK_NUMBER"/>
@@ -94,6 +101,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,BLOCK_NUMBER
         	,BLOCK_HASH
         	,TX_HASH
+        	,TX_INDEX
         	,TX_FEE
         	,TX_TIME
         	,CONFIRM_BLOCK_NUMBER
@@ -105,6 +113,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
         	,#{blockNumber}
         	,#{blockHash}
         	,#{txHash}
+        	,#{txIndex}
         	,#{txFee}
         	,#{txTime}
         	,#{confirmBlockNumber}
@@ -145,6 +154,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,BLOCK_NUMBER
 			,BLOCK_HASH
 			,TX_HASH
+			,TX_INDEX
 			,TX_FEE
 			,TX_TIME
 			,CONFIRM_BLOCK_NUMBER
@@ -163,6 +173,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,BLOCK_NUMBER
 			,BLOCK_HASH
 			,TX_HASH
+			,TX_INDEX
 			,TX_FEE
 			,TX_TIME
 			,CONFIRM_BLOCK_NUMBER
@@ -184,6 +195,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,BLOCK_NUMBER
 			,BLOCK_HASH
 			,TX_HASH
+			,TX_INDEX
 			,TX_FEE
 			,TX_TIME
 			,CONFIRM_BLOCK_NUMBER
@@ -212,6 +224,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,BLOCK_NUMBER
 			,BLOCK_HASH
 			,TX_HASH
+			,TX_INDEX
 			,TX_FEE
 			,TX_TIME
 			,CONFIRM_BLOCK_NUMBER

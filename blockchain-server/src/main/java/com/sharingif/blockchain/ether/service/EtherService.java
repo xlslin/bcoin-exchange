@@ -1,9 +1,6 @@
 package com.sharingif.blockchain.ether.service;
 
-import com.sharingif.blockchain.api.ether.entity.Erc20SignMessageReq;
-import com.sharingif.blockchain.api.ether.entity.Erc20SignMessageRsp;
-import com.sharingif.blockchain.api.ether.entity.SignMessageReq;
-import com.sharingif.blockchain.api.ether.entity.SignMessageRsp;
+import com.sharingif.blockchain.api.ether.entity.*;
 
 /**
  * EthService
@@ -28,5 +25,11 @@ public interface EtherService {
      * @return
      */
     Erc20SignMessageRsp erc20SignMessage(Erc20SignMessageReq req);
+
+    /**
+     * 充值提现通知
+     * @param req
+     */
+    void depositWithdrawalNotice(DepositWithdrawalNoticeReq req);
 
 }

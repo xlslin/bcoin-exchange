@@ -2,9 +2,12 @@ package com.sharingif.blockchain.bitcoin.block.model.entity;
 
 import org.bitcoincore.api.rawtransactions.entity.Transaction;
 
+import java.math.BigInteger;
+
 public class BlockTransaction {
 
     private BlockChain blockChain;
+    private BigInteger txIndex;
     private Transaction transaction;
 
     public BlockChain getBlockChain() {
@@ -13,6 +16,14 @@ public class BlockTransaction {
 
     public void setBlockChain(BlockChain blockChain) {
         this.blockChain = blockChain;
+    }
+
+    public BigInteger getTxIndex() {
+        return txIndex;
+    }
+
+    public void setTxIndex(BigInteger txIndex) {
+        this.txIndex = txIndex;
     }
 
     public Transaction getTransaction() {
@@ -27,6 +38,7 @@ public class BlockTransaction {
     public String toString() {
         final StringBuilder sb = new StringBuilder("BlockTransaction{");
         sb.append("blockChain=").append(blockChain);
+        sb.append(", txIndex=").append(txIndex);
         sb.append(", transaction=").append(transaction);
         sb.append('}');
         return sb.toString();

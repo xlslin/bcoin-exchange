@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.IntStream;
 
 @Service
 public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang.String> implements BlockChainService, ApplicationContextAware {
@@ -143,18 +144,21 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 			return;
 		}
 
-		for(Transaction transaction : transactionList) {
+		IntStream.range(0, transactionList.size()).forEach(index->{
+			Transaction transaction = transactionList.get(index);
+
 			blockTransactionQueue.add(transaction);
 
 			BlockTransaction blockTransaction = new BlockTransaction();
 			blockTransaction.setBlockChain(blockChain);
+			blockTransaction.setTxIndex(new BigInteger(String.valueOf(index)));
 			blockTransaction.setTransaction(transaction);
 			JobRequest<BlockTransaction> jobRequest = new JobRequest<BlockTransaction>();
 			jobRequest.setLookupPath(blockChainSynchingDataJobConfig.getLookupPath());
 			jobRequest.setData(blockTransaction);
 
 			jobMultithreadDispatcherHandler.doDispatch(jobRequest);
-		}
+		});
 	}
 
 	@Override
@@ -194,7 +198,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		BlockChain blockChain = blockTransaction.getBlockChain();
 		Transaction transaction = blockTransaction.getTransaction();
 
-		transactionService.analysis(transaction, blockChain.getBlockNumber(), blockChain.getHash(), blockChain.getBlockCreateTime());
+		transactionService.analysis(transaction, blockChain.getBlockNumber(), blockChain.getHash(), blockChain.getBlockCreateTime(), blockTransaction.getTxIndex());
 
 		synchingData(blockChain.getId(), transaction);
 

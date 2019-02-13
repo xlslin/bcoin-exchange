@@ -1,12 +1,15 @@
 package com.sharingif.blockchain.ether.deposit.service.impl;
 
 
+import com.sharingif.blockchain.api.ether.entity.DepositWithdrawalNoticeReq;
+import com.sharingif.blockchain.api.ether.service.EtherApiService;
 import com.sharingif.blockchain.ether.account.model.entity.AccountJnl;
 import com.sharingif.blockchain.ether.account.service.AccountService;
 import com.sharingif.blockchain.ether.block.dao.TransactionBusinessDAO;
 import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
 import com.sharingif.blockchain.ether.block.model.entity.Transaction;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
+import com.sharingif.blockchain.ether.block.service.TransactionService;
 import com.sharingif.blockchain.ether.deposit.service.DepositService;
 import com.sharingif.cube.batch.core.JobConfig;
 import com.sharingif.cube.batch.core.JobModel;
@@ -24,10 +27,12 @@ import java.util.List;
 public class DepositServiceImpl implements DepositService {
 
     private TransactionBusinessDAO transactionBusinessDAO;
+    private TransactionService transactionService;
     private JobConfig depositInitNoticeJobConfig;
     private JobService jobService;
     private AccountService accountService;
     private JobConfig depositFinishNoticeJobConfig;
+    private EtherApiService etherApiService;
 
     @Resource
     public void setTransactionBusinessDAO(TransactionBusinessDAO transactionBusinessDAO) {
@@ -48,6 +53,14 @@ public class DepositServiceImpl implements DepositService {
     @Resource
     public void setDepositFinishNoticeJobConfig(JobConfig depositFinishNoticeJobConfig) {
         this.depositFinishNoticeJobConfig = depositFinishNoticeJobConfig;
+    }
+    @Resource
+    public void setEtherApiService(EtherApiService etherApiService) {
+        this.etherApiService = etherApiService;
+    }
+    @Resource
+    public void setTransactionService(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 
     @Override
@@ -109,6 +122,28 @@ public class DepositServiceImpl implements DepositService {
         if(!TransactionBusiness.STATUS_INIT_NOTICE.equals(transactionBusiness.getStatus())) {
             return;
         }
+
+        Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
+
+        DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
+        req.setId(transactionBusiness.getId());
+        req.setBlockNumber(transaction.getBlockNumber());
+        req.setBlockHash(transaction.getBlockHash());
+        req.setTxHash(transaction.getTxHash());
+        req.setTxIndex(transaction.getTxIndex());
+        req.setCoinType(transactionBusiness.getCoinType());
+        req.setTxFrom(transactionBusiness.getTxFrom());
+        req.setTxTo(transactionBusiness.getTxTo());
+        req.setAmount(transactionBusiness.getAmount());
+        req.setNonce(transaction.getNonce());
+        req.setTxTime(transaction.getTxTime().getTime());
+        req.setGasLimit(transaction.getGasLimit());
+        req.setGasUsed(transaction.getGasUsed());
+        req.setGasPrice(transaction.getGasPrice());
+        req.setActualFee(transaction.getActualFee());
+        req.setContractAddress(transaction.getContractAddress());
+        req.setStatus(DepositWithdrawalNoticeReq.STATUS_PROCESSING);
+        etherApiService.depositWithdrawalNotice(req);
 
         TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
         updateTransactionBusiness.setId(id);
@@ -205,6 +240,33 @@ public class DepositServiceImpl implements DepositService {
         if(!TransactionBusiness.STATUS_FINISH_NOTICING.equals(transactionBusiness.getStatus())) {
             return;
         }
+
+        Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
+
+        DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
+        req.setId(transactionBusiness.getId());
+        req.setBlockNumber(transaction.getBlockNumber());
+        req.setBlockHash(transaction.getBlockHash());
+        req.setTxHash(transaction.getTxHash());
+        req.setTxIndex(transaction.getTxIndex());
+        req.setCoinType(transactionBusiness.getCoinType());
+        req.setTxFrom(transactionBusiness.getTxFrom());
+        req.setTxTo(transactionBusiness.getTxTo());
+        req.setAmount(transactionBusiness.getAmount());
+        req.setNonce(transaction.getNonce());
+        req.setTxTime(transaction.getTxTime().getTime());
+        req.setGasLimit(transaction.getGasLimit());
+        req.setGasUsed(transaction.getGasUsed());
+        req.setGasPrice(transaction.getGasPrice());
+        req.setActualFee(transaction.getActualFee());
+        req.setContractAddress(transaction.getContractAddress());
+        if(BlockChain.STATUS_VERIFY_VALID.equals(transactionBusiness.getTxStatus())) {
+            req.setStatus(DepositWithdrawalNoticeReq.STATUS_SUCCESS);
+        } else {
+            req.setStatus(DepositWithdrawalNoticeReq.STATUS_FAIL);
+        }
+
+        etherApiService.depositWithdrawalNotice(req);
 
         TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
         updateTransactionBusiness.setId(id);

@@ -246,7 +246,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	}
 
 	@Override
-	public void analysis(org.bitcoincore.api.rawtransactions.entity.Transaction tx, BigInteger blockNumber, String blockHash, Date blockCreateTime) {
+	public void analysis(org.bitcoincore.api.rawtransactions.entity.Transaction tx, BigInteger blockNumber, String blockHash, Date blockCreateTime, BigInteger txIndex) {
 		Transaction transaction = null;
 		try {
 			List<UtxoVin> utxoVinList = handletUtxoVin(tx.getvIn());
@@ -260,6 +260,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			transaction.setBlockNumber(blockNumber);
 			transaction.setBlockHash(blockHash);
 			transaction.setTxHash(tx.getTxId());
+			transaction.setTxIndex(txIndex);
 			transaction.setTxFee(txFee);
 			transaction.setTxTime(blockCreateTime);
 			transaction.setConfirmBlockNumber(0);
@@ -301,7 +302,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			// 连接超时
 			logger.error("analysis block transaction error", e);
 			logger.error("analysis block transaction error, tx:{}", tx);
-			analysis(tx, blockNumber, blockHash, blockCreateTime);
+			analysis(tx, blockNumber, blockHash, blockCreateTime, txIndex);
 		}
 	}
 

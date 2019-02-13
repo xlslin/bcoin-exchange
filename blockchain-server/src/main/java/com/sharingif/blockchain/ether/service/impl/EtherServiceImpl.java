@@ -1,18 +1,19 @@
 package com.sharingif.blockchain.ether.service.impl;
 
-import com.sharingif.blockchain.api.ether.entity.Erc20SignMessageReq;
-import com.sharingif.blockchain.api.ether.entity.Erc20SignMessageRsp;
-import com.sharingif.blockchain.api.ether.entity.SignMessageReq;
-import com.sharingif.blockchain.api.ether.entity.SignMessageRsp;
+import com.sharingif.blockchain.api.ether.entity.*;
 import com.sharingif.blockchain.crypto.api.ether.service.EtherApiService;
 import com.sharingif.blockchain.crypto.model.entity.SecretKey;
 import com.sharingif.blockchain.crypto.service.SecretKeyService;
 import com.sharingif.blockchain.ether.service.EtherService;
+import com.sharingif.blockchain.signature.service.BlockchainSignatureService;
+import com.sharingif.cube.core.exception.UnknownCubeException;
+import com.sharingif.cube.security.binary.Base64Coder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.security.Signature;
 
 /**
  * EthServiceImpl
@@ -29,6 +30,7 @@ public class EtherServiceImpl implements EtherService {
 
     private EtherApiService etherApiService;
     private SecretKeyService secretKeyService;
+    private BlockchainSignatureService BlockchainSignatureService;
 
     @Resource
     public void setEtherApiService(EtherApiService etherApiService) {
@@ -37,6 +39,10 @@ public class EtherServiceImpl implements EtherService {
     @Resource
     public void setSecretKeyService(SecretKeyService secretKeyService) {
         this.secretKeyService = secretKeyService;
+    }
+    @Resource
+    public void setBlockchainSignatureService(com.sharingif.blockchain.signature.service.BlockchainSignatureService blockchainSignatureService) {
+        BlockchainSignatureService = blockchainSignatureService;
     }
 
     @Override
@@ -81,6 +87,14 @@ public class EtherServiceImpl implements EtherService {
         rsp.setHexValue(erc20SignMessageRsp.getHexValue());
 
         return rsp;
+    }
+
+    @Override
+    public void depositWithdrawalNotice(DepositWithdrawalNoticeReq req) {
+        String sign = BlockchainSignatureService.signature(req.getSignData());
+        req.setSign(sign);
+
+        logger.info("sign data:{}", req);
     }
 
 }

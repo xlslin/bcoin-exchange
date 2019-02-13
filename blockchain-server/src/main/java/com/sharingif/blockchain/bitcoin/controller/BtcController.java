@@ -1,5 +1,6 @@
 package com.sharingif.blockchain.bitcoin.controller;
 
+import com.sharingif.blockchain.api.bitcoin.entity.DepositWithdrawalNoticeReq;
 import com.sharingif.blockchain.api.bitcoin.entity.SignMessageReq;
 import com.sharingif.blockchain.api.bitcoin.entity.SignMessageRsp;
 import com.sharingif.blockchain.bitcoin.service.BtcService;
@@ -28,6 +29,15 @@ public class BtcController {
     public SignMessageRsp signMessage(SignMessageReq req) {
 
         return btcService.signMessage(req);
+    }
+
+    /**
+     * 充值提现通知
+     * @param req
+     */
+    @RequestMapping(value="depositWithdrawalNotice", method= RequestMethod.POST)
+    public void depositWithdrawalNotice(DepositWithdrawalNoticeReq req) {
+        btcService.depositWithdrawalNotice(req);
     }
 
 }

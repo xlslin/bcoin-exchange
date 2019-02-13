@@ -5,9 +5,14 @@ import com.sharingif.blockchain.bitcoin.service.BtcService;
 import com.sharingif.blockchain.crypto.api.bitcoin.service.BitCoinApiService;
 import com.sharingif.blockchain.crypto.model.entity.SecretKey;
 import com.sharingif.blockchain.crypto.service.SecretKeyService;
+import com.sharingif.blockchain.signature.service.BlockchainSignatureService;
+import com.sharingif.cube.security.binary.Base64Coder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.security.Signature;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,8 +20,11 @@ import java.util.List;
 @Service
 public class BtcServiceImpl implements BtcService {
 
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+
     private SecretKeyService secretKeyService;
     private BitCoinApiService bitCoinApiService;
+    private BlockchainSignatureService BlockchainSignatureService;
 
     @Resource
     public void setSecretKeyService(SecretKeyService secretKeyService) {
@@ -25,6 +33,10 @@ public class BtcServiceImpl implements BtcService {
     @Resource
     public void setBitCoinApiService(BitCoinApiService bitCoinApiService) {
         this.bitCoinApiService = bitCoinApiService;
+    }
+    @Resource
+    public void setBlockchainSignatureService(com.sharingif.blockchain.signature.service.BlockchainSignatureService blockchainSignatureService) {
+        BlockchainSignatureService = blockchainSignatureService;
     }
 
     @Override
@@ -79,6 +91,14 @@ public class BtcServiceImpl implements BtcService {
         rsp.setHexValue(cryptoSignMessageRsp.getHexValue());
 
         return rsp;
+    }
+
+    @Override
+    public void depositWithdrawalNotice(DepositWithdrawalNoticeReq req) {
+        String sign = BlockchainSignatureService.signature(req.getSignData());
+        req.setSign(sign);
+
+        logger.info("sign data:{}", req);
     }
 
 }
