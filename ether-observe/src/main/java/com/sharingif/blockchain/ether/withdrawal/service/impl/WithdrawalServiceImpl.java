@@ -522,10 +522,10 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
 
         DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
-        req.setId(transactionBusiness.getId());
-        req.setBlockNumber(transaction.getBlockNumber());
-        req.setBlockHash(transaction.getBlockHash());
-        req.setTxHash(transaction.getTxHash());
+        req.setId(withdrawal.getId());
+        req.setBlockNumber(transactionBusiness.getBlockNumber());
+        req.setBlockHash(transactionBusiness.getBlockHash());
+        req.setTxHash(transactionBusiness.getTxHash());
         req.setTxIndex(transaction.getTxIndex());
         req.setCoinType(transactionBusiness.getCoinType());
         req.setTxFrom(transactionBusiness.getTxFrom());
@@ -557,10 +557,10 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
 
         DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
-        req.setId(transactionBusiness.getId());
-        req.setBlockNumber(transaction.getBlockNumber());
-        req.setBlockHash(transaction.getBlockHash());
-        req.setTxHash(transaction.getTxHash());
+        req.setId(withdrawal.getId());
+        req.setBlockNumber(transactionBusiness.getBlockNumber());
+        req.setBlockHash(transactionBusiness.getBlockHash());
+        req.setTxHash(transactionBusiness.getTxHash());
         req.setTxIndex(transaction.getTxIndex());
         req.setCoinType(transactionBusiness.getCoinType());
         req.setTxFrom(transactionBusiness.getTxFrom());

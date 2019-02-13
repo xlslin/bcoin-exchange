@@ -127,9 +127,9 @@ public class DepositServiceImpl implements DepositService {
 
         DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
         req.setId(transactionBusiness.getId());
-        req.setBlockNumber(transaction.getBlockNumber());
-        req.setBlockHash(transaction.getBlockHash());
-        req.setTxHash(transaction.getTxHash());
+        req.setBlockNumber(transactionBusiness.getBlockNumber());
+        req.setBlockHash(transactionBusiness.getBlockHash());
+        req.setTxHash(transactionBusiness.getTxHash());
         req.setTxIndex(transaction.getTxIndex());
         req.setCoinType(transactionBusiness.getCoinType());
         req.setTxFrom(transactionBusiness.getTxFrom());
@@ -245,9 +245,9 @@ public class DepositServiceImpl implements DepositService {
 
         DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
         req.setId(transactionBusiness.getId());
-        req.setBlockNumber(transaction.getBlockNumber());
-        req.setBlockHash(transaction.getBlockHash());
-        req.setTxHash(transaction.getTxHash());
+        req.setBlockNumber(transactionBusiness.getBlockNumber());
+        req.setBlockHash(transactionBusiness.getBlockHash());
+        req.setTxHash(transactionBusiness.getTxHash());
         req.setTxIndex(transaction.getTxIndex());
         req.setCoinType(transactionBusiness.getCoinType());
         req.setTxFrom(transactionBusiness.getTxFrom());

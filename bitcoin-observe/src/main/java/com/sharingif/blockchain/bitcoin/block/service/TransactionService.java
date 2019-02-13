@@ -35,5 +35,12 @@ public interface TransactionService extends IBaseService<Transaction, java.lang.
      * @param confirmBlockNumber
      */
     void updateTxStatusToBlockConfirmedInvalid(BigInteger blockNumber, String blockHash, int confirmBlockNumber);
+
+    /**
+     * 根据交易hash查询有效的块
+     * @param txHash
+     * @return
+     */
+    Transaction getVerifyValidStatusByTxHash(String txHash);
 	
 }

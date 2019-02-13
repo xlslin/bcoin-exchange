@@ -8,13 +8,15 @@ import com.sharingif.blockchain.bitcoin.account.model.entity.AccountUnspent;
 import com.sharingif.blockchain.bitcoin.account.service.AccountService;
 import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinReq;
 import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinRsp;
-import com.sharingif.blockchain.bitcoin.app.exception.InvalidAddressException;
 import com.sharingif.blockchain.bitcoin.app.constants.CoinType;
 import com.sharingif.blockchain.bitcoin.app.constants.Constants;
+import com.sharingif.blockchain.bitcoin.app.exception.InvalidAddressException;
 import com.sharingif.blockchain.bitcoin.block.dao.TransactionBusinessDAO;
 import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChain;
+import com.sharingif.blockchain.bitcoin.block.model.entity.Transaction;
 import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
+import com.sharingif.blockchain.bitcoin.block.service.TransactionService;
 import com.sharingif.blockchain.bitcoin.withdrawal.dao.WithdrawalDAO;
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalTransaction;
@@ -43,6 +45,7 @@ import java.util.List;
 public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang.String> implements WithdrawalService {
 	
 	private WithdrawalDAO withdrawalDAO;
+	private TransactionService transactionService;
 	private TransactionBusinessDAO transactionBusinessDAO;
 	private AccountService accountService;
 	private JobConfig withdrawalInitNoticeNoticeJobConfig;
@@ -96,6 +99,10 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	@Resource
 	public void setWithdrawalTransactionService(WithdrawalTransactionService withdrawalTransactionService) {
 		this.withdrawalTransactionService = withdrawalTransactionService;
+	}
+	@Resource
+	public void setTransactionService(TransactionService transactionService) {
+		this.transactionService = transactionService;
 	}
 
 	@Override
@@ -385,7 +392,14 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	}
 
 	protected void initNotice(Withdrawal withdrawal) {
-		// TODO发送通知信息
+
+		DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
+		req.setId(withdrawal.getId());
+		req.setCoinType(withdrawal.getCoinType());
+		req.setTxTo(withdrawal.getTxTo());
+		req.setAmount(withdrawal.getAmount());
+		req.setStatus(DepositWithdrawalNoticeReq.STATUS_PROCESSING);
+		bitCoinApiService.depositWithdrawalNotice(req);
 
 		initNotice(withdrawal.getId(), withdrawal.getTxHash());
 	}
@@ -528,9 +542,22 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 
 	@Override
 	public void withdrawalSuccessNotice(String id) {
-		// TODO发送通知信息
 		Withdrawal withdrawal = getById(id);
 
+		Transaction transaction = transactionService.getVerifyValidStatusByTxHash(withdrawal.getTxHash());
+
+		DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
+		req.setId(withdrawal.getId());
+		req.setBlockNumber(transaction.getBlockNumber());
+		req.setBlockHash(transaction.getBlockHash());
+		req.setTxHash(withdrawal.getTxHash());
+		req.setTxIndex(transaction.getTxIndex());
+		req.setCoinType(withdrawal.getCoinType());
+		req.setTxTo(withdrawal.getTxTo());
+		req.setAmount(withdrawal.getAmount());
+		req.setFee(withdrawal.getFee());
+		req.setStatus(DepositWithdrawalNoticeReq.STATUS_SUCCESS);
+		bitCoinApiService.depositWithdrawalNotice(req);
 
 		updateStatusToSuccessNoticed(id);
 	}
@@ -545,6 +572,14 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		// TODO发送通知信息
 		Withdrawal withdrawal = getById(id);
 
+		DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
+		req.setId(withdrawal.getId());
+		req.setTxHash(withdrawal.getTxHash());
+		req.setCoinType(withdrawal.getCoinType());
+		req.setTxTo(withdrawal.getTxTo());
+		req.setAmount(withdrawal.getAmount());
+		req.setStatus(DepositWithdrawalNoticeReq.STATUS_FAIL);
+		bitCoinApiService.depositWithdrawalNotice(req);
 
 		updateStatusToFailureNoticed(id);
 	}

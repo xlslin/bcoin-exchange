@@ -1,11 +1,15 @@
 package com.sharingif.blockchain.bitcoin.deposit.service.impl;
 
 
+import com.sharingif.blockchain.api.bitcoin.entity.DepositWithdrawalNoticeReq;
+import com.sharingif.blockchain.api.bitcoin.service.BitCoinApiService;
 import com.sharingif.blockchain.bitcoin.account.model.entity.AccountJnl;
 import com.sharingif.blockchain.bitcoin.account.service.AccountService;
 import com.sharingif.blockchain.bitcoin.block.dao.TransactionBusinessDAO;
 import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChain;
+import com.sharingif.blockchain.bitcoin.block.model.entity.Transaction;
 import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
+import com.sharingif.blockchain.bitcoin.block.service.TransactionService;
 import com.sharingif.blockchain.bitcoin.deposit.service.DepositService;
 import com.sharingif.cube.batch.core.JobConfig;
 import com.sharingif.cube.batch.core.JobModel;
@@ -22,10 +26,12 @@ import java.util.List;
 public class DepositServiceImpl implements DepositService {
 
     private TransactionBusinessDAO transactionBusinessDAO;
+    private TransactionService transactionService;
     private JobConfig depositInitNoticeJobConfig;
     private JobService jobService;
     private AccountService accountService;
     private JobConfig depositFinishNoticeJobConfig;
+    private BitCoinApiService bitCoinApiService;
 
     @Resource
     public void setTransactionBusinessDAO(TransactionBusinessDAO transactionBusinessDAO) {
@@ -46,6 +52,14 @@ public class DepositServiceImpl implements DepositService {
     @Resource
     public void setDepositFinishNoticeJobConfig(JobConfig depositFinishNoticeJobConfig) {
         this.depositFinishNoticeJobConfig = depositFinishNoticeJobConfig;
+    }
+    @Resource
+    public void setBitCoinApiService(BitCoinApiService bitCoinApiService) {
+        this.bitCoinApiService = bitCoinApiService;
+    }
+    @Resource
+    public void setTransactionService(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 
     @Override
@@ -104,6 +118,21 @@ public class DepositServiceImpl implements DepositService {
         if(!TransactionBusiness.STATUS_INIT_NOTICE.equals(transactionBusiness.getStatus())) {
             return;
         }
+
+        Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
+
+        DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
+        req.setId(transactionBusiness.getId());
+        req.setBlockNumber(transactionBusiness.getBlockNumber());
+        req.setBlockHash(transactionBusiness.getBlockHash());
+        req.setTxHash(transactionBusiness.getTxHash());
+        req.setTxIndex(transaction.getTxIndex());
+        req.setVioIndex(transactionBusiness.getVioIndex());
+        req.setCoinType(transactionBusiness.getCoinType());
+        req.setTxTo(transactionBusiness.getTxTo());
+        req.setAmount(transactionBusiness.getAmount());
+        req.setStatus(DepositWithdrawalNoticeReq.STATUS_PROCESSING);
+        bitCoinApiService.depositWithdrawalNotice(req);
 
         TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
         updateTransactionBusiness.setId(id);
@@ -192,6 +221,25 @@ public class DepositServiceImpl implements DepositService {
         if(!TransactionBusiness.STATUS_FINISH_NOTICING.equals(transactionBusiness.getStatus())) {
             return;
         }
+
+        Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
+
+        DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
+        req.setId(transactionBusiness.getId());
+        req.setBlockNumber(transactionBusiness.getBlockNumber());
+        req.setBlockHash(transactionBusiness.getBlockHash());
+        req.setTxHash(transactionBusiness.getTxHash());
+        req.setTxIndex(transaction.getTxIndex());
+        req.setVioIndex(transactionBusiness.getVioIndex());
+        req.setCoinType(transactionBusiness.getCoinType());
+        req.setTxTo(transactionBusiness.getTxTo());
+        req.setAmount(transactionBusiness.getAmount());
+        if(BlockChain.STATUS_VERIFY_VALID.equals(transactionBusiness.getTxStatus())) {
+            req.setStatus(com.sharingif.blockchain.api.ether.entity.DepositWithdrawalNoticeReq.STATUS_SUCCESS);
+        } else {
+            req.setStatus(com.sharingif.blockchain.api.ether.entity.DepositWithdrawalNoticeReq.STATUS_FAIL);
+        }
+        bitCoinApiService.depositWithdrawalNotice(req);
 
         TransactionBusiness updateTransactionBusiness = new TransactionBusiness();
         updateTransactionBusiness.setId(id);

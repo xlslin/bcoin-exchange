@@ -12,6 +12,19 @@ import java.util.TreeMap;
 public class DepositWithdrawalNoticeReq {
 
     /**
+     * 处理状态(P:处理中)
+     */
+    public static final String STATUS_PROCESSING = "P";
+    /**
+     * 处理状态(S:成功)
+     */
+    public static final String STATUS_SUCCESS = "S";
+    /**
+     * 处理状态(F:失败)
+     */
+    public static final String STATUS_FAIL = "F";
+
+    /**
      * id
      */
     private String id;
@@ -52,7 +65,7 @@ public class DepositWithdrawalNoticeReq {
      */
     private Long txTime;
     /**
-     * actual fee
+     * fee
      */
     private BigInteger fee;
     /**
@@ -60,7 +73,7 @@ public class DepositWithdrawalNoticeReq {
      */
     private String sign;
     /**
-     * 处理状态(S:成功、F:失败)
+     * 处理状态(P:处理中、S:成功、F:失败)
      */
     private String status;
 

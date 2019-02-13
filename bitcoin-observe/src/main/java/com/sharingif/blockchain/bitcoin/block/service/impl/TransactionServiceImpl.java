@@ -333,4 +333,13 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 		transactionBusinessService.updateTxStatusToInvalidSettleStatusToReady(blockNumber, blockHash);
 	}
+
+	@Override
+	public Transaction getVerifyValidStatusByTxHash(String txHash) {
+		Transaction queryTransaction = new Transaction();
+		queryTransaction.setTxHash(txHash);
+		queryTransaction.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
+
+		return transactionDAO.query(queryTransaction);
+	}
 }
