@@ -10,7 +10,7 @@ package com.sharingif.blockchain.bitcoin.app.constants;
  */
 public enum CoinType {
 
-    BTC(0,"BTC"),BTC_TEST(1, "BTC"),ETH(60, "ETH"),OLE(60, "OLE");
+    BTC(0,"BTC"),BTC_TEST(1, "BTC"),USDT(0, "USDT"),ETH(60, "ETH"),OLE(60, "OLE");
 
     private int bipCoinType;
     private String coinType;

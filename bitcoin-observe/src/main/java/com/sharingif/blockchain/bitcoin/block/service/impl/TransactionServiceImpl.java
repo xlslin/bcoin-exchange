@@ -7,13 +7,10 @@ import com.sharingif.blockchain.bitcoin.account.service.AddressListenerService;
 import com.sharingif.blockchain.bitcoin.app.constants.CoinType;
 import com.sharingif.blockchain.bitcoin.app.constants.Constants;
 import com.sharingif.blockchain.bitcoin.app.constants.ScriptTypes;
-import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChain;
-import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
-import com.sharingif.blockchain.bitcoin.block.model.entity.UtxoVin;
+import com.sharingif.blockchain.bitcoin.block.model.entity.*;
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
 import com.sharingif.blockchain.bitcoin.block.service.TransactionBusinessService;
 import com.sharingif.blockchain.bitcoin.deposit.service.DepositService;
-import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalService;
 import com.sharingif.cube.core.util.StringUtils;
 import org.bitcoincore.api.rawtransactions.entity.ScriptPubKey;
@@ -21,7 +18,6 @@ import org.bitcoincore.api.rawtransactions.entity.Vin;
 import org.bitcoincore.api.rawtransactions.entity.Vout;
 import org.springframework.stereotype.Service;
 
-import com.sharingif.blockchain.bitcoin.block.model.entity.Transaction;
 import com.sharingif.blockchain.bitcoin.block.dao.TransactionDAO;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import com.sharingif.blockchain.bitcoin.block.service.TransactionService;
@@ -41,9 +37,6 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	private DepositService depositService;
 	private TransactionBusinessService transactionBusinessService;
 
-	public TransactionDAO getTransactionDAO() {
-		return transactionDAO;
-	}
 	@Resource
 	public void setTransactionDAO(TransactionDAO transactionDAO) {
 		super.setBaseDAO(transactionDAO);
@@ -164,13 +157,18 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		return txFee;
 	}
 
-	protected boolean isWatch(Vout vout, Transaction transaction) {
+	protected boolean isWatch(Vout vout, Transaction transaction, OmniNullData omniNullData, int voutIndex) {
 		ScriptPubKey scriptPubKey = vout.getScriptPubKey();
 		String scriptTypes = scriptPubKey.getType();
 		List<String> addresses = scriptPubKey.getAddresses();
 
 		if((!ScriptTypes.PUB_KEY_HASH.getName().equals(scriptTypes) && !ScriptTypes.SCRIPT_HASH.getName().equals(scriptTypes)) || addresses.size()>1) {
 			logger.error("script types error, vout:{}, transaction:{}", vout, transaction);
+
+			if(omniNullData != null && ScriptTypes.NULL_DATA.getName().equals(scriptTypes)) {
+				omniNullData.setVoutIndex(voutIndex);
+				omniNullData.setNullData(scriptPubKey.getHex());
+			}
 
 			return false;
 		}
@@ -181,20 +179,21 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 	}
 
-	private TransactionBusiness handleTransactionBusiness(Vout vout, Transaction transaction) {
-
+	protected TransactionBusiness handleTransactionBusiness(BigInteger vioIndex, String txFrom, String txTo, BigInteger amount, Transaction transaction, String coinType) {
 		TransactionBusiness transactionBusiness = new TransactionBusiness();
 		transactionBusiness.setBlockNumber(transaction.getBlockNumber());
 		transactionBusiness.setBlockHash(transaction.getBlockHash());
 		transactionBusiness.setTxHash(transaction.getTxHash());
 		transactionBusiness.setTransactionId(transaction.getId());
-		transactionBusiness.setCoinType(CoinType.BTC.name());
-		transactionBusiness.setAmount(vout.getValue().toBigInteger());
+		transactionBusiness.setVioIndex(vioIndex);
+		transactionBusiness.setCoinType(coinType);
+		transactionBusiness.setTxFrom(txFrom);
+		transactionBusiness.setTxTo(txTo);
+		transactionBusiness.setAmount(amount);
 		transactionBusiness.setFee(BigInteger.ZERO);
 		transactionBusiness.setTxTime(transaction.getTxTime());
 
 		return transactionBusiness;
-
 	}
 
 	@Transactional
@@ -202,10 +201,8 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		withdrawalService.addUntreated(transactionBusiness);
 	}
 
-	protected void withdrawal(int vioIndex, Vout vout, Transaction transaction) {
-		TransactionBusiness transactionBusiness = handleTransactionBusiness(vout, transaction);
-		transactionBusiness.setTxFrom(vout.getScriptPubKey().getAddresses().get(0));
-		transactionBusiness.setVioIndex(new BigInteger(String.valueOf(vioIndex)));
+	protected void withdrawal(int vioIndex, String txFrom, String txTo, BigInteger amount, Transaction transaction, String coinType) {
+		TransactionBusiness transactionBusiness = handleTransactionBusiness(new BigInteger(String.valueOf(vioIndex)), txFrom, txTo, amount, transaction, coinType);
 
 		TransactionBusiness queryTransactionBusiness = transactionBusinessService.getTransactionBusiness(
 				transactionBusiness.getBlockNumber()
@@ -226,10 +223,8 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		depositService.addUntreated(transactionBusiness);
 	}
 
-	protected void deposit(int vioIndex, Vout vout, Transaction transaction) {
-		TransactionBusiness transactionBusiness = handleTransactionBusiness(vout, transaction);
-		transactionBusiness.setTxTo(vout.getScriptPubKey().getAddresses().get(0));
-		transactionBusiness.setVioIndex(new BigInteger(String.valueOf(vioIndex)));
+	protected void deposit(int vioIndex, String txFrom, String txTo, BigInteger amount, Transaction transaction, String coinType) {
+		TransactionBusiness transactionBusiness = handleTransactionBusiness(new BigInteger(String.valueOf(vioIndex)), txFrom, txTo, amount, transaction, coinType);
 
 		TransactionBusiness queryTransactionBusiness = transactionBusinessService.getTransactionBusiness(
 				transactionBusiness.getBlockNumber()
@@ -243,6 +238,18 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		}
 
 		deposit(transactionBusiness);
+	}
+
+	protected void handleOmniDate(String txId, OmniNullData omniNullData, boolean isWatchFrom, boolean isWatchTo, Transaction transaction) {
+		if(isWatchFrom) {
+			withdrawal(omniNullData.getVoutIndex(), null, null, null,transaction, CoinType.USDT.name());
+			return;
+		}
+
+		if(isWatchTo) {
+			deposit(omniNullData.getVoutIndex(), null, null, null,transaction, CoinType.USDT.name());
+			return;
+		}
 	}
 
 	@Override
@@ -266,10 +273,15 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			transaction.setConfirmBlockNumber(0);
 
 			boolean isAddUntreatedTransaction = false;
+			boolean isWatchFrom = false;
+			boolean isWatchTo = false;
+			OmniNullData omniNullData = new OmniNullData();
+
 			for(int i=0; i<utxoVinList.size(); i++) {
 				UtxoVin utxoVin = utxoVinList.get(i);
 				Vout vout = utxoVin.getVout();
-				if(isWatch(vout, transaction)) {
+				if(isWatch(vout, transaction, null, i)) {
+					isWatchFrom = true;
 					if(!isAddUntreatedTransaction) {
 						isAddUntreatedTransaction = isDuplicationTransaction(transaction.getBlockNumber(), transaction.getBlockHash(), transaction.getTxHash(), transaction);
 					}
@@ -278,13 +290,14 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 						isAddUntreatedTransaction = true;
 					}
 
-					withdrawal(i, vout, transaction);
+					withdrawal(i, null, vout.getScriptPubKey().getAddresses().get(0), vout.getValue().toBigInteger(), transaction, CoinType.BTC.name());
 				}
 
 			}
 			for(int i=0; i<vOutList.size(); i++) {
 				Vout vout = vOutList.get(i);
-				if(isWatch(vout, transaction)) {
+				if(isWatch(vout, transaction, omniNullData, i)) {
+					isWatchTo = true;
 					if(!isAddUntreatedTransaction) {
 						isAddUntreatedTransaction = isDuplicationTransaction(transaction.getBlockNumber(), transaction.getBlockHash(), transaction.getTxHash(), transaction);
 					}
@@ -293,10 +306,12 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 						isAddUntreatedTransaction = true;
 					}
 
-					deposit(i, vout, transaction);
+					deposit(i, null, vout.getScriptPubKey().getAddresses().get(0), vout.getValue().toBigInteger(), transaction, CoinType.BTC.name());
 				}
 			}
 
+			// omni数据处理
+			handleOmniDate(tx.getTxId(), omniNullData, isWatchFrom, isWatchTo, transaction);
 
 		} catch (Exception e) {
 			// 连接超时
