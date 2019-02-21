@@ -85,4 +85,46 @@ public class BitCoinServiceImpl implements BitCoinService {
         return rsp;
     }
 
+    @Override
+    public SignMessageRsp omniSimpleSendSignMessage(OmniSimpleSendSignMessageReq req) {
+        TransactionBuilder builder = null;
+        NetworkParameters networkParameters = null;
+
+        SignMessageVinReq signMessageVinReq = req.getVin();
+        SecretKey secretKey = secretKeyService.getById(signMessageVinReq.getFromAddress());
+        Credentials credentials = secretKeyService.getCredentials(secretKey, signMessageVinReq.getPassword());
+        BigInteger privateKey = credentials.getEcKeyPair().getPrivateKey();
+
+        Bip44KeyPath keyPath = new Bip44KeyPath(secretKey.getKeyPath());
+        boolean isMainNet = keyPath.getCoinType() == CoinType.BTC_MAIN.getBipCoinType() ? true : false;
+
+        networkParameters = getNetworkParameters(keyPath.getCoinType());
+
+        builder = TransactionBuilder.create(isMainNet);
+
+        for(SignMessageUnspentReq signMessageUnspentReq : signMessageVinReq.getUnspentList()) {
+            builder.from(
+                    signMessageUnspentReq.getTxId(),
+                    signMessageUnspentReq.getVout(),
+                    signMessageUnspentReq.getScriptPubKey(),
+                    signMessageUnspentReq.getAmount().longValue(),
+                    ECKey.fromPrivate(privateKey).getPrivateKeyAsWiF(networkParameters)
+            );
+        }
+
+        for(SignMessageVoutReq signMessageVoutReq : req.getVoutList()) {
+            builder.to(signMessageVoutReq.getToAddress(), signMessageVoutReq.getAmount().longValue());
+        }
+
+        builder.put(req.getOpReturn(), 0L);
+
+        builder.withFee(req.getFee().longValue());
+        builder.changeTo(req.getVin().getFromAddress());
+
+        SignMessageRsp rsp = new SignMessageRsp();
+        rsp.setHexValue(builder.build().getRawTransaction());
+
+        return rsp;
+    }
+
 }

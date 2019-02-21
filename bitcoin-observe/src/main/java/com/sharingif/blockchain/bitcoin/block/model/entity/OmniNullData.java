@@ -21,11 +21,36 @@ public class OmniNullData {
         this.nullData = nullData;
     }
 
+    public String getOmni() {
+        if(nullData == null)
+            return null;
+
+        return nullData.substring(0,8);
+    }
+
+    public String getVersion() {
+        if(nullData == null)
+            return null;
+
+        return nullData.substring(8,12);
+    }
+
+    public String getType() {
+        if(nullData == null)
+            return null;
+
+        return nullData.substring(12,16);
+    }
+
     public String getProperty() {
         if(nullData == null)
             return null;
 
-        return nullData;
+        return nullData.substring(16,24);
+    }
+
+    public String getAmount() {
+        return nullData.substring(24);
     }
 
     @Override

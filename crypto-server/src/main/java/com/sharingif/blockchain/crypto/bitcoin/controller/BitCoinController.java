@@ -1,5 +1,6 @@
 package com.sharingif.blockchain.crypto.bitcoin.controller;
 
+import com.sharingif.blockchain.crypto.api.bitcoin.entity.OmniSimpleSendSignMessageReq;
 import com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageReq;
 import com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageRsp;
 import com.sharingif.blockchain.crypto.bitcoin.service.BitCoinService;
@@ -28,6 +29,16 @@ public class BitCoinController {
     public SignMessageRsp signMessage(SignMessageReq req) {
 
         return bitCoinService.signMessage(req);
+    }
+
+    /**
+     * 生成omni转账签名
+     * @return
+     */
+    @RequestMapping(value="omniSimpleSendSignMessage", method= RequestMethod.POST)
+    public SignMessageRsp omniSimpleSendSignMessage(OmniSimpleSendSignMessageReq req) {
+
+        return bitCoinService.omniSimpleSendSignMessage(req);
     }
 
 }

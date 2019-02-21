@@ -16,14 +16,14 @@ import com.sharingif.blockchain.crypto.api.ether.entity.SignMessageRsp;
 public interface EtherService {
 
     /**
-     * 转账
+     * 转账签名
      * @param req
      * @return
      */
     SignMessageRsp signMessage(SignMessageReq req);
 
     /**
-     * 转账
+     * erc20转账签名
      * @param req
      * @return
      */

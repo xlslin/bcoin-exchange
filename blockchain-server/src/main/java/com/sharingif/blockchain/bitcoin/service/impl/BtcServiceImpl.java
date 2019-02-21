@@ -2,6 +2,7 @@ package com.sharingif.blockchain.bitcoin.service.impl;
 
 import com.sharingif.blockchain.api.bitcoin.entity.*;
 import com.sharingif.blockchain.bitcoin.service.BtcService;
+import com.sharingif.blockchain.crypto.api.bitcoin.entity.OmniSimpleSendSignMessageReq;
 import com.sharingif.blockchain.crypto.api.bitcoin.service.BitCoinApiService;
 import com.sharingif.blockchain.crypto.model.entity.SecretKey;
 import com.sharingif.blockchain.crypto.service.SecretKeyService;
@@ -86,6 +87,17 @@ public class BtcServiceImpl implements BtcService {
         cryptoSignMessageReq.setVoutList(cryptoVoutList);
 
         com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageRsp cryptoSignMessageRsp = bitCoinApiService.signMessage(cryptoSignMessageReq);
+
+        SignMessageRsp rsp = new SignMessageRsp();
+        rsp.setHexValue(cryptoSignMessageRsp.getHexValue());
+
+        return rsp;
+    }
+
+    @Override
+    public SignMessageRsp omniSimpleSendSignMessage(OmniSimpleSendSignMessageReq req) {
+
+        com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageRsp cryptoSignMessageRsp = bitCoinApiService.omniSimpleSendSignMessage(req);
 
         SignMessageRsp rsp = new SignMessageRsp();
         rsp.setHexValue(cryptoSignMessageRsp.getHexValue());

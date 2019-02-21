@@ -1,30 +1,29 @@
-package com.sharingif.blockchain.api.bitcoin.entity;
+package com.sharingif.blockchain.crypto.api.bitcoin.entity;
 
 import java.math.BigInteger;
 import java.util.List;
 
-/**
- * btc转账请求
- *
- * @author Joly
- * @version v1.0
- * @since v1.0
- * 2018/7/26 下午1:00
- */
-public class SignMessageReq {
+public class OmniSimpleSendSignMessageReq {
 
     /**
      * 手续费
      */
     private BigInteger fee;
+
     /**
      * vin
      */
-    private List<SignMessageVinReq> vinList;
+    private SignMessageVinReq vin;
+
     /**
      * vout
      */
     private List<SignMessageVoutReq> voutList;
+
+    /**
+     * op_return
+     */
+    private String opReturn;
 
     public BigInteger getFee() {
         return fee;
@@ -34,12 +33,12 @@ public class SignMessageReq {
         this.fee = fee;
     }
 
-    public List<SignMessageVinReq> getVinList() {
-        return vinList;
+    public SignMessageVinReq getVin() {
+        return vin;
     }
 
-    public void setVinList(List<SignMessageVinReq> vinList) {
-        this.vinList = vinList;
+    public void setVin(SignMessageVinReq vin) {
+        this.vin = vin;
     }
 
     public List<SignMessageVoutReq> getVoutList() {
@@ -50,12 +49,21 @@ public class SignMessageReq {
         this.voutList = voutList;
     }
 
+    public String getOpReturn() {
+        return opReturn;
+    }
+
+    public void setOpReturn(String opReturn) {
+        this.opReturn = opReturn;
+    }
+
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("SignMessageReq{");
+        final StringBuilder sb = new StringBuilder("OmniSimpleSendSignMessageReq{");
         sb.append("fee=").append(fee);
-        sb.append(", vinList=").append(vinList);
+        sb.append(", vin=").append(vin);
         sb.append(", voutList=").append(voutList);
+        sb.append(", opReturn='").append(opReturn).append('\'');
         sb.append('}');
         return sb.toString();
     }

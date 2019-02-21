@@ -16,6 +16,7 @@ import com.sharingif.cube.core.util.StringUtils;
 import org.bitcoincore.api.rawtransactions.entity.ScriptPubKey;
 import org.bitcoincore.api.rawtransactions.entity.Vin;
 import org.bitcoincore.api.rawtransactions.entity.Vout;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.sharingif.blockchain.bitcoin.block.dao.TransactionDAO;
@@ -29,7 +30,9 @@ import java.util.*;
 
 @Service
 public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.lang.String> implements TransactionService {
-	
+
+	private String omniUsdt;
+
 	private TransactionDAO transactionDAO;
 	private BitCoinBlockService bitCoinBlockService;
 	private AddressListenerService addressListenerService;
@@ -37,6 +40,11 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	private DepositService depositService;
 	private TransactionBusinessService transactionBusinessService;
 
+
+	@Value("${omni.usdt}")
+	public void setOmniUsdt(String omniUsdt) {
+		this.omniUsdt = omniUsdt;
+	}
 	@Resource
 	public void setTransactionDAO(TransactionDAO transactionDAO) {
 		super.setBaseDAO(transactionDAO);
@@ -241,6 +249,14 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	}
 
 	protected void handleOmniDate(String txId, OmniNullData omniNullData, boolean isWatchFrom, boolean isWatchTo, Transaction transaction) {
+		if(omniNullData.getNullData() == null) {
+			return;
+		}
+
+		if(omniNullData.getNullData().indexOf(omniUsdt) == -1) {
+			return;
+		}
+
 		if(isWatchFrom) {
 			withdrawal(omniNullData.getVoutIndex(), null, null, null,transaction, CoinType.USDT.name());
 			return;

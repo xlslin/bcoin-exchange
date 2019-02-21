@@ -1,7 +1,7 @@
 package com.sharingif.blockchain.api.bitcoin.entity;
 
 /**
- * eth转账响应
+ * btc转账响应
  *
  * @author Joly
  * @version v1.0
