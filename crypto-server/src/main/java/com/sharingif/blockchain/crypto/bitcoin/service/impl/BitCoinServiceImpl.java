@@ -112,9 +112,8 @@ public class BitCoinServiceImpl implements BitCoinService {
             );
         }
 
-        for(SignMessageVoutReq signMessageVoutReq : req.getVoutList()) {
-            builder.to(signMessageVoutReq.getToAddress(), signMessageVoutReq.getAmount().longValue());
-        }
+        SignMessageVoutReq signMessageVoutReq = req.getVout();
+        builder.to(signMessageVoutReq.getToAddress(), signMessageVoutReq.getAmount().longValue());
 
         builder.put(req.getOpReturn(), 0L);
 

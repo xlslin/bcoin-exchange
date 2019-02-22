@@ -316,6 +316,21 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		Balance
 		,ID
 	</select>
+
+	<select id="queryPaginationListByCoinTypeSubCoinTypeBalanceSubBalance" parameterType="PaginationCondition" resultMap="accountResultMap">
+		SELECT
+			ADDRESS
+		FROM
+			ACCOUNT
+		WHERE
+				(COIN_TYPE = #{coinType} AND BALANCE >= #{balance})
+			OR
+				(COIN_TYPE = #{subCoinType} AND BALANCE >= #{subBalance})
+		GROUP BY
+			ADDRESS
+		HAVING
+			COUNT(ADDRESS)=2
+	</select>
 	
 </mapper>
 

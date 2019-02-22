@@ -55,7 +55,13 @@ public interface WithdrawalService extends IBaseService<Withdrawal, java.lang.St
      * 取现
      * @param
      */
-    void withdrawal();
+    void btc();
+
+    /**
+     * 取现
+     * @param
+     */
+    void usdt();
 
     /**
      * 取现处理中

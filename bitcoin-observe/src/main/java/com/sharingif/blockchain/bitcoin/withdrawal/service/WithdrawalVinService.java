@@ -12,7 +12,14 @@ public interface WithdrawalVinService extends IBaseService<WithdrawalVin, java.l
 
     /**
      * 添加vin
-     * @param accountUnspentList
+     * @param txHash
+     * @param accountUnspent
+     */
+    void addWithdrawalVin(String txHash, AccountUnspent accountUnspent);
+
+    /**
+     * 添加vin
+     * @param txHash
      * @param accountUnspentList
      */
     void addWithdrawalVin(String txHash, List<AccountUnspent> accountUnspentList);

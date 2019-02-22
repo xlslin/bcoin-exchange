@@ -45,6 +45,18 @@ public class WithdrawalVoutServiceImpl extends BaseServiceImpl<WithdrawalVout, j
 	}
 
 	@Override
+	public void addWithdrawalVout(String txHash, Withdrawal withdrawal) {
+		WithdrawalVout withdrawalVout = new WithdrawalVout();
+		withdrawalVout.setWithdrawalId(withdrawal.getId());
+		withdrawalVout.setTxHash(txHash);
+		withdrawalVout.setAddress(withdrawal.getTxTo());
+		withdrawalVout.setVout(0);
+		withdrawalVout.setAmount(withdrawal.getAmount());
+
+		withdrawalVoutDAO.insert(withdrawalVout);
+	}
+
+	@Override
 	public List<WithdrawalVout> getByTxHash(String txHash) {
 		WithdrawalVout withdrawalVout = new WithdrawalVout();
 		withdrawalVout.setTxHash(txHash);

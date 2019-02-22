@@ -3,6 +3,7 @@ package com.sharingif.blockchain.bitcoin.account.dao.impl;
 
 import com.sharingif.blockchain.bitcoin.account.dao.AccountDAO;
 import com.sharingif.blockchain.bitcoin.account.model.entity.Account;
+import com.sharingif.blockchain.bitcoin.account.model.entity.SubAccount;
 import com.sharingif.blockchain.bitcoin.app.dao.impl.BaseDAOImpl;
 import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
 import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
@@ -67,6 +68,11 @@ public class AccountDAOImpl extends BaseDAOImpl<Account, String> implements Acco
     @Override
     public PaginationRepertory<Account> queryPaginationListOrderByBalanceAsc(PaginationCondition<Account> paginationCondition) {
         return queryPagination("queryPaginationListOrderByBalanceAsc", paginationCondition);
+    }
+
+    @Override
+    public PaginationRepertory<Account> queryPaginationListByCoinTypeSubCoinTypeBalanceSubBalance(PaginationCondition<SubAccount> paginationCondition) {
+        return queryPagination("queryPaginationListByCoinTypeSubCoinTypeBalanceSubBalance", paginationCondition);
     }
 
 }

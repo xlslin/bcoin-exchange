@@ -2,13 +2,11 @@ package com.sharingif.blockchain.bitcoin.account.service.impl;
 
 
 import com.sharingif.blockchain.bitcoin.account.dao.AccountDAO;
-import com.sharingif.blockchain.bitcoin.account.model.entity.Account;
-import com.sharingif.blockchain.bitcoin.account.model.entity.AccountFrozenJnl;
-import com.sharingif.blockchain.bitcoin.account.model.entity.AccountJnl;
-import com.sharingif.blockchain.bitcoin.account.model.entity.AccountUnspent;
+import com.sharingif.blockchain.bitcoin.account.model.entity.*;
 import com.sharingif.blockchain.bitcoin.account.service.AccountFrozenJnlService;
 import com.sharingif.blockchain.bitcoin.account.service.AccountJnlService;
 import com.sharingif.blockchain.bitcoin.account.service.AccountService;
+import com.sharingif.blockchain.bitcoin.app.constants.CoinType;
 import com.sharingif.blockchain.bitcoin.app.constants.Constants;
 import com.sharingif.blockchain.bitcoin.app.constants.ErrorConstants;
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
@@ -224,7 +222,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 				accounTotalBalance = accounTotalBalance.add(unspent.getAmount().toBigInteger());
 				accountUnspentUnspentList.add(unspent);
 
-				if(accounTotalBalance.compareTo(balance) > 0) {
+				if(accounTotalBalance.compareTo(balance) > -1) {
 					return accounTotalBalance;
 				}
 			}
@@ -252,9 +250,9 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 	};
 
 	@Override
-	public List<AccountUnspent> getAccountListByBalance(String coinType, BigInteger balance) {
+	public List<AccountUnspent> getAccountListByBalance(BigInteger balance) {
 		Account queryAccount = new Account();
-		queryAccount.setCoinType(coinType);
+		queryAccount.setCoinType(CoinType.BTC.name());
 		PaginationCondition<Account> paginationCondition = new PaginationCondition<Account>();
 		paginationCondition.setCondition(queryAccount);
 		paginationCondition.setQueryCount(false);
@@ -262,6 +260,62 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 		paginationCondition.setPageSize(20);
 
 		return getAccountListByBalance(paginationCondition, balance, new ArrayList<AccountUnspent>(), BigInteger.ZERO);
+	}
+
+	public AccountUnspent getOmniAccountListByBalance(BigInteger btcBalance, BigInteger omniBalance, int currentPage) {
+		SubAccount querySubAccount = new SubAccount();
+		querySubAccount.setCoinType(CoinType.BTC.name());
+		querySubAccount.setBalance(btcBalance);
+		querySubAccount.setSubCoinType(CoinType.USDT.name());
+		querySubAccount.setSubBalance(omniBalance);
+		PaginationCondition<SubAccount> paginationCondition = new PaginationCondition<SubAccount>();
+		paginationCondition.setCondition(querySubAccount);
+		paginationCondition.setQueryCount(false);
+		paginationCondition.setCurrentPage(currentPage);
+		paginationCondition.setPageSize(20);
+		PaginationRepertory<Account> accountPaginationRepertory = accountDAO.queryPaginationListByCoinTypeSubCoinTypeBalanceSubBalance(paginationCondition);
+		List<Account> accountList = accountPaginationRepertory.getPageItems();
+		if (accountList == null || accountList.isEmpty()) {
+			return null;
+		}
+
+		for(Account account : accountList) {
+
+			// 验证omni余额
+
+			List<Unspent> unspentList = bitCoinBlockService.listUnspent(account.getAddress());
+			if(unspentList == null || unspentList.isEmpty()) {
+				continue;
+			}
+
+			List<Unspent> accountUnspentUnspentList = new ArrayList<Unspent>();
+			AccountUnspent accountUnspent = new AccountUnspent();
+			accountUnspent.setAccount(account);
+			accountUnspent.setUnspentList(accountUnspentUnspentList);
+
+			BigInteger accounTotalBalance = BigInteger.ZERO;
+			for(Unspent unspent : unspentList) {
+				unspent.setAmount(unspent.getAmount().multiply(Constants.BTC_UNIT));
+				accounTotalBalance = accounTotalBalance.add(unspent.getAmount().toBigInteger());
+				accountUnspentUnspentList.add(unspent);
+
+				if(accounTotalBalance.compareTo(btcBalance) > -1) {
+					Account queryBalanceAccount = new Account();
+					queryBalanceAccount.setAddress(account.getAddress());
+					queryBalanceAccount = accountDAO.query(queryBalanceAccount);
+					accountUnspent.setAccount(queryBalanceAccount);
+					return accountUnspent;
+				}
+			}
+		}
+
+		return getOmniAccountListByBalance(btcBalance, omniBalance, currentPage+1);
+
+	}
+
+	@Override
+	public AccountUnspent getOmniAccountByBalance(BigInteger btcBalance, BigInteger omniBalance) {
+		return getOmniAccountListByBalance(btcBalance, omniBalance, 1);
 	}
 
 }

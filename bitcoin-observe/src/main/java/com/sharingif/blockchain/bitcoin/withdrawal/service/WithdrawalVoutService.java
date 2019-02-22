@@ -18,6 +18,13 @@ public interface WithdrawalVoutService extends IBaseService<WithdrawalVout, java
     void addWithdrawalVout(String txHash, List<Withdrawal> withdrawalList);
 
     /**
+     * 添加WithdrawalVout
+     * @param txHash
+     * @param withdrawal
+     */
+    void addWithdrawalVout(String txHash, Withdrawal withdrawal);
+
+    /**
      * 根据交易hash查询
      * @param txHash
      * @return

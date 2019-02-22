@@ -4,6 +4,7 @@ import com.sharingif.blockchain.api.bitcoin.entity.DepositWithdrawalNoticeReq;
 import com.sharingif.blockchain.api.bitcoin.entity.SignMessageReq;
 import com.sharingif.blockchain.api.bitcoin.entity.SignMessageRsp;
 import com.sharingif.blockchain.bitcoin.service.BtcService;
+import com.sharingif.blockchain.crypto.api.bitcoin.entity.OmniSimpleSendSignMessageReq;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,16 @@ public class BtcController {
     public SignMessageRsp signMessage(SignMessageReq req) {
 
         return btcService.signMessage(req);
+    }
+
+    /**
+     * omni转账签名
+     * @return
+     */
+    @RequestMapping(value="omniSimpleSendSignMessage", method= RequestMethod.POST)
+    public SignMessageRsp omniSimpleSendSignMessage(OmniSimpleSendSignMessageReq req) {
+
+        return btcService.omniSimpleSendSignMessage(req);
     }
 
     /**

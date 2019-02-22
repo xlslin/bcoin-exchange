@@ -1,6 +1,7 @@
-package com.sharingif.blockchain.crypto.api.bitcoin.entity;
+package com.sharingif.blockchain.api.bitcoin.entity;
 
 import java.math.BigInteger;
+import java.util.List;
 
 public class OmniSimpleSendSignMessageReq {
 

@@ -31,22 +31,26 @@ public class WithdrawalVinServiceImpl extends BaseServiceImpl<WithdrawalVin, jav
 
 
 	@Override
+	public void addWithdrawalVin(String txHash, AccountUnspent accountUnspent) {
+		Account account = accountUnspent.getAccount();
+		List<Unspent> unspentList = accountUnspent.getUnspentList();
+
+		for(Unspent unspent : unspentList) {
+			WithdrawalVin vithdrawalVin = new WithdrawalVin();
+			vithdrawalVin.setTxHash(txHash);
+			vithdrawalVin.setAddress(account.getAddress());
+			vithdrawalVin.setTxId(unspent.getTxId());
+			vithdrawalVin.setVout(unspent.getvOut());
+			vithdrawalVin.setAmount(unspent.getAmount().toBigInteger());
+
+			withdrawalVinDAO.insert(vithdrawalVin);
+		}
+	}
+
+	@Override
 	public void addWithdrawalVin(String txHash, List<AccountUnspent> accountUnspentList) {
 		for(AccountUnspent accountUnspent : accountUnspentList) {
-			Account account = accountUnspent.getAccount();
-			List<Unspent> unspentList = accountUnspent.getUnspentList();
-
-			for(Unspent unspent : unspentList) {
-				WithdrawalVin vithdrawalVin = new WithdrawalVin();
-				vithdrawalVin.setTxHash(txHash);
-				vithdrawalVin.setAddress(account.getAddress());
-				vithdrawalVin.setTxId(unspent.getTxId());
-				vithdrawalVin.setVout(unspent.getvOut());
-				vithdrawalVin.setAmount(unspent.getAmount().toBigInteger());
-
-				withdrawalVinDAO.insert(vithdrawalVin);
-			}
-
+			addWithdrawalVin(txHash, accountUnspent);
 		}
 	}
 

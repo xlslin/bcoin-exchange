@@ -86,10 +86,17 @@ public interface AccountService extends IBaseService<Account, java.lang.String> 
 
     /**
      * 获取账户未花费spent列表，账户列表总余额大于balance
-     * @param coinType
      * @param balance
      * @return
      */
-    List<AccountUnspent> getAccountListByBalance(String coinType, BigInteger balance);
+    List<AccountUnspent> getAccountListByBalance(BigInteger balance);
+
+    /**
+     * 获取账户未花费spent列表，账户列表总余额大于balance
+     * @param btcBalance
+     * @param omniBalance
+     * @return
+     */
+    AccountUnspent getOmniAccountByBalance(BigInteger btcBalance, BigInteger omniBalance);
 
 }

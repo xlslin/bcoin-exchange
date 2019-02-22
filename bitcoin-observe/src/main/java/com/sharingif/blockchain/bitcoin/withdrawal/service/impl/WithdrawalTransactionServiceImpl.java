@@ -57,6 +57,20 @@ public class WithdrawalTransactionServiceImpl extends BaseServiceImpl<Withdrawal
 	}
 
 	@Override
+	public void addWithdrawalTransaction(String txHash, BigInteger fee, AccountUnspent accountUnspent, Withdrawal withdrawal) {
+		WithdrawalTransaction withdrawalTransaction = new WithdrawalTransaction();
+		withdrawalTransaction.setTxHash(txHash);
+		withdrawalTransaction.setFee(fee);
+		withdrawalTransaction.setStatus(Withdrawal.STATUS_PROCESSING);
+
+		withdrawalTransactionDAO.insert(withdrawalTransaction);
+
+		withdrawalVinService.addWithdrawalVin(txHash, accountUnspent);
+
+		withdrawalVoutService.addWithdrawalVout(txHash, withdrawal);
+	}
+
+	@Override
 	public void addWithdrawalTransaction(String txHash, BigInteger fee, List<AccountUnspent> accountUnspentList, List<Withdrawal> withdrawalList) {
 		WithdrawalTransaction withdrawalTransaction = new WithdrawalTransaction();
 		withdrawalTransaction.setTxHash(txHash);

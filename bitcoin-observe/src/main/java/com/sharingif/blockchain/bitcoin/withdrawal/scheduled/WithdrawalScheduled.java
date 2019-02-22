@@ -20,9 +20,17 @@ public class WithdrawalScheduled {
     }
 
     @Scheduled(fixedRate = 1000*60*1)
-    public synchronized void withdrawalEther() {
+    public synchronized void withdrawalBtc() {
         JobRequest jobRequest = new JobRequest();
-        jobRequest.setLookupPath("/withdrawal/withdrawal");
+        jobRequest.setLookupPath("/withdrawal/btc");
+
+        simpleDispatcherHandler.doDispatch(jobRequest);
+    }
+
+    @Scheduled(fixedRate = 1000*60*1)
+    public synchronized void withdrawalUsdt() {
+        JobRequest jobRequest = new JobRequest();
+        jobRequest.setLookupPath("/withdrawal/usdt");
 
         simpleDispatcherHandler.doDispatch(jobRequest);
     }

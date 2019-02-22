@@ -224,7 +224,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 
 	}
 
-	protected void withdrawal(List<Withdrawal> withdrawalList) {
+	protected void btc(List<Withdrawal> withdrawalList) {
 		// 取现总金额
 		BigInteger withdrawalTotalBalance = BigInteger.ZERO;
 		for(Withdrawal withdrawal : withdrawalList) {
@@ -235,9 +235,9 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		BigInteger fee = Constants.BTC_COIN_TRANSFOR_FEE;
 
 		// 根据取现总金额获取可取现的账号和unspent
-		List<AccountUnspent> accountUnspentList = accountService.getAccountListByBalance(CoinType.BTC.name(), withdrawalTotalBalance.add(fee));
+		List<AccountUnspent> accountUnspentList = accountService.getAccountListByBalance(withdrawalTotalBalance.add(fee));
 		if(accountUnspentList == null) {
-			logger.error("withdrawal failure, Insufficient balance, withdrawal balance:{}", withdrawalTotalBalance.add(fee));
+			logger.error("withdrawal btc failure, Insufficient balance, withdrawal balance:{}", withdrawalTotalBalance.add(fee));
 			return;
 		}
 
@@ -298,8 +298,9 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	}
 
 	@Override
-	public void withdrawal() {
+	public void btc() {
 		Withdrawal queryWithdrawal = new Withdrawal();
+		queryWithdrawal.setCoinType(CoinType.BTC.name());
 		queryWithdrawal.setStatus(Withdrawal.STATUS_UNTREATED);
 		PaginationCondition<Withdrawal> paginationCondition = new PaginationCondition<Withdrawal>();
 		paginationCondition.setCondition(queryWithdrawal);
@@ -313,7 +314,102 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 			return;
 		}
 
-		withdrawal(withdrawalList);
+		btc(withdrawalList);
+	}
+
+	@Transactional
+	protected void updateWithdrawal(String txHash, BigInteger fee, AccountUnspent accountUnspent, Withdrawal withdrawal) {
+		withdrawalTransactionService.addWithdrawalTransaction(txHash, fee, accountUnspent, withdrawal);
+
+
+		Withdrawal updateWithdrawal = new Withdrawal();
+		updateWithdrawal.setId(withdrawal.getId());
+
+		updateWithdrawal.setTxHash(txHash);
+		updateWithdrawal.setFee(fee);
+
+		withdrawalDAO.updateById(updateWithdrawal);
+
+	}
+
+	protected void usdt(List<Withdrawal> withdrawalList) {
+		withdrawalList.forEach(withdrawal -> {
+
+			// 取现手续费
+			BigInteger fee = Constants.BTC_COIN_TRANSFOR_FEE;
+			// TODO转账费用
+			BigInteger tranferToBalance = BigInteger.ZERO;
+
+			AccountUnspent accountUnspent = accountService.getOmniAccountByBalance(fee.add(tranferToBalance), withdrawal.getAmount());
+			if(accountUnspent == null) {
+				logger.error("withdrawal omni failure, Insufficient balance, fee:{},withdrawal balance:{}", fee.add(tranferToBalance), withdrawal.getAmount());
+				return;
+			}
+
+			OmniSimpleSendSignMessageReq req = new OmniSimpleSendSignMessageReq();
+			req.setFee(fee);
+
+			SignMessageVinReq vin = new SignMessageVinReq();
+			req.setVin(vin);
+
+			vin.setFromAddress(accountUnspent.getAccount().getAddress());
+
+			List<Unspent> unspentList = accountUnspent.getUnspentList();
+			List<SignMessageUnspentReq> signMessageUnspentReqList =  new ArrayList<SignMessageUnspentReq>(unspentList.size());
+			unspentList.forEach(unspent -> {
+				SignMessageUnspentReq signMessageUnspentReq = new SignMessageUnspentReq();
+				signMessageUnspentReq.setTxId(unspent.getTxId());
+				signMessageUnspentReq.setVout(unspent.getvOut());
+				signMessageUnspentReq.setScriptPubKey(unspent.getScriptPubKey());
+				signMessageUnspentReq.setAmount(unspent.getAmount().toBigInteger());
+
+				signMessageUnspentReqList.add(signMessageUnspentReq);
+			});
+			vin.setUnspentList(signMessageUnspentReqList);
+
+			SignMessageVoutReq vout = new SignMessageVoutReq();
+			vout.setToAddress(withdrawal.getTxTo());
+			vout.setAmount(withdrawal.getAmount());
+
+			// TODO build opReturn
+
+			SignMessageRsp rsp = bitCoinApiService.omniSimpleSendSignMessage(req);
+			String hexstring = rsp.getHexValue();
+
+			updateStatusToProcessing(withdrawal.getId());
+
+			String txHash = bitCoinBlockService.sendRawTransaction(hexstring);
+
+			if(StringUtils.isTrimEmpty(txHash)) {
+				logger.error("withdrawal generate txhash is null, withdrawalList:{}", withdrawalList);
+				return;
+			}
+
+			updateWithdrawal(txHash, fee, accountUnspent, withdrawal);
+
+		});
+	}
+
+	@Override
+	public void usdt() {
+		Withdrawal queryWithdrawal = new Withdrawal();
+		queryWithdrawal.setCoinType(CoinType.USDT.name());
+		queryWithdrawal.setStatus(Withdrawal.STATUS_UNTREATED);
+		PaginationCondition<Withdrawal> paginationCondition = new PaginationCondition<Withdrawal>();
+		paginationCondition.setCondition(queryWithdrawal);
+		paginationCondition.setQueryCount(false);
+		paginationCondition.setCurrentPage(1);
+		paginationCondition.setPageSize(20);
+
+		PaginationRepertory<Withdrawal> withdrawalPaginationRepertory = withdrawalDAO.queryPagination(paginationCondition);
+		List<Withdrawal> withdrawalList = withdrawalPaginationRepertory.getPageItems();
+		if(withdrawalList == null || withdrawalList.isEmpty()) {
+			return;
+		}
+
+		usdt(withdrawalList);
+
+
 	}
 
 	@Override

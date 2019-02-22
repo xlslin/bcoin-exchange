@@ -27,6 +27,15 @@ public interface WithdrawalTransactionService extends IBaseService<WithdrawalTra
      * 添加取现交易
      * @param txHash
      * @param fee
+     * @param accountUnspent
+     * @param withdrawal
+     */
+    void addWithdrawalTransaction(String txHash, BigInteger fee, AccountUnspent accountUnspent, Withdrawal withdrawal);
+
+    /**
+     * 添加取现交易
+     * @param txHash
+     * @param fee
      * @param accountUnspentList
      * @param withdrawalList
      */
