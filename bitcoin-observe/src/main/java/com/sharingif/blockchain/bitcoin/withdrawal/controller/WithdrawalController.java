@@ -31,14 +31,14 @@ public class WithdrawalController {
 		return withdrawalService.apply(req);
 	}
 
-	@RequestMapping(value="usdt", method= RequestMethod.POST)
-	public void usdt() {
-		withdrawalService.usdt();
-	}
-
 	@RequestMapping(value="btc", method= RequestMethod.POST)
 	public void btc() {
 		withdrawalService.btc();
+	}
+
+	@RequestMapping(value="usdt", method= RequestMethod.POST)
+	public void usdt() {
+		withdrawalService.usdt();
 	}
 
 	@RequestMapping(value="readyInitNotice", method= RequestMethod.POST)
