@@ -409,7 +409,6 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 
 		usdt(withdrawalList);
 
-
 	}
 
 	@Override
