@@ -337,8 +337,8 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 
 			// 取现手续费
 			BigInteger fee = Constants.BTC_COIN_TRANSFOR_FEE;
-			// TODO转账费用
-			BigInteger tranferToBalance = BigInteger.ZERO;
+			// USDT收款人btc金额
+			BigInteger tranferToBalance = Constants.USDT_RECIPIENT_BTC_AMOUNT;
 
 			AccountUnspent accountUnspent = accountService.getUsdtAccountByBalance(fee.add(tranferToBalance), withdrawal.getAmount());
 			if(accountUnspent == null) {
@@ -371,7 +371,8 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 			vout.setToAddress(withdrawal.getTxTo());
 			vout.setAmount(withdrawal.getAmount());
 
-			// TODO build opReturn
+			String opReturn = String.format("6f6d6e6900000000%08x%016x", 31, withdrawal.getAmount());
+			req.setOpReturn(opReturn);
 
 			SignMessageRsp rsp = bitCoinApiService.omniSimpleSendSignMessage(req);
 			String hexstring = rsp.getHexValue();

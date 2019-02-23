@@ -21,5 +21,9 @@ public class Constants {
      * btc转账手续费
      */
     public static final BigInteger BTC_COIN_TRANSFOR_FEE = new BigInteger("30000");
+    /**
+     * USDT收款人BTC数量
+     */
+    public static final BigInteger USDT_RECIPIENT_BTC_AMOUNT = new BigInteger("546");
 
 }
