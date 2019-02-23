@@ -94,9 +94,9 @@ public interface AccountService extends IBaseService<Account, java.lang.String> 
     /**
      * 获取账户未花费spent列表，账户列表总余额大于balance
      * @param btcBalance
-     * @param omniBalance
+     * @param usdtBalance
      * @return
      */
-    AccountUnspent getOmniAccountByBalance(BigInteger btcBalance, BigInteger omniBalance);
+    AccountUnspent getUsdtAccountByBalance(BigInteger btcBalance, BigInteger usdtBalance);
 
 }

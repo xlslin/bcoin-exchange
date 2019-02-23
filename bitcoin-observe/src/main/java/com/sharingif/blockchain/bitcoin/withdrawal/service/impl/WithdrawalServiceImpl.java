@@ -340,7 +340,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 			// TODO转账费用
 			BigInteger tranferToBalance = BigInteger.ZERO;
 
-			AccountUnspent accountUnspent = accountService.getOmniAccountByBalance(fee.add(tranferToBalance), withdrawal.getAmount());
+			AccountUnspent accountUnspent = accountService.getUsdtAccountByBalance(fee.add(tranferToBalance), withdrawal.getAmount());
 			if(accountUnspent == null) {
 				logger.error("withdrawal omni failure, Insufficient balance, fee:{},withdrawal balance:{}", fee.add(tranferToBalance), withdrawal.getAmount());
 				return;

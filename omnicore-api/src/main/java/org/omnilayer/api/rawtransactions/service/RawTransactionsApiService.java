@@ -17,6 +17,6 @@ public interface RawTransactionsApiService {
      * @param height
      * @return
      */
-    Transaction decodetransaction(String rawTx, String prevtxs, BigInteger height);
+    Transaction decodeTransaction(String rawTx, String prevtxs, BigInteger height);
 
 }

@@ -94,6 +94,9 @@ public class BitCoinCoreRemoteContextAutoconfigure {
         services.add("org.bitcoincore.api.rawtransactions.service.RawTransactionsApiService");
         services.add("org.bitcoincore.api.wallet.service.WalletApiService");
 
+        services.add("org.omnilayer.api.rawtransactions.service.RawTransactionsApiService");
+        services.add("org.omnilayer.api.wallet.service.WalletApiService");
+
         RemoteServices remoteServices = new RemoteServices();
         remoteServices.setRequestContextResolver(bitCoinCoreRequestContextResolver);
         remoteServices.setHandlerMethodCommunicationTransportFactory(bitCoinCoreHttpJsonRemoteHandlerMethodTransportFactory);

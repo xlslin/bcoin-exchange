@@ -10,6 +10,7 @@ import com.sharingif.blockchain.bitcoin.app.constants.CoinType;
 import com.sharingif.blockchain.bitcoin.app.constants.Constants;
 import com.sharingif.blockchain.bitcoin.app.constants.ErrorConstants;
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
+import com.sharingif.blockchain.bitcoin.block.service.OmniBlockService;
 import com.sharingif.cube.core.exception.validation.ValidationCubeException;
 import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
 import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
@@ -30,6 +31,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 	private AccountJnlService accountJnlService;
 	private AccountFrozenJnlService accountFrozenJnlService;
 	private BitCoinBlockService bitCoinBlockService;
+	private OmniBlockService omniBlockService;
 
 	public AccountDAO getAccountDAO() {
 		return accountDAO;
@@ -50,6 +52,10 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 	@Resource
 	public void setBitCoinBlockService(BitCoinBlockService bitCoinBlockService) {
 		this.bitCoinBlockService = bitCoinBlockService;
+	}
+	@Resource
+	public void setOmniBlockService(OmniBlockService omniBlockService) {
+		this.omniBlockService = omniBlockService;
 	}
 
 	protected void initNormalAccount(String address, String coinType) {
@@ -262,12 +268,12 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 		return getAccountListByBalance(paginationCondition, balance, new ArrayList<AccountUnspent>(), BigInteger.ZERO);
 	}
 
-	public AccountUnspent getOmniAccountListByBalance(BigInteger btcBalance, BigInteger omniBalance, int currentPage) {
+	public AccountUnspent getUsdtAccountByBalance(BigInteger btcBalance, BigInteger usdtBalance, int currentPage) {
 		SubAccount querySubAccount = new SubAccount();
 		querySubAccount.setCoinType(CoinType.BTC.name());
 		querySubAccount.setBalance(btcBalance);
 		querySubAccount.setSubCoinType(CoinType.USDT.name());
-		querySubAccount.setSubBalance(omniBalance);
+		querySubAccount.setSubBalance(usdtBalance);
 		PaginationCondition<SubAccount> paginationCondition = new PaginationCondition<SubAccount>();
 		paginationCondition.setCondition(querySubAccount);
 		paginationCondition.setQueryCount(false);
@@ -282,6 +288,10 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 		for(Account account : accountList) {
 
 			// 验证omni余额
+			BigInteger blockUsdtBalance = omniBlockService.getUsdtBalance(account.getAddress());
+			if(blockUsdtBalance.compareTo(usdtBalance) == -1) {
+				continue;
+			}
 
 			List<Unspent> unspentList = bitCoinBlockService.listUnspent(account.getAddress());
 			if(unspentList == null || unspentList.isEmpty()) {
@@ -309,13 +319,13 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 			}
 		}
 
-		return getOmniAccountListByBalance(btcBalance, omniBalance, currentPage+1);
+		return getUsdtAccountByBalance(btcBalance, usdtBalance, currentPage+1);
 
 	}
 
 	@Override
-	public AccountUnspent getOmniAccountByBalance(BigInteger btcBalance, BigInteger omniBalance) {
-		return getOmniAccountListByBalance(btcBalance, omniBalance, 1);
+	public AccountUnspent getUsdtAccountByBalance(BigInteger btcBalance, BigInteger omniBalance) {
+		return getUsdtAccountByBalance(btcBalance, omniBalance, 1);
 	}
 
 }
