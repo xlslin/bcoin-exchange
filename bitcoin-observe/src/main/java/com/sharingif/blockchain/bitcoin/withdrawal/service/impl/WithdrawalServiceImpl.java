@@ -668,7 +668,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 
 	@Override
 	public void withdrawalFailureNotice(String id) {
-		// TODO发送通知信息
+		// 发送通知信息
 		Withdrawal withdrawal = getById(id);
 
 		DepositWithdrawalNoticeReq req = new DepositWithdrawalNoticeReq();
