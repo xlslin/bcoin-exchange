@@ -32,6 +32,7 @@ import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.bitcoincore.api.wallet.entity.Unspent;
 import org.bitcoinj.core.Base58;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +44,8 @@ import java.util.List;
 
 @Service
 public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang.String> implements WithdrawalService {
-	
+
+	private String omniUsdtProperty;
 	private WithdrawalDAO withdrawalDAO;
 	private TransactionService transactionService;
 	private TransactionBusinessDAO transactionBusinessDAO;
@@ -56,8 +58,9 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	private BitCoinBlockService bitCoinBlockService;
 	private WithdrawalTransactionService withdrawalTransactionService;
 
-	public WithdrawalDAO getWithdrawalDAO() {
-		return withdrawalDAO;
+	@Value("${omni.usdt.property}")
+	public void setOmniUsdtProperty(String omniUsdtProperty) {
+		this.omniUsdtProperty = omniUsdtProperty;
 	}
 	@Resource
 	public void setWithdrawalDAO(WithdrawalDAO withdrawalDAO) {
@@ -371,7 +374,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 			vout.setToAddress(withdrawal.getTxTo());
 			vout.setAmount(withdrawal.getAmount());
 
-			String opReturn = String.format("6f6d6e6900000000%08x%016x", 31, withdrawal.getAmount());
+			String opReturn = String.format("6f6d6e6900000000%08x%016x", omniUsdtProperty, withdrawal.getAmount());
 			req.setOpReturn(opReturn);
 
 			SignMessageRsp rsp = bitCoinApiService.omniSimpleSendSignMessage(req);
