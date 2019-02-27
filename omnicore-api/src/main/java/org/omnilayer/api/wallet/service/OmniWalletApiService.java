@@ -5,7 +5,7 @@ import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import org.omnilayer.api.wallet.entity.OmniBalance;
 
 @RequestMapping(value="/")
-public interface WalletApiService {
+public interface OmniWalletApiService {
 
     /**
      * Returns the token balance for a given address and property.

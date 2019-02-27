@@ -6,7 +6,7 @@ import org.omnilayer.api.rawtransactions.entity.Transaction;
 import java.math.BigInteger;
 
 @RequestMapping(value="/")
-public interface RawTransactionsApiService {
+public interface OmniRawTransactionsApiService {
 
     /**
      * Decodes an Omni transaction.
