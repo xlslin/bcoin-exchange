@@ -18,7 +18,7 @@ public class OmniNullData {
     }
 
     public void setNullData(String nullData) {
-        this.nullData = nullData;
+        this.nullData = nullData.replace("OP_RETURN ", "");
     }
 
     public String getOmni() {

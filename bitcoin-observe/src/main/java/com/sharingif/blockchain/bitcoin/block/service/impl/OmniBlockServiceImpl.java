@@ -31,6 +31,11 @@ public class OmniBlockServiceImpl implements OmniBlockService {
     }
 
     @Override
+    public void importAddress(String address, String label) {
+        omniWalletApiService.importAddress(address, label, false, false);
+    }
+
+    @Override
     public BigInteger getUsdtBalance(String address) {
         OmniBalance omniBalance = omniWalletApiService.getBalance(address, 31);
         return new BigInteger(omniBalance.getBalance());

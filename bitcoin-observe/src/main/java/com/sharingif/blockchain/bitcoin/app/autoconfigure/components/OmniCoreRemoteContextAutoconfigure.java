@@ -24,14 +24,14 @@ import java.util.List;
 public class OmniCoreRemoteContextAutoconfigure {
 
 
-    @Bean(name = "ominCoreHttpJsonConnection")
-    public HttpJsonConnection createOminCoreHttpJsonConnection(
-            @Value("${omincore.server.http.host}")String host
-            ,@Value("${omincore.server.http.port}")int port
-            ,@Value("${omincore.server.http.so.timeout}")int soTimeout
-            ,@Value("${omincore.server.http.user}")String user
-            ,@Value("${omincore.server.http.password}")String password
-            ,@Value("${omincore.server.http.receive.logger}")Boolean receiveLogger
+    @Bean(name = "omniCoreHttpJsonConnection")
+    public HttpJsonConnection createOmniCoreHttpJsonConnection(
+            @Value("${omnicore.server.http.host}")String host
+            ,@Value("${omnicore.server.http.port}")int port
+            ,@Value("${omnicore.server.http.so.timeout}")int soTimeout
+            ,@Value("${omnicore.server.http.user}")String user
+            ,@Value("${omnicore.server.http.password}")String password
+            ,@Value("${omnicore.server.http.receive.logger}")Boolean receiveLogger
     ) {
         HttpJsonConnection apacheHttpJsonConnection = new HttpJsonConnection(host, port, null);
         apacheHttpJsonConnection.setSoTimeout(soTimeout);
@@ -42,15 +42,15 @@ public class OmniCoreRemoteContextAutoconfigure {
         return apacheHttpJsonConnection;
     }
 
-    @Bean(name= "ominCoreHttpJsonRemoteHandlerMethodTransportFactory")
-    public ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>> createOminCoreHttpJsonRemoteHandlerMethodTransportFactory(
-            HttpJsonConnection omincoreHttpJsonConnection
+    @Bean(name= "omniCoreHttpJsonRemoteHandlerMethodTransportFactory")
+    public ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>> createOmniCoreHttpJsonRemoteHandlerMethodTransportFactory(
+            HttpJsonConnection omniCoreHttpJsonConnection
             , ProxyInterfaceHandlerMethodCommunicationTransform<String,String,JsonModel<Object>> bitCoinCoreJsonModelProxyInterfaceHandlerMethodCommunicationTransform
             , JsonModelBusinessCommunicationExceptionHandler jsonModelBusinessCommunicationExceptionHandler
             , MultiHandlerMethodChain transportChains
     ) {
         ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>> httpJsonRemoteHandlerMethodTransportFactory = new ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>>();
-        httpJsonRemoteHandlerMethodTransportFactory.setConnection(omincoreHttpJsonConnection);
+        httpJsonRemoteHandlerMethodTransportFactory.setConnection(omniCoreHttpJsonConnection);
         httpJsonRemoteHandlerMethodTransportFactory.setTransform(bitCoinCoreJsonModelProxyInterfaceHandlerMethodCommunicationTransform);
         httpJsonRemoteHandlerMethodTransportFactory.setBusinessCommunicationExceptionHandler(jsonModelBusinessCommunicationExceptionHandler);
         httpJsonRemoteHandlerMethodTransportFactory.setHandlerMethodChain(transportChains);
@@ -58,10 +58,10 @@ public class OmniCoreRemoteContextAutoconfigure {
         return httpJsonRemoteHandlerMethodTransportFactory;
     }
 
-    @Bean(name = "ominCoreRemoteServices")
-    public RemoteServices createOminCoreRemoteServices(
+    @Bean(name = "omniCoreRemoteServices")
+    public RemoteServices createOmniCoreRemoteServices(
             BitCoinCoreRequestContextResolver bitCoinCoreRequestContextResolver
-            ,ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>> ominCoreHttpJsonRemoteHandlerMethodTransportFactory
+            ,ProxyInterfaceHandlerMethodCommunicationTransportFactory<String,String,JsonModel<Object>> omniCoreHttpJsonRemoteHandlerMethodTransportFactory
     ) {
         List<String> services = new ArrayList<String>();
 
@@ -70,7 +70,7 @@ public class OmniCoreRemoteContextAutoconfigure {
 
         RemoteServices remoteServices = new RemoteServices();
         remoteServices.setRequestContextResolver(bitCoinCoreRequestContextResolver);
-        remoteServices.setHandlerMethodCommunicationTransportFactory(ominCoreHttpJsonRemoteHandlerMethodTransportFactory);
+        remoteServices.setHandlerMethodCommunicationTransportFactory(omniCoreHttpJsonRemoteHandlerMethodTransportFactory);
         remoteServices.setServices(services);
 
         return remoteServices;

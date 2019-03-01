@@ -1,5 +1,7 @@
 package com.sharingif.blockchain.crypto.api.bitcoin.entity;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 import java.math.BigInteger;
 import java.util.List;
 
@@ -16,6 +18,7 @@ public class SignMessageReq {
     /**
      * 找零地址
      */
+    @NotEmpty
     private String changeAddress;
     /**
      * 手续费

@@ -19,6 +19,7 @@ import org.bitcoincore.api.wallet.entity.Unspent;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
@@ -224,7 +225,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 			accountUnspentList.add(accountUnspent);
 
 			for(Unspent unspent : unspentList) {
-				unspent.setAmount(unspent.getAmount().multiply(Constants.BTC_UNIT));
+				unspent.setAmount(unspent.getAmount().multiply(new BigDecimal(Constants.BTC_UNIT.toString())));
 				accounTotalBalance = accounTotalBalance.add(unspent.getAmount().toBigInteger());
 				accountUnspentUnspentList.add(unspent);
 
@@ -305,7 +306,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 
 			BigInteger accounTotalBalance = BigInteger.ZERO;
 			for(Unspent unspent : unspentList) {
-				unspent.setAmount(unspent.getAmount().multiply(Constants.BTC_UNIT));
+				unspent.setAmount(unspent.getAmount().multiply(new BigDecimal(Constants.BTC_UNIT.toString())));
 				accounTotalBalance = accounTotalBalance.add(unspent.getAmount().toBigInteger());
 				accountUnspentUnspentList.add(unspent);
 

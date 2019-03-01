@@ -9,6 +9,7 @@ import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping(value="bitcoin")
@@ -26,7 +27,7 @@ public class BitCoinController {
      * @return
      */
     @RequestMapping(value="signMessage", method= RequestMethod.POST)
-    public SignMessageRsp signMessage(SignMessageReq req) {
+    public SignMessageRsp signMessage(@Valid SignMessageReq req) {
 
         return bitCoinService.signMessage(req);
     }

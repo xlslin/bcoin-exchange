@@ -1,6 +1,7 @@
 package org.omnilayer.api.rawtransactions.service;
 
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
+import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import org.omnilayer.api.rawtransactions.entity.Transaction;
 
 import java.math.BigInteger;
@@ -17,6 +18,7 @@ public interface OmniRawTransactionsApiService {
      * @param height
      * @return
      */
+    @RequestMapping(value="omni_decodetransaction", method= RequestMethod.POST)
     Transaction decodeTransaction(String rawTx, String prevtxs, BigInteger height);
 
 }

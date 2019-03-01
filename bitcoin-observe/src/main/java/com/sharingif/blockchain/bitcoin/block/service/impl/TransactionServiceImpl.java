@@ -9,6 +9,7 @@ import com.sharingif.blockchain.bitcoin.app.constants.Constants;
 import com.sharingif.blockchain.bitcoin.app.constants.ScriptTypes;
 import com.sharingif.blockchain.bitcoin.block.model.entity.*;
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
+import com.sharingif.blockchain.bitcoin.block.service.OmniBlockService;
 import com.sharingif.blockchain.bitcoin.block.service.TransactionBusinessService;
 import com.sharingif.blockchain.bitcoin.deposit.service.DepositService;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalService;
@@ -35,6 +36,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 	private TransactionDAO transactionDAO;
 	private BitCoinBlockService bitCoinBlockService;
+	private OmniBlockService omniBlockService;
 	private AddressListenerService addressListenerService;
 	private WithdrawalService withdrawalService;
 	private DepositService depositService;
@@ -54,6 +56,11 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	public void setBitCoinBlockService(BitCoinBlockService bitCoinBlockService) {
 		this.bitCoinBlockService = bitCoinBlockService;
 	}
+	@Resource
+	public void setOmniBlockService(OmniBlockService omniBlockService) {
+		this.omniBlockService = omniBlockService;
+	}
+
 	@Resource
 	public void setAddressListenerService(AddressListenerService addressListenerService) {
 		this.addressListenerService = addressListenerService;
@@ -129,11 +136,13 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	 * @param vOutList
 	 */
 	protected void updateValueUnit(List<UtxoVin> utxoVinList, List<Vout> vOutList) {
+		BigDecimal btcUnit = new BigDecimal(Constants.BTC_UNIT.toString());
+
 		for (UtxoVin utxoVin : utxoVinList) {
-			utxoVin.getVout().setValue(utxoVin.getVout().getValue().multiply(Constants.BTC_UNIT));
+			utxoVin.getVout().setValue(utxoVin.getVout().getValue().multiply(btcUnit));
 		}
 		for(Vout out : vOutList) {
-			out.setValue(out.getValue().multiply(Constants.BTC_UNIT));
+			out.setValue(out.getValue().multiply(btcUnit));
 		}
 	}
 
@@ -175,7 +184,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 			if(omniNullData != null && ScriptTypes.NULL_DATA.getName().equals(scriptTypes)) {
 				omniNullData.setVoutIndex(voutIndex);
-				omniNullData.setNullData(scriptPubKey.getHex());
+				omniNullData.setNullData(scriptPubKey.getAsm());
 			}
 
 			return false;
@@ -248,7 +257,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 		deposit(transactionBusiness);
 	}
 
-	protected void handleOmniDate(String txId, OmniNullData omniNullData, boolean isWatchFrom, boolean isWatchTo, Transaction transaction) {
+	protected void handleOmniData(String txId, OmniNullData omniNullData, boolean isWatchFrom, boolean isWatchTo, Transaction transaction) {
 		if(omniNullData.getNullData() == null) {
 			return;
 		}
@@ -257,13 +266,21 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			return;
 		}
 
+		org.omnilayer.api.rawtransactions.entity.Transaction omniTransaction = omniBlockService.decodeTransaction(txId);
+		if(!omniTransaction.getValid()) {
+			logger.info("Transaction not validated, omniTransaction:{}", omniTransaction);
+			return;
+		}
+
+		BigInteger amount = new BigInteger(omniTransaction.getAmount()).multiply(Constants.BTC_UNIT);
+
 		if(isWatchFrom) {
-			withdrawal(omniNullData.getVoutIndex(), null, null, null,transaction, CoinType.USDT.name());
+			withdrawal(omniNullData.getVoutIndex(), omniTransaction.getSendingAddress(), omniTransaction.getReferenceAddress(), amount,transaction, CoinType.USDT.name());
 			return;
 		}
 
 		if(isWatchTo) {
-			deposit(omniNullData.getVoutIndex(), null, null, null,transaction, CoinType.USDT.name());
+			deposit(omniNullData.getVoutIndex(), omniTransaction.getSendingAddress(), omniTransaction.getReferenceAddress(), amount,transaction, CoinType.USDT.name());
 			return;
 		}
 	}
@@ -327,7 +344,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			}
 
 			// omni数据处理
-			handleOmniDate(tx.getTxId(), omniNullData, isWatchFrom, isWatchTo, transaction);
+			handleOmniData(tx.getTxId(), omniNullData, isWatchFrom, isWatchTo, transaction);
 
 		} catch (Exception e) {
 			// 连接超时

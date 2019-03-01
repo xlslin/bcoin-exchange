@@ -25,14 +25,14 @@ public class RemoteContextAutoconfigure {
             BindingInitializer bindingInitializer
             ,RemoteServices blockchainServerRemoteServices
             ,RemoteServices bitCoinCoreRemoteServices
-            ,RemoteServices ominCoreRemoteServices
+            ,RemoteServices omniCoreRemoteServices
     ) {
 
 
         List<RemoteServices> remoteServicesList = new ArrayList<RemoteServices>();
         remoteServicesList.add(blockchainServerRemoteServices);
         remoteServicesList.add(bitCoinCoreRemoteServices);
-        remoteServicesList.add(ominCoreRemoteServices);
+        remoteServicesList.add(omniCoreRemoteServices);
 
         RemoteServicesApplicationContext remoteServicesApplicationContext = new RemoteServicesApplicationContext();
         remoteServicesApplicationContext.setBindingInitializer(bindingInitializer);
