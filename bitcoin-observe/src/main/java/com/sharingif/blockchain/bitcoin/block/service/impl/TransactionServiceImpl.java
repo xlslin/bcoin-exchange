@@ -281,12 +281,10 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 
 		if(isWatchFrom) {
 			withdrawal(omniNullData.getVoutIndex(), omniTransaction.getSendingAddress(), omniTransaction.getReferenceAddress(), amount,transaction, CoinType.USDT.name());
-			return;
 		}
 
 		if(isWatchTo) {
 			deposit(omniNullData.getVoutIndex(), omniTransaction.getSendingAddress(), omniTransaction.getReferenceAddress(), amount,transaction, CoinType.USDT.name());
-			return;
 		}
 	}
 
