@@ -266,7 +266,14 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			return;
 		}
 
-		org.omnilayer.api.rawtransactions.entity.Transaction omniTransaction = omniBlockService.decodeTransaction(txId);
+		org.omnilayer.api.rawtransactions.entity.Transaction omniTransaction = null;
+		try {
+			omniTransaction = omniBlockService.getTransaction(txId);
+		} catch (Exception e) {
+			logger.error("omni get transaction error, txId:", txId);
+			return;
+		}
+
 		if(!omniTransaction.getValid()) {
 			logger.info("Transaction not validated, omniTransaction:{}", omniTransaction);
 			return;

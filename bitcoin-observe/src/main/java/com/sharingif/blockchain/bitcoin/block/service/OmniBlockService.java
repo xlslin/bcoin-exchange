@@ -7,11 +7,11 @@ import java.math.BigInteger;
 public interface OmniBlockService {
 
     /**
-     * 解码交易
-     * @param rawTx
+     * 根据交易id查询交易
+     * @param txId
      * @return
      */
-    Transaction decodeTransaction(String rawTx);
+    Transaction getTransaction(String txId);
 
     /**
      * 导入观察地址

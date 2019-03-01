@@ -26,8 +26,8 @@ public class OmniBlockServiceImpl implements OmniBlockService {
     }
 
     @Override
-    public Transaction decodeTransaction(String rawTx) {
-        return omniRawTransactionsApiService.decodeTransaction(rawTx, null, null);
+    public Transaction getTransaction(String txId) {
+        return omniRawTransactionsApiService.getTransaction(txId);
     }
 
     @Override

@@ -10,15 +10,11 @@ import java.math.BigInteger;
 public interface OmniRawTransactionsApiService {
 
     /**
-     * Decodes an Omni transaction.
-     * If the inputs of the transaction are not in the chain, then they must be provided, because the transaction inputs are used to identify the sender of a transaction.
-     * A block height can be provided, which is used to determine the parsing rules.
-     * @param rawTx
-     * @param prevtxs
-     * @param height
+     * Get detailed information about an Omni transaction.
+     * @param txId
      * @return
      */
-    @RequestMapping(value="omni_decodetransaction", method= RequestMethod.POST)
-    Transaction decodeTransaction(String rawTx, String prevtxs, BigInteger height);
+    @RequestMapping(value="omni_gettransaction", method= RequestMethod.POST)
+    Transaction getTransaction(String txId);
 
 }
