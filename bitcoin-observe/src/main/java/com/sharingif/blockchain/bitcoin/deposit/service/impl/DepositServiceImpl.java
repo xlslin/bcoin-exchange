@@ -131,6 +131,8 @@ public class DepositServiceImpl implements DepositService {
         req.setCoinType(transactionBusiness.getCoinType());
         req.setTxTo(transactionBusiness.getTxTo());
         req.setAmount(transactionBusiness.getAmount());
+        req.setTxTime(transactionBusiness.getTxTime().getTime());
+        req.setFee(transactionBusiness.getFee());
         req.setStatus(DepositWithdrawalNoticeReq.STATUS_PROCESSING);
         bitCoinApiService.depositWithdrawalNotice(req);
 
@@ -234,6 +236,8 @@ public class DepositServiceImpl implements DepositService {
         req.setCoinType(transactionBusiness.getCoinType());
         req.setTxTo(transactionBusiness.getTxTo());
         req.setAmount(transactionBusiness.getAmount());
+        req.setTxTime(transactionBusiness.getTxTime().getTime());
+        req.setFee(transactionBusiness.getFee());
         if(BlockChain.STATUS_VERIFY_VALID.equals(transactionBusiness.getTxStatus())) {
             req.setStatus(com.sharingif.blockchain.api.ether.entity.DepositWithdrawalNoticeReq.STATUS_SUCCESS);
         } else {

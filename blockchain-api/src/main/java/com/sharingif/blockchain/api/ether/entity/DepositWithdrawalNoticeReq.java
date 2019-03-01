@@ -265,7 +265,7 @@ public class DepositWithdrawalNoticeReq {
 
         StringBuffer stringBuffer = new StringBuffer();
         parameters.forEach((key, value)->{
-            if (StringUtils.isTrimEmpty(value)) {
+            if (!StringUtils.isTrimEmpty(value)) {
                 stringBuffer.append(key).append("=").append(value).append("&");
             }
         });
