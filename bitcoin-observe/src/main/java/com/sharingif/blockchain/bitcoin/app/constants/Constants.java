@@ -16,7 +16,7 @@ public class Constants {
     /**
      * btc单位
      */
-    public static final BigInteger BTC_UNIT = new BigInteger("100000000");
+    public static final BigDecimal BTC_UNIT = new BigDecimal("100000000");
     /**
      * btc转账手续费
      */

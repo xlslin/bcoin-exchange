@@ -136,13 +136,11 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 	 * @param vOutList
 	 */
 	protected void updateValueUnit(List<UtxoVin> utxoVinList, List<Vout> vOutList) {
-		BigDecimal btcUnit = new BigDecimal(Constants.BTC_UNIT.toString());
-
 		for (UtxoVin utxoVin : utxoVinList) {
-			utxoVin.getVout().setValue(utxoVin.getVout().getValue().multiply(btcUnit));
+			utxoVin.getVout().setValue(utxoVin.getVout().getValue().multiply(Constants.BTC_UNIT));
 		}
 		for(Vout out : vOutList) {
-			out.setValue(out.getValue().multiply(btcUnit));
+			out.setValue(out.getValue().multiply(Constants.BTC_UNIT));
 		}
 	}
 
@@ -279,7 +277,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 			return;
 		}
 
-		BigInteger amount = new BigInteger(omniTransaction.getAmount()).multiply(Constants.BTC_UNIT);
+		BigInteger amount = new BigDecimal(omniTransaction.getAmount()).multiply(Constants.BTC_UNIT).toBigInteger();
 
 		if(isWatchFrom) {
 			withdrawal(omniNullData.getVoutIndex(), omniTransaction.getSendingAddress(), omniTransaction.getReferenceAddress(), amount,transaction, CoinType.USDT.name());
@@ -330,7 +328,7 @@ public class TransactionServiceImpl extends BaseServiceImpl<Transaction, java.la
 						isAddUntreatedTransaction = true;
 					}
 
-					withdrawal(i, null, vout.getScriptPubKey().getAddresses().get(0), vout.getValue().toBigInteger(), transaction, CoinType.BTC.name());
+					withdrawal(i, vout.getScriptPubKey().getAddresses().get(0), null, vout.getValue().toBigInteger(), transaction, CoinType.BTC.name());
 				}
 
 			}

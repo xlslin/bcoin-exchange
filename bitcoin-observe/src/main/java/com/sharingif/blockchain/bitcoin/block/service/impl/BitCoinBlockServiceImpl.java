@@ -93,7 +93,7 @@ public class BitCoinBlockServiceImpl implements BitCoinBlockService {
             return balance;
         }
         for(Unspent unspent : unspentList) {
-            balance = balance.add(unspent.getAmount().multiply(new BigDecimal(Constants.BTC_UNIT.toString())).toBigInteger());
+            balance = balance.add(unspent.getAmount().multiply(Constants.BTC_UNIT).toBigInteger());
         }
         return balance;
     }

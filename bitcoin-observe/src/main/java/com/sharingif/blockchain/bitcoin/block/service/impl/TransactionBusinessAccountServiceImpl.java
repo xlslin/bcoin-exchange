@@ -4,7 +4,9 @@ package com.sharingif.blockchain.bitcoin.block.service.impl;
 import javax.annotation.Resource;
 
 import com.sharingif.blockchain.bitcoin.account.service.AccountService;
+import com.sharingif.blockchain.bitcoin.app.constants.CoinType;
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
+import com.sharingif.blockchain.bitcoin.block.service.OmniBlockService;
 import com.sharingif.blockchain.bitcoin.block.service.TransactionBusinessService;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ public class TransactionBusinessAccountServiceImpl extends BaseServiceImpl<Trans
 	
 	private TransactionBusinessAccountDAO transactionBusinessAccountDAO;
 	private BitCoinBlockService bitCoinBlockService;
+	private OmniBlockService omniBlockService;
 	private AccountService accountService;
 	private TransactionBusinessService transactionBusinessService;
 
@@ -36,6 +39,10 @@ public class TransactionBusinessAccountServiceImpl extends BaseServiceImpl<Trans
 	@Resource
 	public void setBitCoinBlockService(BitCoinBlockService bitCoinBlockService) {
 		this.bitCoinBlockService = bitCoinBlockService;
+	}
+	@Resource
+	public void setOmniBlockService(OmniBlockService omniBlockService) {
+		this.omniBlockService = omniBlockService;
 	}
 	@Resource
 	public void setAccountService(AccountService accountService) {
@@ -75,12 +82,19 @@ public class TransactionBusinessAccountServiceImpl extends BaseServiceImpl<Trans
 		for(TransactionBusinessAccount transactionBusinessAccount : transactionBusinessAccountList) {
 			BigInteger blockNumber = bitCoinBlockService.getBlockNumber();
 
-			BigInteger blockBalance = bitCoinBlockService.getBalanceByAddress(transactionBusinessAccount.getAddress());
 			BigInteger accountBalance = accountService.getBalance(transactionBusinessAccount.getAddress(),transactionBusinessAccount.getCoinType());
+			BigInteger blockBalance = null;
+
+			if(CoinType.BTC.name().equals(transactionBusinessAccount.getCoinType())) {
+				blockBalance = bitCoinBlockService.getBalanceByAddress(transactionBusinessAccount.getAddress());
+			} else if(CoinType.USDT.name().equals(transactionBusinessAccount.getCoinType())) {
+				blockBalance = omniBlockService.getUsdtBalance(transactionBusinessAccount.getAddress());
+			}
 
 			if(blockBalance.compareTo(accountBalance) != 0) {
 				continue;
 			}
+
 
 			transactionBusinessService.updateSettleStatusToSettled(transactionBusinessAccount.getAddress(), transactionBusinessAccount.getCoinType(), blockNumber);
 

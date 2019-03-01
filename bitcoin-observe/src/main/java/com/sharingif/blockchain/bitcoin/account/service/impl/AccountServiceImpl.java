@@ -225,7 +225,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 			accountUnspentList.add(accountUnspent);
 
 			for(Unspent unspent : unspentList) {
-				unspent.setAmount(unspent.getAmount().multiply(new BigDecimal(Constants.BTC_UNIT.toString())));
+				unspent.setAmount(unspent.getAmount().multiply(Constants.BTC_UNIT));
 				accounTotalBalance = accounTotalBalance.add(unspent.getAmount().toBigInteger());
 				accountUnspentUnspentList.add(unspent);
 
@@ -306,7 +306,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 
 			BigInteger accounTotalBalance = BigInteger.ZERO;
 			for(Unspent unspent : unspentList) {
-				unspent.setAmount(unspent.getAmount().multiply(new BigDecimal(Constants.BTC_UNIT.toString())));
+				unspent.setAmount(unspent.getAmount().multiply(Constants.BTC_UNIT));
 				accounTotalBalance = accounTotalBalance.add(unspent.getAmount().toBigInteger());
 				accountUnspentUnspentList.add(unspent);
 
