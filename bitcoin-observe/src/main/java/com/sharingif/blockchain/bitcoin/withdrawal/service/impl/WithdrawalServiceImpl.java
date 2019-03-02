@@ -574,6 +574,9 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		int withdrawalVinCount = withdrawalTransactionService.getWithdrawalVinService().getCountByTxHash(transactionBusiness.getTxHash());
 		int transactionBusinessCount = transactionBusinessDAO.queryCountByTxHashTypeStatus(transactionBusiness.getTxHash(), TransactionBusiness.TYPE_WITHDRAWAL ,TransactionBusiness.STATUS_FINISH_NOTICED);
 
+		// 解锁取现时锁定的账号
+		accountService.unLockAccount(transactionBusiness.getTxFrom(), transactionBusiness.getCoinType());
+
 		if(withdrawalVinCount == transactionBusinessCount) {
 			withdrawalTransactionService.updateStatusToSuccess(transactionBusiness.getTxHash());
 
@@ -583,12 +586,6 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 			updateWithdrawal.setStatus(Withdrawal.STATUS_SUCCESS);
 
 			withdrawalDAO.updateByTxHash(updateWithdrawal);
-
-			// 解锁取现时锁定的账号
-			List<WithdrawalVin> withdrawalVinList = withdrawalTransactionService.getWithdrawalVinService().getByTxHash(transactionBusiness.getTxHash());
-			withdrawalVinList.forEach(withdrawalVin -> {
-				accountService.unLockAccount(withdrawalVin.getAddress(), transactionBusiness.getCoinType());
-			});
 		}
 
 	}
