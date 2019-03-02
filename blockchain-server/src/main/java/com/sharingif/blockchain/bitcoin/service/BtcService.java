@@ -1,9 +1,9 @@
 package com.sharingif.blockchain.bitcoin.service;
 
 import com.sharingif.blockchain.api.bitcoin.entity.DepositWithdrawalNoticeReq;
+import com.sharingif.blockchain.api.bitcoin.entity.OmniSimpleSendSignMessageReq;
 import com.sharingif.blockchain.api.bitcoin.entity.SignMessageReq;
 import com.sharingif.blockchain.api.bitcoin.entity.SignMessageRsp;
-import com.sharingif.blockchain.crypto.api.bitcoin.entity.OmniSimpleSendSignMessageReq;
 
 public interface BtcService {
 

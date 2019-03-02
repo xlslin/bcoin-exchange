@@ -13,6 +13,28 @@ import java.util.List;
 public interface AccountService extends IBaseService<Account, java.lang.String> {
 
     /**
+     * 根据id锁定账户
+     * @param id
+     */
+    int lockAccount(String id);
+
+    /**
+     * 根据id解锁账户
+     * @param address
+     * @param coinType
+     * @return
+     */
+    int unLockAccount(String address, String coinType);
+
+    /**
+     * 查询账户信息
+     * @param address
+     * @param coinType
+     * @return
+     */
+    Account getAccount(String address, String coinType);
+
+    /**
      * 根据地址、币种查询余额
      * @param address
      * @param coinType

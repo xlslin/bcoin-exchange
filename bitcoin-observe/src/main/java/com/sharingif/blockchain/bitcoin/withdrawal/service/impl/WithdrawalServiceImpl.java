@@ -3,6 +3,7 @@ package com.sharingif.blockchain.bitcoin.withdrawal.service.impl;
 
 import com.sharingif.blockchain.api.bitcoin.entity.*;
 import com.sharingif.blockchain.api.bitcoin.service.BitCoinApiService;
+import com.sharingif.blockchain.bitcoin.account.model.entity.Account;
 import com.sharingif.blockchain.bitcoin.account.model.entity.AccountJnl;
 import com.sharingif.blockchain.bitcoin.account.model.entity.AccountUnspent;
 import com.sharingif.blockchain.bitcoin.account.service.AccountService;
@@ -20,6 +21,7 @@ import com.sharingif.blockchain.bitcoin.block.service.TransactionService;
 import com.sharingif.blockchain.bitcoin.withdrawal.dao.WithdrawalDAO;
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalTransaction;
+import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalVin;
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalVout;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalService;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalTransactionService;
@@ -45,7 +47,7 @@ import java.util.List;
 @Service
 public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang.String> implements WithdrawalService {
 
-	private String omniUsdtProperty;
+	private int omniUsdtProperty;
 	private WithdrawalDAO withdrawalDAO;
 	private TransactionService transactionService;
 	private TransactionBusinessDAO transactionBusinessDAO;
@@ -59,7 +61,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	private WithdrawalTransactionService withdrawalTransactionService;
 
 	@Value("${omni.usdt.property}")
-	public void setOmniUsdtProperty(String omniUsdtProperty) {
+	public void setOmniUsdtProperty(int omniUsdtProperty) {
 		this.omniUsdtProperty = omniUsdtProperty;
 	}
 	@Resource
@@ -289,6 +291,9 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		String hexstring = rsp.getHexValue();
 
 		updateStatusToProcessing(withdrawalList);
+		accountUnspentList.forEach(accountUnspent ->{
+			accountService.lockAccount(accountUnspent.getAccount().getId());
+		});
 
 		String txHash = bitCoinBlockService.sendRawTransaction(hexstring);
 
@@ -372,7 +377,8 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 
 			SignMessageVoutReq vout = new SignMessageVoutReq();
 			vout.setToAddress(withdrawal.getTxTo());
-			vout.setAmount(withdrawal.getAmount());
+			vout.setAmount(tranferToBalance);
+			req.setVout(vout);
 
 			String opReturn = String.format("6f6d6e6900000000%08x%016x", omniUsdtProperty, withdrawal.getAmount());
 			req.setOpReturn(opReturn);
@@ -381,6 +387,9 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 			String hexstring = rsp.getHexValue();
 
 			updateStatusToProcessing(withdrawal.getId());
+			accountService.lockAccount(accountUnspent.getAccount().getId());
+			Account btcAccount = accountService.getAccount(accountUnspent.getAccount().getAddress(), CoinType.BTC.name());
+			accountService.lockAccount(btcAccount.getId());
 
 			String txHash = bitCoinBlockService.sendRawTransaction(hexstring);
 
@@ -574,6 +583,12 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 			updateWithdrawal.setStatus(Withdrawal.STATUS_SUCCESS);
 
 			withdrawalDAO.updateByTxHash(updateWithdrawal);
+
+			// 解锁取现时锁定的账号
+			List<WithdrawalVin> withdrawalVinList = withdrawalTransactionService.getWithdrawalVinService().getByTxHash(transactionBusiness.getTxHash());
+			withdrawalVinList.forEach(withdrawalVin -> {
+				accountService.unLockAccount(withdrawalVin.getAddress(), transactionBusiness.getCoinType());
+			});
 		}
 
 	}

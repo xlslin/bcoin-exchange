@@ -2,18 +2,15 @@ package com.sharingif.blockchain.bitcoin.service.impl;
 
 import com.sharingif.blockchain.api.bitcoin.entity.*;
 import com.sharingif.blockchain.bitcoin.service.BtcService;
-import com.sharingif.blockchain.crypto.api.bitcoin.entity.OmniSimpleSendSignMessageReq;
 import com.sharingif.blockchain.crypto.api.bitcoin.service.BitCoinApiService;
 import com.sharingif.blockchain.crypto.model.entity.SecretKey;
 import com.sharingif.blockchain.crypto.service.SecretKeyService;
 import com.sharingif.blockchain.signature.service.BlockchainSignatureService;
-import com.sharingif.cube.security.binary.Base64Coder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.security.Signature;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,7 +94,42 @@ public class BtcServiceImpl implements BtcService {
     @Override
     public SignMessageRsp omniSimpleSendSignMessage(OmniSimpleSendSignMessageReq req) {
 
-        com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageRsp cryptoSignMessageRsp = bitCoinApiService.omniSimpleSendSignMessage(req);
+        com.sharingif.blockchain.crypto.api.bitcoin.entity.OmniSimpleSendSignMessageReq cryptoOmniSimpleSendSignMessageReq = new com.sharingif.blockchain.crypto.api.bitcoin.entity.OmniSimpleSendSignMessageReq();
+
+        cryptoOmniSimpleSendSignMessageReq.setFee(req.getFee());
+
+        com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageVinReq cryptoSignMessageVinReq = new com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageVinReq();
+
+        SignMessageVinReq signMessageVinReq = req.getVin();
+        SecretKey secretKey = secretKeyService.getSecretKeyByAddress(signMessageVinReq.getFromAddress());
+        String password = secretKeyService.decryptPassword(secretKey.getPassword());
+
+        cryptoSignMessageVinReq.setFromAddress(signMessageVinReq.getFromAddress());
+        cryptoSignMessageVinReq.setPassword(password);
+
+        List<SignMessageUnspentReq> unspentList = signMessageVinReq.getUnspentList();
+        List<com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageUnspentReq> cryptoUnspentList = new ArrayList<>(unspentList.size());
+        for(SignMessageUnspentReq signMessageUnspentReq : unspentList) {
+            com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageUnspentReq cryptoSignMessageUnspentReq = new com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageUnspentReq();
+            cryptoSignMessageUnspentReq.setTxId(signMessageUnspentReq.getTxId());
+            cryptoSignMessageUnspentReq.setVout(signMessageUnspentReq.getVout());
+            cryptoSignMessageUnspentReq.setScriptPubKey(signMessageUnspentReq.getScriptPubKey());
+            cryptoSignMessageUnspentReq.setAmount(signMessageUnspentReq.getAmount());
+
+            cryptoUnspentList.add(cryptoSignMessageUnspentReq);
+        }
+        cryptoSignMessageVinReq.setUnspentList(cryptoUnspentList);
+        cryptoOmniSimpleSendSignMessageReq.setVin(cryptoSignMessageVinReq);
+
+
+        com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageVoutReq cryptoSignMessageVoutReq = new com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageVoutReq();
+        cryptoSignMessageVoutReq.setToAddress(req.getVout().getToAddress());
+        cryptoSignMessageVoutReq.setAmount(req.getVout().getAmount());
+        cryptoOmniSimpleSendSignMessageReq.setVout(cryptoSignMessageVoutReq);
+
+        cryptoOmniSimpleSendSignMessageReq.setOpReturn(req.getOpReturn());
+
+        com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageRsp cryptoSignMessageRsp = bitCoinApiService.omniSimpleSendSignMessage(cryptoOmniSimpleSendSignMessageReq);
 
         SignMessageRsp rsp = new SignMessageRsp();
         rsp.setHexValue(cryptoSignMessageRsp.getHexValue());

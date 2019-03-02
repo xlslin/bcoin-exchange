@@ -6,17 +6,14 @@ import com.sharingif.blockchain.crypto.bitcoin.service.BitCoinService;
 import com.sharingif.blockchain.crypto.key.model.entity.Bip44KeyPath;
 import com.sharingif.blockchain.crypto.key.model.entity.SecretKey;
 import com.sharingif.blockchain.crypto.key.service.SecretKeyService;
-import org.bitcoinj.core.Base58;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.TestNet3Params;
-import org.bitcoinj.wallet.UnreadableWalletException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.web3j.crypto.Credentials;
-import org.web3j.crypto.ECKeyPair;
 import sd.fomin.gerbera.transaction.TransactionBuilder;
 
 import javax.annotation.Resource;
