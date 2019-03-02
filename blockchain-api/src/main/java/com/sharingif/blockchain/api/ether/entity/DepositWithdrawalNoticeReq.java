@@ -244,30 +244,35 @@ public class DepositWithdrawalNoticeReq {
 
     @JsonIgnore
     public byte[] getSignData() {
-        Map<String, String> parameters = new TreeMap();
+        Map<String, Object> parameters = new TreeMap();
         parameters.put("id", id);
-        parameters.put("blockNumber", blockNumber.toString());
+        parameters.put("blockNumber", blockNumber);
         parameters.put("blockHash", blockHash);
         parameters.put("txHash", txHash);
-        parameters.put("txIndex", txIndex.toString());
+        parameters.put("txIndex", txIndex);
         parameters.put("coinType", coinType);
         parameters.put("txFrom", txFrom);
         parameters.put("txTo", txTo);
-        parameters.put("amount", amount.toString());
-        parameters.put("nonce", nonce.toString());
-        parameters.put("txTime", txTime.toString());
-        parameters.put("gasLimit", gasLimit.toString());
-        parameters.put("gasUsed", gasUsed.toString());
-        parameters.put("gasPrice", gasPrice.toString());
-        parameters.put("actualFee", actualFee.toString());
+        parameters.put("amount", amount);
+        parameters.put("nonce", nonce);
+        parameters.put("txTime", txTime);
+        parameters.put("gasLimit", gasLimit);
+        parameters.put("gasUsed", gasUsed);
+        parameters.put("gasPrice", gasPrice);
+        parameters.put("actualFee", actualFee);
         parameters.put("contractAddress", contractAddress);
         parameters.put("status", status);
 
         StringBuffer stringBuffer = new StringBuffer();
         parameters.forEach((key, value)->{
-            if (!StringUtils.isTrimEmpty(value)) {
-                stringBuffer.append(key).append("=").append(value).append("&");
+            if(value instanceof String) {
+                if (StringUtils.isTrimEmpty((String)value)) {
+                    return;
+                }
+            } else if(value == null) {
+                return;
             }
+            stringBuffer.append(key).append("=").append(value).append("&");
         });
 
         try {

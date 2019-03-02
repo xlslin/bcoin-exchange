@@ -183,25 +183,30 @@ public class DepositWithdrawalNoticeReq {
 
     @JsonIgnore
     public byte[] getSignData() {
-        Map<String, String> parameters = new TreeMap();
+        Map<String, Object> parameters = new TreeMap();
         parameters.put("id", id);
-        parameters.put("blockNumber", blockNumber.toString());
+        parameters.put("blockNumber", blockNumber);
         parameters.put("blockHash", blockHash);
         parameters.put("txHash", txHash);
-        parameters.put("txIndex", txIndex.toString());
-        parameters.put("vioIndex", vioIndex.toString());
+        parameters.put("txIndex", txIndex);
+        parameters.put("vioIndex", vioIndex);
         parameters.put("coinType", coinType);
         parameters.put("txTo", txTo);
-        parameters.put("amount", amount.toString());
-        parameters.put("txTime", txTime.toString());
-        parameters.put("fee", fee.toString());
+        parameters.put("amount", amount);
+        parameters.put("txTime", txTime);
+        parameters.put("fee", fee);
         parameters.put("status", status);
 
         StringBuffer stringBuffer = new StringBuffer();
         parameters.forEach((key, value)->{
-            if (!StringUtils.isTrimEmpty(value)) {
-                stringBuffer.append(key).append("=").append(value).append("&");
+            if(value instanceof String) {
+                if (StringUtils.isTrimEmpty((String)value)) {
+                    return;
+                }
+            } else if(value == null) {
+                return;
             }
+            stringBuffer.append(key).append("=").append(value).append("&");
         });
 
         try {

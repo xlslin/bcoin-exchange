@@ -246,9 +246,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			,WITHDRAWAL_ID
 			,TX_HASH
 			,COIN_TYPE
-			,TX_FROM
 			,TX_TO
-			,CONTRACT_ADDRESS
 			,AMOUNT
 			,FEE
 			,STATUS

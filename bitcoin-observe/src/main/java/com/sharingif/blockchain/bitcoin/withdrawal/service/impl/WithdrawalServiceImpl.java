@@ -515,7 +515,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	@Override
 	public void initNotice(String id) {
 		Withdrawal withdrawal = withdrawalDAO.queryById(id);
-		if(!Withdrawal.STATUS_INIT_NOTICED.equals(withdrawal.getStatus())) {
+		if(!Withdrawal.STATUS_INIT_NOTICE.equals(withdrawal.getStatus())) {
 			return;
 		}
 
