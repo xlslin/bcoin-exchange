@@ -88,12 +88,15 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 
 	@Override
 	public int unLockAccount(String address, String coinType) {
-		Account account = new Account();
-		account.setAddress(address);
-		account.setCoinType(coinType);
-		account.setStatus(Account.STATUS_NORMAL);
+		Account account = getAccount(address, coinType);
 
-		return accountDAO.updateById(account);
+		Account updateAccount = new Account();
+		updateAccount.setId(account.getId());
+		updateAccount.setAddress(address);
+		updateAccount.setCoinType(coinType);
+		updateAccount.setStatus(Account.STATUS_NORMAL);
+
+		return accountDAO.updateById(updateAccount);
 	}
 
 	@Override

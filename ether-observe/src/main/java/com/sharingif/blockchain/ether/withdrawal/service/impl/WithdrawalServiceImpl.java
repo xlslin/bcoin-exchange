@@ -332,6 +332,8 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
 
         withdrawalDAO.updateById(updateWithdrawal);
 
+        accountService.unLockAccount(transactionBusiness.getTxFrom(), transactionBusiness.getCoinType());
+
     }
 
     @Override
