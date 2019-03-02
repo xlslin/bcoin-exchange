@@ -11,6 +11,7 @@ import com.sharingif.blockchain.ether.account.service.AccountJnlService;
 import com.sharingif.blockchain.ether.account.service.AccountService;
 import com.sharingif.blockchain.ether.app.autoconfigure.constants.CoinType;
 import com.sharingif.blockchain.ether.app.constants.ErrorConstants;
+import com.sharingif.blockchain.ether.app.exception.AccountException;
 import com.sharingif.blockchain.ether.block.service.EthereumBlockService;
 import com.sharingif.cube.core.exception.validation.ValidationCubeException;
 import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
@@ -70,12 +71,47 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 	}
 
 	@Override
-	public BigInteger getBalance(String address, String coinType) {
+	public int lockAccount(String id) {
+		Account account = new Account();
+		account.setId(id);
+		account.setStatus(Account.STATUS_LOCK);
+
+		return accountDAO.updateById(account);
+	}
+
+	@Override
+	public int unLockAccount(String address, String coinType) {
+		Account account = new Account();
+		account.setAddress(address);
+		account.setCoinType(coinType);
+		account.setStatus(Account.STATUS_NORMAL);
+
+		return accountDAO.updateById(account);
+	}
+
+	@Override
+	public int exceptionAccount(String id) {
+		Account account = new Account();
+		account.setId(id);
+		account.setStatus(Account.STATUS_EXCEPTION);
+
+		return accountDAO.updateById(account);
+	}
+
+	@Override
+	public Account getAccount(String address, String coinType) {
 		Account account = new Account();
 		account.setAddress(address);
 		account.setCoinType(coinType);
 
 		Account queryAccount = accountDAO.query(account);
+
+		return queryAccount;
+	}
+
+	@Override
+	public BigInteger getBalance(String address, String coinType) {
+		Account queryAccount = getAccount(address, coinType);
 
 		return queryAccount.getBalance();
 	}
@@ -205,60 +241,66 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 		Account queryAccount = new Account();
 		queryAccount.setCoinType(CoinType.ETH.name());
 		queryAccount.setBalance(balance.add(fee));
+		queryAccount.setStatus(Account.STATUS_NORMAL);
 		PaginationCondition<Account> paginationCondition = new PaginationCondition<Account>();
 		paginationCondition.setCondition(queryAccount);
 		paginationCondition.setQueryCount(false);
 		paginationCondition.setCurrentPage(1);
-		paginationCondition.setPageSize(20);
+		paginationCondition.setPageSize(1);
 		PaginationRepertory<Account> accountPaginationRepertory = accountDAO.queryPaginationListByCoinTypeBalance(paginationCondition);
 		List<Account> accountList = accountPaginationRepertory.getPageItems();
 		if(accountList == null || accountList.isEmpty()) {
 			return null;
 		}
 
-		for(Account account : accountList) {
-			BigInteger blockBalance = ethereumBlockService.getBalance(account.getAddress());
-			if(blockBalance.compareTo(balance) >= 0) {
-				return account;
-			}
+		Account account = accountList.get(0);
+		BigInteger blockBalance = ethereumBlockService.getBalance(account.getAddress());
+		if(blockBalance.compareTo(balance) != 0) {
+			logger.error("account exception, coin type:{}, account balance:{}, block balance:{}", account.getCoinType(), account.getBalance(), blockBalance);
+			exceptionAccount(account.getId());
+			throw new AccountException();
 		}
 
-		return null;
+		return account;
 	}
 
-	public Account getEthContractAccount(String coinType, BigInteger balance, BigInteger fee, String contractAddress, int currentPage) {
+	public Account getEthContractAccount(String coinType, BigInteger balance, BigInteger fee, String contractAddress) {
 		SubAccount querySubAccount = new SubAccount();
 		querySubAccount.setCoinType(CoinType.ETH.name());
 		querySubAccount.setBalance(fee);
 		querySubAccount.setSubCoinType(coinType);
 		querySubAccount.setSubBalance(balance);
+		querySubAccount.setStatus(Account.STATUS_NORMAL);
 		PaginationCondition<SubAccount> paginationCondition = new PaginationCondition<SubAccount>();
 		paginationCondition.setCondition(querySubAccount);
 		paginationCondition.setQueryCount(false);
-		paginationCondition.setCurrentPage(currentPage);
-		paginationCondition.setPageSize(20);
+		paginationCondition.setCurrentPage(1);
+		paginationCondition.setPageSize(1);
 		PaginationRepertory<Account> accountPaginationRepertory = accountDAO.queryPaginationListByCoinTypeSubCoinTypeBalanceSubBalance(paginationCondition);
 		List<Account> accountList = accountPaginationRepertory.getPageItems();
 		if(accountList == null || accountList.isEmpty()) {
 			return null;
 		}
 
-		for(Account account : accountList) {
-			BigInteger blockEthBalance = ethereumBlockService.getBalance(account.getAddress());
-			if(blockEthBalance.compareTo(fee) < 0 ) {
-				continue;
-			}
-			BigInteger blockContractBalance = ethereumBlockService.getErc20ContractService().balanceOf(account.getAddress(), contractAddress);
-			if (blockContractBalance.compareTo(balance) < 0) {
-				continue;
-			}
+		Account account = accountList.get(0);
+		Account ethAccount = getAccount(account.getAddress(), CoinType.ETH.name());
 
-			Account queryBalanceAccount = new Account();
-			queryBalanceAccount.setAddress(account.getAddress());
-			return accountDAO.query(queryBalanceAccount);
+		BigInteger blockEthBalance = ethereumBlockService.getBalance(account.getAddress());
+		if(blockEthBalance.compareTo(ethAccount.getBalance()) != 0) {
+			logger.error("account exception, coin type:{}, account balance:{}, block balance:{}", CoinType.ETH.name(), ethAccount.getBalance(), blockEthBalance);
+			exceptionAccount(account.getId());
+			throw new AccountException();
 		}
 
-		return getEthContractAccount(coinType, balance, fee, contractAddress,currentPage+1);
+		Account contractAccount = getAccount(account.getAddress(), coinType);
+		BigInteger blockContractBalance = ethereumBlockService.getErc20ContractService().balanceOf(account.getAddress(), contractAddress);
+		if (blockContractBalance.compareTo(contractAccount.getBalance()) != 0) {
+			logger.error("account exception, coin type:{}, account balance:{}, block balance:{}", coinType, contractAccount.getBalance(), blockContractBalance);
+			exceptionAccount(account.getId());
+			throw new AccountException();
+		}
+
+		return contractAccount;
 	}
 
 	@Override
@@ -267,7 +309,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 		if(CoinType.ETH.name().equals(coinType)) {
 			return getEthAccount(balance, fee);
 		} else {
-			return getEthContractAccount(coinType, balance, fee, contractAddress,1);
+			return getEthContractAccount(coinType, balance, fee, contractAddress);
 		}
 
 	}

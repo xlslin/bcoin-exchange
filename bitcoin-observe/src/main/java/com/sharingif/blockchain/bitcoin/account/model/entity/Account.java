@@ -13,12 +13,10 @@ public class Account implements java.io.Serializable, IObjectDateOperationHistor
 	 * 账户状态(NORMAL:正常)
 	 */
 	public static final String STATUS_NORMAL = "NORMAL";
-
 	/**
 	 * 账户状态(LOCK:锁定)
 	 */
 	public static final String STATUS_LOCK = "LOCK";
-
 	/**
 	 * 账户状态(EXCEPTION:异常)
 	 */

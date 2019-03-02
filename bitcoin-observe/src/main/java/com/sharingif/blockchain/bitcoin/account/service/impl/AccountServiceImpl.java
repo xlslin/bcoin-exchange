@@ -100,7 +100,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 	public int exceptionAccount(String id) {
 		Account account = new Account();
 		account.setId(id);
-		account.setStatus(Account.STATUS_LOCK);
+		account.setStatus(Account.STATUS_EXCEPTION);
 
 		return accountDAO.updateById(account);
 	}
