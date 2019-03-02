@@ -287,7 +287,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 	}
 
 	protected List<AccountUnspent> getAccountListByBalance(PaginationCondition<Account> paginationCondition, BigInteger balance, List<AccountUnspent> accountUnspentList, BigInteger accounTotalBalance) {
-		PaginationRepertory<Account> accountPaginationRepertory = accountDAO.queryPaginationListOrderByBalanceAsc(paginationCondition);
+		PaginationRepertory<Account> accountPaginationRepertory = accountDAO.queryPaginationListByCoinTypeBalanceStatus(paginationCondition);
 		List<Account> queryAccountList = accountPaginationRepertory.getPageItems();
 
 		if(queryAccountList == null || queryAccountList.isEmpty()) {
@@ -295,7 +295,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 		}
 		accounTotalBalance = getAccountListByBalance(balance, accounTotalBalance, accountUnspentList, queryAccountList);
 
-		if(accounTotalBalance.compareTo(balance) > 0) {
+		if(accounTotalBalance.compareTo(balance) > -1) {
 			return accountUnspentList;
 		} else {
 			paginationCondition.setCurrentPage(paginationCondition.getCurrentPage()+1);
@@ -308,6 +308,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 		Account queryAccount = new Account();
 		queryAccount.setCoinType(CoinType.BTC.name());
 		queryAccount.setStatus(Account.STATUS_NORMAL);
+		queryAccount.setBalance(BigInteger.ZERO);
 		PaginationCondition<Account> paginationCondition = new PaginationCondition<Account>();
 		paginationCondition.setCondition(queryAccount);
 		paginationCondition.setQueryCount(false);
@@ -315,13 +316,6 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 		paginationCondition.setPageSize(20);
 
 		return getAccountListByBalance(paginationCondition, balance, new ArrayList<AccountUnspent>(), BigInteger.ZERO);
-	}
-
-	public AccountUnspent getUsdtAccountByBalance(BigInteger btcBalance, BigInteger usdtBalance, int currentPage) {
-
-
-		return getUsdtAccountByBalance(btcBalance, usdtBalance, currentPage+1);
-
 	}
 
 	@Override

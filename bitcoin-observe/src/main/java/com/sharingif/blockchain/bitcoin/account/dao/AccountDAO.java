@@ -65,6 +65,13 @@ public interface AccountDAO extends BaseDAO<Account, String> {
     PaginationRepertory<Account> queryPaginationListOrderByBalanceAsc(PaginationCondition<Account> paginationCondition);
 
     /**
+     * 根据币种、大于余额、状态，余额升序查询
+     * @param paginationCondition
+     * @return
+     */
+    PaginationRepertory<Account> queryPaginationListByCoinTypeBalanceStatus(PaginationCondition<Account> paginationCondition);
+
+    /**
      * 根据2个币种、大于等于余额查询
      * @param paginationCondition
      * @return
