@@ -45,12 +45,13 @@ public class TransactionBusinessDAOImpl extends BaseDAOImpl<TransactionBusiness,
     }
 
     @Override
-    public int queryCountByTypeStatus(String type, String status) {
+    public int queryCountByTxHashTypeStatus(String txHash, String type, String status) {
         TransactionBusiness transactionBusiness = new TransactionBusiness();
+        transactionBusiness.setTxHash(txHash);
         transactionBusiness.setType(type);
         transactionBusiness.setStatus(status);
 
-        return query("queryCountByTypeStatus", transactionBusiness, Integer.TYPE);
+        return query("queryCountByTxHashTypeStatus", transactionBusiness, Integer.TYPE);
     }
 
 }

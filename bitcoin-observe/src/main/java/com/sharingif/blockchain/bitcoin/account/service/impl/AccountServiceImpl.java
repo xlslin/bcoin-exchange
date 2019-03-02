@@ -97,6 +97,15 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 	}
 
 	@Override
+	public int exceptionAccount(String id) {
+		Account account = new Account();
+		account.setId(id);
+		account.setStatus(Account.STATUS_LOCK);
+
+		return accountDAO.updateById(account);
+	}
+
+	@Override
 	public Account getAccount(String address, String coinType) {
 		Account account = new Account();
 		account.setAddress(address);
@@ -252,6 +261,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 			}
 			if(account.getBalance().compareTo(blockBalance) !=0) {
 				logger.error("account exception, coin type:{}, account balance:{}, block balance:{}", account.getCoinType(), account.getBalance(), blockBalance);
+				exceptionAccount(account.getId());
 				throw new AccountException();
 			}
 
@@ -341,6 +351,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 		BigInteger blockUsdtBalance = omniBlockService.getUsdtBalance(account.getAddress());
 		if(account.getBalance().compareTo(blockUsdtBalance) != 0) {
 			logger.error("account exception, coin type:{}, account balance:{}, block balance:{}", account.getCoinType(), account.getBalance(), blockUsdtBalance);
+			exceptionAccount(account.getId());
 			throw new AccountException();
 		}
 
@@ -353,6 +364,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 		}
 		if(btcAccountBalance.compareTo(blockBtcBalance) !=0) {
 			logger.error("account exception, coin type:{}, account balance:{}, block balance:{}",  CoinType.BTC.name(), account.getBalance(), blockBtcBalance);
+			exceptionAccount(account.getId());
 			throw new AccountException();
 		}
 

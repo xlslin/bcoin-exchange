@@ -37,11 +37,12 @@ public interface TransactionBusinessDAO extends BaseDAO<TransactionBusiness, Str
     int updateByBlockNumberBlockHash(TransactionBusiness transactionBusiness);
 
     /**
-     * 根据类型、状态查询条数
+     * 根据txHash、类型、状态查询条数
+     * @param txHash
      * @param type
      * @param status
      * @return
      */
-    int queryCountByTypeStatus(String type, String status);
+    int queryCountByTxHashTypeStatus(String txHash, String type, String status);
 
 }

@@ -13,18 +13,25 @@ import java.util.List;
 public interface AccountService extends IBaseService<Account, java.lang.String> {
 
     /**
-     * 根据id锁定账户
+     * 账户状态改为锁定
      * @param id
      */
     int lockAccount(String id);
 
     /**
-     * 根据id解锁账户
+     * 账户状态改为正常
      * @param address
      * @param coinType
      * @return
      */
     int unLockAccount(String address, String coinType);
+
+    /**
+     * 账户状态改为异常
+     * @param id
+     * @return
+     */
+    int exceptionAccount(String id);
 
     /**
      * 查询账户信息

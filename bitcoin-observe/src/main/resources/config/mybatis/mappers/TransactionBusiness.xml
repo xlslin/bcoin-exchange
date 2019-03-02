@@ -373,7 +373,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			BLOCK_HASH = #{blockHash}
 	</update>
 
-	<select id="queryCountByTypeStatus" resultType="Integer">
+	<select id="queryCountByTxHashTypeStatus" resultType="Integer">
 		SELECT
 			COUNT(0)
 		FROM
@@ -382,6 +382,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			TYPE = #{type}
 		AND
 			STATUS = #{status}
+		AND
+			TX_HASH = #{txHash}
 	</select>
 	
 </mapper>
