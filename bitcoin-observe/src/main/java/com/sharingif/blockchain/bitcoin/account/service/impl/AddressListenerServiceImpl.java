@@ -1,27 +1,25 @@
 package com.sharingif.blockchain.bitcoin.account.service.impl;
 
 
-import javax.annotation.Resource;
-
+import com.sharingif.blockchain.bitcoin.account.dao.AddressListenerDAO;
+import com.sharingif.blockchain.bitcoin.account.model.entity.AddressListener;
+import com.sharingif.blockchain.bitcoin.account.service.AddressListenerService;
 import com.sharingif.blockchain.bitcoin.api.account.entity.AddressListenerAddReq;
 import com.sharingif.blockchain.bitcoin.block.service.BitCoinBlockService;
+import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.sharingif.blockchain.bitcoin.account.model.entity.AddressListener;
-import com.sharingif.blockchain.bitcoin.account.dao.AddressListenerDAO;
-import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
-import com.sharingif.blockchain.bitcoin.account.service.AddressListenerService;
-
-import java.util.HashMap;
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener, java.lang.String> implements AddressListenerService, InitializingBean {
 
-	private Map<String,String> addressMap = new HashMap<>();
+	private Map<String,String> addressMap = new ConcurrentHashMap<>();
 
 	private AddressListenerDAO addressListenerDAO;
 	private BitCoinBlockService bitCoinBlockService;

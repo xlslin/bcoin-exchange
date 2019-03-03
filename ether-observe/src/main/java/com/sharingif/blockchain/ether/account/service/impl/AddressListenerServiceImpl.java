@@ -5,21 +5,19 @@ import com.sharingif.blockchain.ether.account.dao.AddressListenerDAO;
 import com.sharingif.blockchain.ether.account.model.entity.AddressListener;
 import com.sharingif.blockchain.ether.account.service.AddressListenerService;
 import com.sharingif.blockchain.ether.api.account.entity.AddressListenerAddReq;
-import com.sharingif.blockchain.ether.api.account.entity.AddressListenerIsWatchReq;
-import com.sharingif.blockchain.ether.api.account.entity.AddressListenerIsWatchRsp;
 import com.sharingif.cube.support.service.base.impl.BaseServiceImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener, java.lang.String> implements AddressListenerService, InitializingBean {
 
-	private Map<String,String> addressMap = new HashMap<>();
+	private Map<String,String> addressMap = new ConcurrentHashMap<>();
 
 	private AddressListenerDAO addressListenerDAO;
 
