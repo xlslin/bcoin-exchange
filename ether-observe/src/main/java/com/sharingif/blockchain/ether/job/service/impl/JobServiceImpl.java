@@ -1,7 +1,5 @@
 package com.sharingif.blockchain.ether.job.service.impl;
 
-import com.sharingif.blockchain.ether.account.model.entity.AddressListener;
-import com.sharingif.blockchain.ether.account.service.AddressListenerService;
 import com.sharingif.blockchain.ether.job.model.entity.BatchJob;
 import com.sharingif.blockchain.ether.job.service.BatchJobService;
 import com.sharingif.cube.batch.core.JobConfig;
@@ -10,7 +8,6 @@ import com.sharingif.cube.batch.core.JobService;
 import com.sharingif.cube.batch.core.handler.MultithreadDispatcherHandler;
 import com.sharingif.cube.batch.core.handler.SimpleDispatcherHandler;
 import com.sharingif.cube.batch.core.request.JobRequest;
-import com.sharingif.cube.core.exception.validation.ValidationCubeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -57,7 +54,6 @@ public class JobServiceImpl implements JobService, InitializingBean {
     private MultithreadDispatcherHandler jobMultithreadDispatcherHandler;
     private DataSourceTransactionManager dataSourceTransactionManager;
     private Map<String, JobConfig> allJobConfig;
-    private AddressListenerService addressListenerService;
 
     @Value("${job.queue.size}")
     public void setQueueSize(int queueSize) {
@@ -87,10 +83,6 @@ public class JobServiceImpl implements JobService, InitializingBean {
     @Override
     public void add(JobRequest jobRequest) {
 
-    }
-    @Resource
-    public void setAddressListenerService(AddressListenerService addressListenerService) {
-        this.addressListenerService = addressListenerService;
     }
 
     @Override
@@ -158,25 +150,8 @@ public class JobServiceImpl implements JobService, InitializingBean {
         }
     }
 
-//    @Transactional
-    protected void test() {
-
-        AddressListener addressListener1 = new AddressListener();
-        addressListener1.setAddress("11111111");
-        addressListenerService.add(addressListener1);
-
-        if(true) {
-            throw new ValidationCubeException("");
-        }
-
-        AddressListener addressListener2 = new AddressListener();
-        addressListener2.setAddress("22222222");
-        addressListenerService.add(addressListener2);
-    }
-
     @Override
     public synchronized void putQueue() {
-        test();
 
         if(queue.size() >= queueSize) {
             return;
