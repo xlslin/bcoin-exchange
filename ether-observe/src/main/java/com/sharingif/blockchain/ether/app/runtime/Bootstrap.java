@@ -47,7 +47,6 @@ public class Bootstrap {
     }
 
     @EnableTransactionManagement(mode=AdviceMode.ASPECTJ)
-    @EnableLoadTimeWeaving(aspectjWeaving= EnableLoadTimeWeaving.AspectJWeaving.ENABLED)
     @EnableAutoConfiguration
     @ComponentScan(
             basePackages = "com.sharingif.blockchain.ether.*.dao,com.sharingif.blockchain.ether.*.service,com.sharingif.blockchain.ether.*.scheduled,com.sharingif.blockchain.ether.app.autoconfigure,com.sharingif.cube.spring.boot"
