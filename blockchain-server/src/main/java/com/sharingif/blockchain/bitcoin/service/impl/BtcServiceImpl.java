@@ -129,6 +129,8 @@ public class BtcServiceImpl implements BtcService {
 
         cryptoOmniSimpleSendSignMessageReq.setOpReturn(req.getOpReturn());
 
+        cryptoOmniSimpleSendSignMessageReq.setChange(req.getChange());
+
         com.sharingif.blockchain.crypto.api.bitcoin.entity.SignMessageRsp cryptoSignMessageRsp = bitCoinApiService.omniSimpleSendSignMessage(cryptoOmniSimpleSendSignMessageReq);
 
         SignMessageRsp rsp = new SignMessageRsp();

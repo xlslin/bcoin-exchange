@@ -118,7 +118,7 @@ public class BitCoinServiceImpl implements BitCoinService {
         builder.put(req.getOpReturn(), 0L);
 
         builder.withFee(req.getFee().longValue());
-        builder.changeTo(req.getVin().getFromAddress());
+        builder.changeTo(req.getChange());
 
         SignMessageRsp rsp = new SignMessageRsp();
         rsp.setHexValue(builder.build().getRawTransaction());

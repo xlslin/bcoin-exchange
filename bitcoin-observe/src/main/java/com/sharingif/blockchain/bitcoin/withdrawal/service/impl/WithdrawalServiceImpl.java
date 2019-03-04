@@ -383,6 +383,8 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 			String opReturn = String.format("6f6d6e6900000000%08x%016x", omniUsdtProperty, withdrawal.getAmount());
 			req.setOpReturn(opReturn);
 
+			req.setChange(accountUnspent.getAccount().getAddress());
+
 			SignMessageRsp rsp = bitCoinApiService.omniSimpleSendSignMessage(req);
 			String hexstring = rsp.getHexValue();
 

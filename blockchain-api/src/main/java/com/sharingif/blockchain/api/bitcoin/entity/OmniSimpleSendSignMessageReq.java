@@ -24,6 +24,10 @@ public class OmniSimpleSendSignMessageReq {
      * op_return
      */
     private String opReturn;
+    /**
+     * change
+     */
+    private String change;
 
     public BigInteger getFee() {
         return fee;
@@ -57,6 +61,14 @@ public class OmniSimpleSendSignMessageReq {
         this.opReturn = opReturn;
     }
 
+    public String getChange() {
+        return change;
+    }
+
+    public void setChange(String change) {
+        this.change = change;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("OmniSimpleSendSignMessageReq{");
@@ -64,6 +76,7 @@ public class OmniSimpleSendSignMessageReq {
         sb.append(", vin=").append(vin);
         sb.append(", vout=").append(vout);
         sb.append(", opReturn='").append(opReturn).append('\'');
+        sb.append(", change='").append(change).append('\'');
         sb.append('}');
         return sb.toString();
     }
