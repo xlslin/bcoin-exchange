@@ -3,6 +3,7 @@ package com.sharingif.blockchain.ether.withdrawal.model.entity;
 
 import com.sharingif.blockchain.ether.api.withdrawal.entity.WithdrawalEtherReq;
 import com.sharingif.cube.components.monitor.IObjectDateOperationHistory;
+import com.sharingif.cube.components.sequence.Sequence;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -49,7 +50,8 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 	//columns START
     /**
      * id			db_column: ID 
-     */	
+     */
+	@Sequence(ref="uuidSequenceGenerator")
 	private String id;
     /**
      * 交易业务表唯一编号			db_column: TRANSACTION_BUSINESS_ID 
