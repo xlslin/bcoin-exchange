@@ -340,7 +340,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     public void finishNotice() {
         TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
         queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
-        queryTransactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_INVALID);
+        queryTransactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
         queryTransactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_FINISH);
         queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
         PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
