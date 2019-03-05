@@ -66,8 +66,8 @@ public class AccountDAOImpl extends BaseDAOImpl<Account, String> implements Acco
     }
 
     @Override
-    public PaginationRepertory<Account> queryPaginationListByCoinTypeBalance(PaginationCondition<Account> paginationCondition) {
-        return queryPagination("queryPaginationListByCoinTypeBalance", paginationCondition);
+    public PaginationRepertory<Account> queryPaginationListByCoinTypeBalanceStatus(PaginationCondition<Account> paginationCondition) {
+        return queryPagination("queryPaginationListByCoinTypeBalanceStatus", paginationCondition);
     }
 
     @Override

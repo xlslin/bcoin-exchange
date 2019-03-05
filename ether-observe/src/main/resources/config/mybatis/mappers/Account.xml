@@ -295,7 +295,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			FROZEN_AMOUNT >= #{frozenAmount}
 	</update>
 
-	<select id="queryPaginationListByCoinTypeBalance" parameterType="PaginationCondition" resultMap="accountResultMap">
+	<select id="queryPaginationListByCoinTypeBalanceStatus" parameterType="PaginationCondition" resultMap="accountResultMap">
 		SELECT
 			ID
 			,ADDRESS
@@ -313,6 +313,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			COIN_TYPE = #{coinType}
 		AND
 			BALANCE >= #{balance}
+		AND
+			STATUS = #{status}
 		ORDER BY
 			BALANCE
 	</select>

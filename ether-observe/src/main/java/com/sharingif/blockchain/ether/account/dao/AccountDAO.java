@@ -58,11 +58,11 @@ public interface AccountDAO extends BaseDAO<Account, String> {
     int updateSubFrozenAmountTotalOutByAddressCoinType(String address, String coinType, BigInteger frozenAmount);
 
     /**
-     * 根据币种、大于等于余额查询
+     * 根据币种、大于等于余额、状态查询
      * @param paginationCondition
      * @return
      */
-    PaginationRepertory<Account> queryPaginationListByCoinTypeBalance(PaginationCondition<Account> paginationCondition);
+    PaginationRepertory<Account> queryPaginationListByCoinTypeBalanceStatus(PaginationCondition<Account> paginationCondition);
 
     /**
      * 根据2个币种、大于等于余额查询

@@ -250,7 +250,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 		paginationCondition.setQueryCount(false);
 		paginationCondition.setCurrentPage(1);
 		paginationCondition.setPageSize(1);
-		PaginationRepertory<Account> accountPaginationRepertory = accountDAO.queryPaginationListByCoinTypeBalance(paginationCondition);
+		PaginationRepertory<Account> accountPaginationRepertory = accountDAO.queryPaginationListByCoinTypeBalanceStatus(paginationCondition);
 		List<Account> accountList = accountPaginationRepertory.getPageItems();
 		if(accountList == null || accountList.isEmpty()) {
 			return null;
@@ -258,7 +258,7 @@ public class AccountServiceImpl extends BaseServiceImpl<Account, java.lang.Strin
 
 		Account account = accountList.get(0);
 		BigInteger blockBalance = ethereumBlockService.getBalance(account.getAddress());
-		if(blockBalance.compareTo(balance) != 0) {
+		if(blockBalance.compareTo(account.getBalance()) != 0) {
 			logger.error("account exception, coin type:{}, account balance:{}, block balance:{}", account.getCoinType(), account.getBalance(), blockBalance);
 			exceptionAccount(account.getId());
 			throw new AccountException();
