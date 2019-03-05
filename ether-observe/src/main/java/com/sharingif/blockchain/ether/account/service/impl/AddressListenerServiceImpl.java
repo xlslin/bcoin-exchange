@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener, java.lang.String> implements AddressListenerService, InitializingBean {
 
-	private Map<String,String> addressMap = new ConcurrentHashMap<>();
+	private Map<String,String> addressMap;
 
 	private AddressListenerDAO addressListenerDAO;
 
@@ -31,7 +31,7 @@ public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener,
 	}
 
 	protected void addAddressMap(String address) {
-		addressMap.put(address, null);
+		addressMap.put(address, address);
 	}
 
 	@Override
@@ -58,6 +58,9 @@ public class AddressListenerServiceImpl extends BaseServiceImpl<AddressListener,
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		List<AddressListener> addressListenerList = addressListenerDAO.queryAll();
+
+        addressMap = new ConcurrentHashMap<String,String>(addressListenerList.size()+((int) (addressListenerList.size()*0.3)));
+
 		for(AddressListener addressListener : addressListenerList) {
 			addAddressMap(addressListener.getAddress());
 		}
