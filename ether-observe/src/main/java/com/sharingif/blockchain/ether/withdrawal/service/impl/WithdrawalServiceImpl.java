@@ -332,7 +332,10 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
 
         withdrawalDAO.updateById(updateWithdrawal);
 
-        accountService.unLockAccount(transactionBusiness.getTxFrom(), transactionBusiness.getCoinType());
+        accountService.unLockAccount(withdrawal.getTxFrom(), withdrawal.getCoinType());
+        if(!CoinType.ETH.name().equals(withdrawal.getCoinType())) {
+            accountService.unLockAccount(withdrawal.getTxFrom(), CoinType.ETH.name());
+        }
 
     }
 
