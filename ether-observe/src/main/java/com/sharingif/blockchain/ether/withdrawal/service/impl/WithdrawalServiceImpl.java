@@ -444,7 +444,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         updateStatusToProcessing(withdrawal.getId());
         accountService.lockAccount(account.getId());
         if(!CoinType.ETH.name().equals(withdrawal.getCoinType())) {
-            Account contractAccount = accountService.getAccount(account.getAddress(), withdrawal.getCoinType());
+            Account contractAccount = accountService.getAccount(account.getAddress(), CoinType.ETH.name());
             accountService.lockAccount(contractAccount.getId());
         }
 
