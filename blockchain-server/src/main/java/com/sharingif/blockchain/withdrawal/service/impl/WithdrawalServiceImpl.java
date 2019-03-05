@@ -29,7 +29,6 @@ public class WithdrawalServiceImpl implements WithdrawalService {
 
     @Override
     public WithdrawalEtherRsp ether(WithdrawalEtherReq req) {
-        req.setAddress(req.getAddress().toLowerCase());
         return withdrawalEtherApiService.ether(req);
     }
 

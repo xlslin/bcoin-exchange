@@ -226,8 +226,8 @@ public class Withdrawal implements java.io.Serializable, IObjectDateOperationHis
 		Withdrawal withdrawal = new Withdrawal();
 		withdrawal.setWithdrawalId(req.getWithdrawalId());
 		withdrawal.setCoinType(req.getCoinType());
-		withdrawal.setTxTo(req.getAddress());
-		withdrawal.setContractAddress(req.getContractAddress());
+		withdrawal.setTxTo(req.getAddress().toLowerCase());
+		withdrawal.setContractAddress(req.getContractAddress().toLowerCase());
 		withdrawal.setAmount(req.getAmount());
 		withdrawal.setGasLimit(req.getGasLimit());
 		withdrawal.setGasPrice(req.getGasPrice());
