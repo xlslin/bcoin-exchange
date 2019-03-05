@@ -257,21 +257,7 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 				continue;
 			}
 
-			SignMessageVinReq signMessageVinReq = new SignMessageVinReq();
-			signMessageVinReq.setFromAddress(accountUnspent.getAccount().getAddress());
-
-			List<SignMessageUnspentReq> signMessageUnspentReqList =  new ArrayList<SignMessageUnspentReq>(unspentList.size());
-			for(Unspent unspent : unspentList) {
-				SignMessageUnspentReq signMessageUnspentReq = new SignMessageUnspentReq();
-				signMessageUnspentReq.setTxId(unspent.getTxId());
-				signMessageUnspentReq.setVout(unspent.getvOut());
-				signMessageUnspentReq.setScriptPubKey(unspent.getScriptPubKey());
-				signMessageUnspentReq.setAmount(unspent.getAmount().toBigInteger());
-
-				signMessageUnspentReqList.add(signMessageUnspentReq);
-			}
-
-			signMessageVinReq.setUnspentList(signMessageUnspentReqList);
+			SignMessageVinReq signMessageVinReq = accountUnspent.getSignMessageVinReq();
 
 			vinList.add(signMessageVinReq);
 		}
@@ -357,23 +343,8 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 			OmniSimpleSendSignMessageReq req = new OmniSimpleSendSignMessageReq();
 			req.setFee(fee);
 
-			SignMessageVinReq vin = new SignMessageVinReq();
+			SignMessageVinReq vin = accountUnspent.getSignMessageVinReq();
 			req.setVin(vin);
-
-			vin.setFromAddress(accountUnspent.getAccount().getAddress());
-
-			List<Unspent> unspentList = accountUnspent.getUnspentList();
-			List<SignMessageUnspentReq> signMessageUnspentReqList =  new ArrayList<SignMessageUnspentReq>(unspentList.size());
-			unspentList.forEach(unspent -> {
-				SignMessageUnspentReq signMessageUnspentReq = new SignMessageUnspentReq();
-				signMessageUnspentReq.setTxId(unspent.getTxId());
-				signMessageUnspentReq.setVout(unspent.getvOut());
-				signMessageUnspentReq.setScriptPubKey(unspent.getScriptPubKey());
-				signMessageUnspentReq.setAmount(unspent.getAmount().toBigInteger());
-
-				signMessageUnspentReqList.add(signMessageUnspentReq);
-			});
-			vin.setUnspentList(signMessageUnspentReqList);
 
 			SignMessageVoutReq vout = new SignMessageVoutReq();
 			vout.setToAddress(withdrawal.getTxTo());
