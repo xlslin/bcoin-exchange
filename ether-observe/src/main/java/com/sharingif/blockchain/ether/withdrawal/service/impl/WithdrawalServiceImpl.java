@@ -174,24 +174,10 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     }
 
     @Override
-    public void readyInitNotice() {
-        Withdrawal queryWithdrawal = new Withdrawal();
-        queryWithdrawal.setStatus(Withdrawal.STATUS_PROCESSING);
-        PaginationCondition<Withdrawal> paginationCondition = new PaginationCondition<>();
-        paginationCondition.setCondition(queryWithdrawal);
-        paginationCondition.setQueryCount(false);
-        paginationCondition.setCurrentPage(1);
-        paginationCondition.setPageSize(20);
-
-        PaginationRepertory<Withdrawal> withdrawalPaginationRepertory = withdrawalDAO.queryPagination(paginationCondition);
-        List<Withdrawal> withdrawalList = withdrawalPaginationRepertory.getPageItems();
-        if(withdrawalList == null || withdrawalList.isEmpty()) {
-            return;
-        }
-
-        for (Withdrawal withdrawal : withdrawalList) {
+    public void readyInitNotice(List<Withdrawal> withdrawalList) {
+        withdrawalList.forEach(withdrawal ->{
             readyInitNotice(withdrawal);
-        }
+        });
     }
 
     @Override
@@ -340,29 +326,12 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     }
 
     @Override
-    public void finishNotice() {
-        TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-        queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
-        queryTransactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
-        queryTransactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_FINISH);
-        queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
-        PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
-        paginationCondition.setCondition(queryTransactionBusiness);
-        paginationCondition.setQueryCount(false);
-        paginationCondition.setCurrentPage(1);
-        paginationCondition.setPageSize(20);
-
-        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessDAO.queryPagination(paginationCondition);
-        List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
-        if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
-            return;
-        }
-
-        for (TransactionBusiness transactionBusiness : transactionBusinessList) {
+    public void finishNotice(List<TransactionBusiness> transactionBusinessList) {
+        transactionBusinessList.forEach(transactionBusiness -> {
             Transaction transaction = transactionService.getById(transactionBusiness.getTransactionId());
             Withdrawal withdrawal = getWithdrawalByTxHash(transactionBusiness.getTxHash());
             finishNotice(transactionBusiness, transaction, withdrawal);
-        }
+        });
     }
 
     @Override
@@ -468,24 +437,10 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     }
 
     @Override
-    public void withdrawalEther() {
-        Withdrawal queryWithdrawal = new Withdrawal();
-        queryWithdrawal.setStatus(Withdrawal.STATUS_UNTREATED);
-        PaginationCondition<Withdrawal> paginationCondition = new PaginationCondition<Withdrawal>();
-        paginationCondition.setCondition(queryWithdrawal);
-        paginationCondition.setQueryCount(false);
-        paginationCondition.setCurrentPage(1);
-        paginationCondition.setPageSize(20);
-
-        PaginationRepertory<Withdrawal> withdrawalPaginationRepertory = withdrawalDAO.queryPagination(paginationCondition);
-        List<Withdrawal> withdrawalList = withdrawalPaginationRepertory.getPageItems();
-        if(withdrawalList == null || withdrawalList.isEmpty()) {
-            return;
-        }
-
-        for(Withdrawal withdrawal : withdrawalList) {
+    public void withdrawalEther(List<Withdrawal> withdrawalList) {
+        withdrawalList.forEach(withdrawal -> {
             withdrawalEther(withdrawal);
-        }
+        });
     }
 
     @Transactional
@@ -499,29 +454,11 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
         jobService.add(null, jobModel);
     }
 
-    protected void readyWithdrawalNotice(String status, JobConfig jobConfig) {
-        Withdrawal queryWithdrawal = new Withdrawal();
-        queryWithdrawal.setStatus(status);
-        PaginationCondition<Withdrawal> paginationCondition = new PaginationCondition<Withdrawal>();
-        paginationCondition.setCondition(queryWithdrawal);
-        paginationCondition.setQueryCount(false);
-        paginationCondition.setCurrentPage(1);
-        paginationCondition.setPageSize(20);
-
-        PaginationRepertory<Withdrawal> withdrawalPaginationRepertory = withdrawalDAO.queryPagination(paginationCondition);
-        List<Withdrawal> withdrawalList = withdrawalPaginationRepertory.getPageItems();
-        if(withdrawalList == null || withdrawalList.isEmpty()) {
-            return;
-        }
-
-        for(Withdrawal withdrawal : withdrawalList) {
-            readyWithdrawalNotice(withdrawal, jobConfig);
-        }
-    }
-
     @Override
-    public void readyWithdrawalSuccessNotice() {
-        readyWithdrawalNotice(Withdrawal.STATUS_SUCCESS, withdrawalSuccessNoticeJobConfig);
+    public void readyWithdrawalSuccessNotice(List<Withdrawal> withdrawalList) {
+        withdrawalList.forEach(withdrawal ->{
+            readyWithdrawalNotice(withdrawal, withdrawalSuccessNoticeJobConfig);
+        });
     }
 
     @Override
@@ -555,8 +492,10 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, String> i
     }
 
     @Override
-    public void readyWithdrawalFailureNotice() {
-        readyWithdrawalNotice(Withdrawal.STATUS_FAILURE, withdrawalFailureNoticeJobConfig);
+    public void readyWithdrawalFailureNotice(List<Withdrawal> withdrawalList) {
+        withdrawalList.forEach(withdrawal ->{
+            readyWithdrawalNotice(withdrawal, withdrawalFailureNoticeJobConfig);
+        });
     }
 
     @Override

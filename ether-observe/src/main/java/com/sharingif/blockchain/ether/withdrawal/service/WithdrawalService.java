@@ -7,6 +7,8 @@ import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.ether.withdrawal.model.entity.Withdrawal;
 import com.sharingif.cube.support.service.base.IBaseService;
 
+import java.util.List;
+
 public interface WithdrawalService extends IBaseService<Withdrawal, String> {
 
     /**
@@ -52,8 +54,9 @@ public interface WithdrawalService extends IBaseService<Withdrawal, String> {
 
     /**
      * 准备提现通知
+     * @param withdrawalList
      */
-    void readyInitNotice();
+    void readyInitNotice(List<Withdrawal> withdrawalList);
 
     /**
      * 初始化提现通知
@@ -76,9 +79,9 @@ public interface WithdrawalService extends IBaseService<Withdrawal, String> {
 
     /**
      * 提现完成通知
-     * @return
+     * @param transactionBusinessList
      */
-    void finishNotice();
+    void finishNotice(List<TransactionBusiness> transactionBusinessList);
 
     /**
      * 添加ether取现
@@ -89,13 +92,15 @@ public interface WithdrawalService extends IBaseService<Withdrawal, String> {
 
     /**
      * ether取现
+     * @param withdrawalList
      */
-    void withdrawalEther();
+    void withdrawalEther(List<Withdrawal> withdrawalList);
 
     /**
      * 准备提现成功通知
+     * @param withdrawalList
      */
-    void readyWithdrawalSuccessNotice();
+    void readyWithdrawalSuccessNotice(List<Withdrawal> withdrawalList);
 
     /**
      * 提现成功通知
@@ -105,8 +110,9 @@ public interface WithdrawalService extends IBaseService<Withdrawal, String> {
 
     /**
      * 准备提现失败通知
+     * @param withdrawalList
      */
-    void readyWithdrawalFailureNotice();
+    void readyWithdrawalFailureNotice(List<Withdrawal> withdrawalList);
 
     /**
      * 提现失败通知
