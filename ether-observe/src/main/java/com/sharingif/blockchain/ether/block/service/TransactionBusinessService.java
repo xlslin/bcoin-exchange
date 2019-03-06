@@ -5,6 +5,7 @@ import com.sharingif.blockchain.ether.block.model.entity.TransactionBusiness;
 import com.sharingif.cube.support.service.base.IBaseService;
 
 import java.math.BigInteger;
+import java.util.List;
 
 
 public interface TransactionBusinessService extends IBaseService<TransactionBusiness, java.lang.String> {
@@ -50,8 +51,15 @@ public interface TransactionBusinessService extends IBaseService<TransactionBusi
     void updateTxStatusToInvalidSettleStatusToReady(BigInteger blockNumber, String blockHash);
 
     /**
-     * 清算
+     * 获取准备清算数据
+     * @return
      */
-    void settle();
+    List<TransactionBusiness> getSettleStatusReady();
+
+    /**
+     * 清算
+     * @param transactionBusinessList
+     */
+    void settle(List<TransactionBusiness> transactionBusinessList);
 
 }

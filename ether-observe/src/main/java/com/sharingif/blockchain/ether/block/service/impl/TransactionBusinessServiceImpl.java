@@ -129,18 +129,18 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 	}
 
 	@Override
-	public void settle() {
+	public List<TransactionBusiness> getSettleStatusReady() {
 		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
 		queryTransactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_READY);
-		List<TransactionBusiness> transactionBusinessList = transactionBusinessDAO.queryList(queryTransactionBusiness);
 
-		if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
-			return;
-		}
+		return transactionBusinessDAO.queryList(queryTransactionBusiness);
+	}
 
-		for (TransactionBusiness transactionBusiness : transactionBusinessList) {
+	@Override
+	public void settle(List<TransactionBusiness> transactionBusinessList) {
+		transactionBusinessList.forEach(transactionBusiness ->{
 			settle(transactionBusiness);
-		}
+		});
 	}
 
 }
