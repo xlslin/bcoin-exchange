@@ -43,7 +43,6 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	private JobConfig blockChainSynchingDataJobConfig;
 	private JobConfig blockChainValidateBolckJobConfig;
 	private TransactionService transactionService;
-	private String btcValidBlockNumber;
 	private JobService jobService;
 
 	public BlockChainDAO getBlockChainDAO() {
@@ -70,13 +69,13 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	public void setTransactionService(TransactionService transactionService) {
 		this.transactionService = transactionService;
 	}
-	@Value("${btc.valid.block.number}")
-	public void setBtcValidBlockNumber(String btcValidBlockNumber) {
-		this.btcValidBlockNumber = btcValidBlockNumber;
-	}
 	@Resource
 	public void setJobService(JobService jobService) {
 		this.jobService = jobService;
+	}
+
+	public Queue<Transaction> getBlockTransactionQueue() {
+		return blockTransactionQueue;
 	}
 
 	@Override
@@ -128,62 +127,52 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		blockChainDAO.updateById(updateBlockChain);
 	}
 
-	protected void readySyncData(BlockChain blockChain) {
-		// 如果同步块时发现块hash不匹配，跳过数据同步，状态改为"未验证"
-		String blockHash = bitCoinBlockService.getBlockHash(blockChain.getBlockNumber());
-		if(!blockChain.getHash().equals(blockHash)) {
-			updateStatusToUnverified(blockChain.getId());
-			return;
-		}
-
-		// 块中没有交易数据状态改为"未验证"
-		Block<List<Transaction>> block = bitCoinBlockService.getBlockFullTransaction(blockHash);
-		List<Transaction> transactionList = block.getTx();
-		if(transactionList == null || transactionList.isEmpty()) {
-			updateStatusToUnverified(blockChain.getId());
-			return;
-		}
-
-		IntStream.range(0, transactionList.size()).forEach(index->{
-			Transaction transaction = transactionList.get(index);
-
-			blockTransactionQueue.add(transaction);
-
-			BlockTransaction blockTransaction = new BlockTransaction();
-			blockTransaction.setBlockChain(blockChain);
-			blockTransaction.setTxIndex(new BigInteger(String.valueOf(index)));
-			blockTransaction.setTransaction(transaction);
-			JobRequest<BlockTransaction> jobRequest = new JobRequest<BlockTransaction>();
-			jobRequest.setLookupPath(blockChainSynchingDataJobConfig.getLookupPath());
-			jobRequest.setData(blockTransaction);
-
-			jobMultithreadDispatcherHandler.doDispatch(jobRequest);
-		});
+	@Override
+	public PaginationRepertory<BlockChain> getPaginationListOrderByBlockNumberAsc(PaginationCondition<BlockChain> blockChainPaginationCondition) {
+		return blockChainDAO.queryPaginationListOrderByBlockNumberAsc(blockChainPaginationCondition);
 	}
 
 	@Override
-	public void readySyncData() {
-		if(blockTransactionQueue.size() !=0) {
-			return;
-		}
+	public PaginationRepertory<BlockChain> getPaginationListByBlockNumberStatus(PaginationCondition<BlockChain> paginationCondition) {
+		return blockChainDAO.queryPaginationListByBlockNumberStatus(paginationCondition);
+	}
 
-		BlockChain queryBlockChain = new BlockChain();
-		queryBlockChain.setStatus(BlockChain.STATUS_UNTREATED);
-		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
-		blockChainPaginationCondition.setCondition(queryBlockChain);
-		blockChainPaginationCondition.setQueryCount(false);
-		blockChainPaginationCondition.setCurrentPage(1);
-		blockChainPaginationCondition.setPageSize(20);
+	@Override
+	public void readySyncData(List<BlockChain> blockChainList) {
+		blockChainList.forEach(blockChain -> {
 
-		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListOrderByBlockNumberAsc(blockChainPaginationCondition);
-		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
-		if(blockChainList == null || blockChainList.isEmpty()) {
-			return;
-		}
+			// 如果同步块时发现块hash不匹配，跳过数据同步，状态改为"未验证"
+			String blockHash = bitCoinBlockService.getBlockHash(blockChain.getBlockNumber());
+			if(!blockChain.getHash().equals(blockHash)) {
+				updateStatusToUnverified(blockChain.getId());
+				return;
+			}
 
-		for(BlockChain blockChain : blockChainList) {
-			readySyncData(blockChain);
-		}
+			// 块中没有交易数据状态改为"未验证"
+			Block<List<Transaction>> block = bitCoinBlockService.getBlockFullTransaction(blockHash);
+			List<Transaction> transactionList = block.getTx();
+			if(transactionList == null || transactionList.isEmpty()) {
+				updateStatusToUnverified(blockChain.getId());
+				return;
+			}
+
+			IntStream.range(0, transactionList.size()).forEach(index->{
+				Transaction transaction = transactionList.get(index);
+
+				blockTransactionQueue.add(transaction);
+
+				BlockTransaction blockTransaction = new BlockTransaction();
+				blockTransaction.setBlockChain(blockChain);
+				blockTransaction.setTxIndex(new BigInteger(String.valueOf(index)));
+				blockTransaction.setTransaction(transaction);
+				JobRequest<BlockTransaction> jobRequest = new JobRequest<BlockTransaction>();
+				jobRequest.setLookupPath(blockChainSynchingDataJobConfig.getLookupPath());
+				jobRequest.setData(blockTransaction);
+
+				jobMultithreadDispatcherHandler.doDispatch(jobRequest);
+			});
+
+		});
 	}
 
 	protected synchronized void synchingData(String blockChainId, Transaction transaction) {
@@ -216,25 +205,7 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	}
 
 	@Override
-	public void readyValidateBolck() {
-		BigInteger currentBlockNumber = bitCoinBlockService.getBlockNumber();
-
-		BlockChain queryBlockChain = new BlockChain();
-		queryBlockChain.setBlockNumber(currentBlockNumber.subtract(new BigInteger(btcValidBlockNumber)));
-		queryBlockChain.setStatus(BlockChain.STATUS_UNVERIFIED);
-		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
-		blockChainPaginationCondition.setCondition(queryBlockChain);
-		blockChainPaginationCondition.setQueryCount(false);
-		blockChainPaginationCondition.setCurrentPage(1);
-		blockChainPaginationCondition.setPageSize(20);
-
-		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListByBlockNumberStatus(blockChainPaginationCondition);
-		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
-
-		if(blockChainList == null || blockChainList.isEmpty()) {
-			return;
-		}
-
+	public void readyValidateBolck(List<BlockChain> blockChainList) {
 		for(BlockChain unverifiedBlockChain : blockChainList) {
 			readyValidateBolck(unverifiedBlockChain);
 		}
