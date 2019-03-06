@@ -111,6 +111,11 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	}
 
 	@Override
+	public WithdrawalTransactionService getWithdrawalTransactionService() {
+		return withdrawalTransactionService;
+	}
+
+	@Override
 	public void addUntreated(TransactionBusiness transactionBusiness) {
 
 		transactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
@@ -229,7 +234,8 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 
 	}
 
-	protected void btc(List<Withdrawal> withdrawalList) {
+	@Override
+	public void btc(List<Withdrawal> withdrawalList) {
 		// 取现总金额
 		BigInteger withdrawalTotalBalance = BigInteger.ZERO;
 		for(Withdrawal withdrawal : withdrawalList) {
@@ -291,26 +297,6 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		updateWithdrawal(txHash, fee, accountUnspentList, withdrawalList);
 	}
 
-	@Override
-	public void btc() {
-		Withdrawal queryWithdrawal = new Withdrawal();
-		queryWithdrawal.setCoinType(CoinType.BTC.name());
-		queryWithdrawal.setStatus(Withdrawal.STATUS_UNTREATED);
-		PaginationCondition<Withdrawal> paginationCondition = new PaginationCondition<Withdrawal>();
-		paginationCondition.setCondition(queryWithdrawal);
-		paginationCondition.setQueryCount(false);
-		paginationCondition.setCurrentPage(1);
-		paginationCondition.setPageSize(20);
-
-		PaginationRepertory<Withdrawal> withdrawalPaginationRepertory = withdrawalDAO.queryPagination(paginationCondition);
-		List<Withdrawal> withdrawalList = withdrawalPaginationRepertory.getPageItems();
-		if(withdrawalList == null || withdrawalList.isEmpty()) {
-			return;
-		}
-
-		btc(withdrawalList);
-	}
-
 	@Transactional
 	protected void updateWithdrawal(String txHash, BigInteger fee, AccountUnspent accountUnspent, Withdrawal withdrawal) {
 		withdrawalTransactionService.addWithdrawalTransaction(txHash, fee, accountUnspent, withdrawal);
@@ -326,7 +312,8 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 
 	}
 
-	protected void usdt(List<Withdrawal> withdrawalList) {
+	@Override
+	public void usdt(List<Withdrawal> withdrawalList) {
 		withdrawalList.forEach(withdrawal -> {
 
 			// 取现手续费
@@ -377,27 +364,6 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	}
 
 	@Override
-	public void usdt() {
-		Withdrawal queryWithdrawal = new Withdrawal();
-		queryWithdrawal.setCoinType(CoinType.USDT.name());
-		queryWithdrawal.setStatus(Withdrawal.STATUS_UNTREATED);
-		PaginationCondition<Withdrawal> paginationCondition = new PaginationCondition<Withdrawal>();
-		paginationCondition.setCondition(queryWithdrawal);
-		paginationCondition.setQueryCount(false);
-		paginationCondition.setCurrentPage(1);
-		paginationCondition.setPageSize(20);
-
-		PaginationRepertory<Withdrawal> withdrawalPaginationRepertory = withdrawalDAO.queryPagination(paginationCondition);
-		List<Withdrawal> withdrawalList = withdrawalPaginationRepertory.getPageItems();
-		if(withdrawalList == null || withdrawalList.isEmpty()) {
-			return;
-		}
-
-		usdt(withdrawalList);
-
-	}
-
-	@Override
 	public void withdrawal(TransactionBusiness transactionBusiness) {
 		accountService.frozenBalance(
 				transactionBusiness.getTxFrom()
@@ -432,27 +398,11 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	}
 
 	@Override
-	public void readyInitNotice() {
-		WithdrawalTransaction queryWithdrawalTransaction = new WithdrawalTransaction();
-		queryWithdrawalTransaction.setStatus(Withdrawal.STATUS_PROCESSING);
-
-		PaginationCondition<WithdrawalTransaction> paginationCondition = new PaginationCondition<>();
-		paginationCondition.setCondition(queryWithdrawalTransaction);
-		paginationCondition.setQueryCount(false);
-		paginationCondition.setCurrentPage(1);
-		paginationCondition.setPageSize(20);
-
-		PaginationRepertory<WithdrawalTransaction> withdrawalPaginationRepertory = withdrawalTransactionService.getPagination(paginationCondition);
-		List<WithdrawalTransaction> withdrawalTransactionList = withdrawalPaginationRepertory.getPageItems();
-		if(withdrawalTransactionList == null || withdrawalTransactionList.isEmpty()) {
-			return;
-		}
-
-		for (WithdrawalTransaction withdrawalTransaction : withdrawalTransactionList) {
+	public void readyInitNotice(List<WithdrawalTransaction> withdrawalTransactionList) {
+		withdrawalTransactionList.forEach(withdrawalTransaction -> {
 			List<WithdrawalVout> withdrawalVoutList = withdrawalTransactionService.getWithdrawalVoutService().getByTxHash(withdrawalTransaction.getTxHash());
 			readyInitNotice(withdrawalTransaction, withdrawalVoutList);
-		}
-
+		});
 	}
 
 	@Transactional
@@ -564,28 +514,10 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	}
 
 	@Override
-	public void finishNotice() {
-		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-		queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
-		queryTransactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_FINISH);
-		queryTransactionBusiness.setTxStatus(BlockChain.STATUS_VERIFY_VALID);
-		queryTransactionBusiness.setType(TransactionBusiness.TYPE_WITHDRAWAL);
-		PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
-		paginationCondition.setCondition(queryTransactionBusiness);
-		paginationCondition.setQueryCount(false);
-		paginationCondition.setCurrentPage(1);
-		paginationCondition.setPageSize(20);
-
-		PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessDAO.queryPagination(paginationCondition);
-		List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
-		if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
-			return;
-		}
-
-		for (TransactionBusiness transactionBusiness : transactionBusinessList) {
+	public void finishNotice(List<TransactionBusiness> transactionBusinessList) {
+		transactionBusinessList.forEach(transactionBusiness -> {
 			finishNotice(transactionBusiness);
-		}
-
+		});
 	}
 
 	@Transactional
@@ -599,29 +531,11 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 		jobService.add(null, jobModel);
 	}
 
-	protected void readyWithdrawalNotice(String status, JobConfig jobConfig) {
-		Withdrawal queryWithdrawal = new Withdrawal();
-		queryWithdrawal.setStatus(status);
-		PaginationCondition<Withdrawal> paginationCondition = new PaginationCondition<Withdrawal>();
-		paginationCondition.setCondition(queryWithdrawal);
-		paginationCondition.setQueryCount(false);
-		paginationCondition.setCurrentPage(1);
-		paginationCondition.setPageSize(20);
-
-		PaginationRepertory<Withdrawal> withdrawalPaginationRepertory = withdrawalDAO.queryPagination(paginationCondition);
-		List<Withdrawal> withdrawalList = withdrawalPaginationRepertory.getPageItems();
-		if(withdrawalList == null || withdrawalList.isEmpty()) {
-			return;
-		}
-
-		for(Withdrawal withdrawal : withdrawalList) {
-			readyWithdrawalNotice(withdrawal, jobConfig);
-		}
-	}
-
 	@Override
-	public void readyWithdrawalSuccessNotice() {
-		readyWithdrawalNotice(Withdrawal.STATUS_SUCCESS, withdrawalSuccessNoticeJobConfig);
+	public void readyWithdrawalSuccessNotice(List<Withdrawal> withdrawalList) {
+		withdrawalList.forEach(withdrawal -> {
+			readyWithdrawalNotice(withdrawal, withdrawalSuccessNoticeJobConfig);
+		});
 	}
 
 	@Override
@@ -647,8 +561,10 @@ public class WithdrawalServiceImpl extends BaseServiceImpl<Withdrawal, java.lang
 	}
 
 	@Override
-	public void readyWithdrawalFailureNotice() {
-		readyWithdrawalNotice(Withdrawal.STATUS_FAILURE, withdrawalFailureNoticeJobConfig);
+	public void readyWithdrawalFailureNotice(List<Withdrawal> withdrawalList) {
+		withdrawalList.forEach(withdrawal -> {
+			readyWithdrawalNotice(withdrawal, withdrawalFailureNoticeJobConfig);
+		});
 	}
 
 	@Override

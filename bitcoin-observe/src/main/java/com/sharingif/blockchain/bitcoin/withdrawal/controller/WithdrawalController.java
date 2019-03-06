@@ -3,6 +3,9 @@ package com.sharingif.blockchain.bitcoin.withdrawal.controller;
 
 import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinReq;
 import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinRsp;
+import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
+import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
+import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalTransaction;
 import com.sharingif.blockchain.bitcoin.withdrawal.service.WithdrawalService;
 import com.sharingif.cube.batch.core.request.JobRequest;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
@@ -10,6 +13,7 @@ import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 @Controller
@@ -18,9 +22,6 @@ public class WithdrawalController {
 	
 	private WithdrawalService withdrawalService;
 
-	public WithdrawalService getWithdrawalService() {
-		return withdrawalService;
-	}
 	@Resource
 	public void setWithdrawalService(WithdrawalService withdrawalService) {
 		this.withdrawalService = withdrawalService;
@@ -32,18 +33,18 @@ public class WithdrawalController {
 	}
 
 	@RequestMapping(value="btc", method= RequestMethod.POST)
-	public void btc() {
-		withdrawalService.btc();
+	public void btc(JobRequest<List<Withdrawal>> jobRequest) {
+		withdrawalService.btc(jobRequest.getData());
 	}
 
 	@RequestMapping(value="usdt", method= RequestMethod.POST)
-	public void usdt() {
-		withdrawalService.usdt();
+	public void usdt(JobRequest<List<Withdrawal>> jobRequest) {
+		withdrawalService.usdt(jobRequest.getData());
 	}
 
 	@RequestMapping(value="readyInitNotice", method= RequestMethod.POST)
-	public void readyInitNotice() {
-		withdrawalService.readyInitNotice();
+	public void readyInitNotice(JobRequest<List<WithdrawalTransaction>> jobRequest) {
+		withdrawalService.readyInitNotice(jobRequest.getData());
 	}
 
 	@RequestMapping(value="initNotice", method= RequestMethod.POST)
@@ -52,13 +53,13 @@ public class WithdrawalController {
 	}
 
 	@RequestMapping(value="finishNotice", method= RequestMethod.POST)
-	public void finishNotice() {
-		withdrawalService.finishNotice();
+	public void finishNotice(JobRequest<List<TransactionBusiness>> jobRequest) {
+		withdrawalService.finishNotice(jobRequest.getData());
 	}
 
 	@RequestMapping(value="readySuccessNotice", method= RequestMethod.POST)
-	public void readySuccessNotice() {
-		withdrawalService.readyWithdrawalSuccessNotice();
+	public void readySuccessNotice(JobRequest<List<Withdrawal>> jobRequest) {
+		withdrawalService.readyWithdrawalSuccessNotice(jobRequest.getData());
 	}
 
 	@RequestMapping(value="successNotice", method= RequestMethod.POST)
@@ -67,8 +68,8 @@ public class WithdrawalController {
 	}
 
 	@RequestMapping(value="readyFailureNotice", method= RequestMethod.POST)
-	public void readyFailureNotice() {
-		withdrawalService.readyWithdrawalFailureNotice();
+	public void readyFailureNotice(JobRequest<List<Withdrawal>> jobRequest) {
+		withdrawalService.readyWithdrawalFailureNotice(jobRequest.getData());
 	}
 
 	@RequestMapping(value="failureNotice", method= RequestMethod.POST)

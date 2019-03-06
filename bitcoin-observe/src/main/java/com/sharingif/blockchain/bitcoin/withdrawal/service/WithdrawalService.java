@@ -5,10 +5,19 @@ import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBit
 import com.sharingif.blockchain.bitcoin.api.withdrawal.entity.ApplyWithdrawalBitCoinRsp;
 import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.Withdrawal;
+import com.sharingif.blockchain.bitcoin.withdrawal.model.entity.WithdrawalTransaction;
 import com.sharingif.cube.support.service.base.IBaseService;
+
+import java.util.List;
 
 
 public interface WithdrawalService extends IBaseService<Withdrawal, java.lang.String> {
+
+    /**
+     * WithdrawalTransactionService
+     * @return
+     */
+    WithdrawalTransactionService getWithdrawalTransactionService();
 
     /**
      * 添加未处理提现
@@ -53,15 +62,15 @@ public interface WithdrawalService extends IBaseService<Withdrawal, java.lang.St
 
     /**
      * 取现
-     * @param
+     * @param withdrawalList
      */
-    void btc();
+    void btc(List<Withdrawal> withdrawalList);
 
     /**
      * 取现
-     * @param
+     * @param withdrawalList
      */
-    void usdt();
+    void usdt(List<Withdrawal> withdrawalList);
 
     /**
      * 取现处理中
@@ -71,8 +80,9 @@ public interface WithdrawalService extends IBaseService<Withdrawal, java.lang.St
 
     /**
      * 准备提现通知
+     * @param withdrawalTransactionList
      */
-    void readyInitNotice();
+    void readyInitNotice(List<WithdrawalTransaction> withdrawalTransactionList);
 
     /**
      * 初始化提现通知
@@ -91,12 +101,13 @@ public interface WithdrawalService extends IBaseService<Withdrawal, java.lang.St
      * 提现完成通知
      * @return
      */
-    void finishNotice();
+    void finishNotice(List<TransactionBusiness> transactionBusinessList);
 
     /**
      * 准备提现成功通知
+     * @param withdrawalList
      */
-    void readyWithdrawalSuccessNotice();
+    void readyWithdrawalSuccessNotice(List<Withdrawal> withdrawalList);
 
     /**
      * 提现成功通知
@@ -106,8 +117,9 @@ public interface WithdrawalService extends IBaseService<Withdrawal, java.lang.St
 
     /**
      * 准备提现失败通知
+     * @param withdrawalList
      */
-    void readyWithdrawalFailureNotice();
+    void readyWithdrawalFailureNotice(List<Withdrawal> withdrawalList);
 
     /**
      * 提现失败通知
