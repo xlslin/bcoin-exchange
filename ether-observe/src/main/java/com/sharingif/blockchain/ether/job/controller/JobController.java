@@ -19,18 +19,6 @@ public class JobController {
         this.jobService = jobService;
     }
 
-    @RequestMapping(value="putQueue", method= RequestMethod.POST)
-    public void putQueue() {
-
-        jobService.putQueue();
-    }
-
-    @RequestMapping(value="consume", method= RequestMethod.POST)
-    public void consume() {
-
-        jobService.consume();
-    }
-
     @RequestMapping(value="deleteJobHistory", method= RequestMethod.POST)
     public void deleteJobHistory() {
 
