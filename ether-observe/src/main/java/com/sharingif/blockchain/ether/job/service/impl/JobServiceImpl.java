@@ -5,20 +5,14 @@ import com.sharingif.blockchain.ether.job.service.BatchJobService;
 import com.sharingif.cube.batch.core.JobConfig;
 import com.sharingif.cube.batch.core.JobModel;
 import com.sharingif.cube.batch.core.JobService;
-import com.sharingif.cube.batch.core.handler.MultithreadDispatcherHandler;
-import com.sharingif.cube.batch.core.handler.SimpleDispatcherHandler;
 import com.sharingif.cube.batch.core.request.JobRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -50,9 +44,6 @@ public class JobServiceImpl implements JobService, InitializingBean {
     private Queue<JobRequest> queue = new ConcurrentLinkedQueue<JobRequest>();
 
     private BatchJobService batchJobService;
-    private SimpleDispatcherHandler simpleDispatcherHandler;
-    private MultithreadDispatcherHandler jobMultithreadDispatcherHandler;
-    private DataSourceTransactionManager dataSourceTransactionManager;
     private Map<String, JobConfig> allJobConfig;
 
     @Value("${job.queue.size}")
@@ -62,18 +53,6 @@ public class JobServiceImpl implements JobService, InitializingBean {
     @Resource
     public void setBatchJobService(BatchJobService batchJobService) {
         this.batchJobService = batchJobService;
-    }
-    @Resource
-    public void setSimpleDispatcherHandler(SimpleDispatcherHandler simpleDispatcherHandler) {
-        this.simpleDispatcherHandler = simpleDispatcherHandler;
-    }
-    @Resource
-    public void setJobMultithreadDispatcherHandler(MultithreadDispatcherHandler jobMultithreadDispatcherHandler) {
-        this.jobMultithreadDispatcherHandler = jobMultithreadDispatcherHandler;
-    }
-    @Resource
-    public void setDataSourceTransactionManager(DataSourceTransactionManager dataSourceTransactionManager) {
-        this.dataSourceTransactionManager = dataSourceTransactionManager;
     }
     @Resource
     public void setAllJobConfig(@Qualifier("allJobConfig") Map<String, JobConfig> allJobConfig) {
@@ -147,68 +126,6 @@ public class JobServiceImpl implements JobService, InitializingBean {
             batchJob.setStatus(BatchJob.STATUS_PENDING);
 
             batchJobService.add(batchJob);
-        }
-    }
-
-    @Override
-    public synchronized void putQueue() {
-
-        if(queue.size() >= queueSize) {
-            return;
-        }
-
-        List<BatchJob> suspendingJobRequestList = batchJobService.getSuspendingStatus();
-
-        if(suspendingJobRequestList == null || suspendingJobRequestList.size() == 0) {
-            return;
-        }
-
-        for(BatchJob batchJob : suspendingJobRequestList){
-            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-            TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
-
-            try {
-                batchJobService.updateStatusToInQueue(batchJob.getId());
-
-                queue.add(batchJob.convertJobRequest());
-
-                dataSourceTransactionManager.commit(status);
-            } catch (Exception e) {
-                logger.error("putQueue error", e);
-                dataSourceTransactionManager.rollback(status);
-            }
-        }
-
-    }
-
-    @Override
-    public synchronized void consume() {
-        while (true) {
-            JobRequest inQueueJobRequest = queue.peek();
-            if(null == inQueueJobRequest){
-                return;
-            }
-
-            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-            TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
-
-            try {
-                // 修改job状态
-                batchJobService.updateStatusToHandling(inQueueJobRequest.getId());
-
-                // 从队列中删除job
-                queue.remove(inQueueJobRequest);
-
-                dataSourceTransactionManager.commit(status);
-            } catch (Exception e) {
-                logger.error("consume error", e);
-                dataSourceTransactionManager.rollback(status);
-            }
-
-            jobMultithreadDispatcherHandler.doDispatch(inQueueJobRequest);
-
         }
     }
 
