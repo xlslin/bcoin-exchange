@@ -3,6 +3,8 @@ package com.sharingif.blockchain.bitcoin.deposit.service;
 
 import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
 
+import java.util.List;
+
 public interface DepositService {
 
     /**
@@ -13,8 +15,9 @@ public interface DepositService {
 
     /**
      * 准备充值通知
+     * @param transactionBusinessList
      */
-    void readyInitNotice();
+    void readyInitNotice(List<TransactionBusiness> transactionBusinessList);
 
     /**
      * 初始化充值通知中
@@ -36,9 +39,10 @@ public interface DepositService {
 
     /**
      * 准备充值完成通知
+     * @param transactionBusinessList
      * @return
      */
-    void readyFinishNotice();
+    void readyFinishNotice(List<TransactionBusiness> transactionBusinessList);
 
     /**
      * 充值完成通知

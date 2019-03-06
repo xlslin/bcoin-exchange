@@ -1,6 +1,7 @@
 package com.sharingif.blockchain.bitcoin.deposit.controller;
 
 
+import com.sharingif.blockchain.bitcoin.block.model.entity.TransactionBusiness;
 import com.sharingif.blockchain.bitcoin.deposit.service.DepositService;
 import com.sharingif.cube.batch.core.request.JobRequest;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
@@ -8,6 +9,7 @@ import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 @Controller
@@ -25,8 +27,8 @@ public class DepositController {
 	}
 
 	@RequestMapping(value="readyInitNotice", method= RequestMethod.POST)
-	public void readyInitNotice() {
-		depositService.readyInitNotice();
+	public void readyInitNotice(JobRequest<List<TransactionBusiness>> jobRequest) {
+		depositService.readyInitNotice(jobRequest.getData());
 	}
 
 	@RequestMapping(value="initNotice", method= RequestMethod.POST)
@@ -35,8 +37,8 @@ public class DepositController {
 	}
 
 	@RequestMapping(value="readyFinishNotice", method= RequestMethod.POST)
-	public void readyFinishNotice() {
-		depositService.readyFinishNotice();
+	public void readyFinishNotice(JobRequest<List<TransactionBusiness>> jobRequest) {
+		depositService.readyFinishNotice(jobRequest.getData());
 	}
 
 	@RequestMapping(value="finishNotice", method= RequestMethod.POST)

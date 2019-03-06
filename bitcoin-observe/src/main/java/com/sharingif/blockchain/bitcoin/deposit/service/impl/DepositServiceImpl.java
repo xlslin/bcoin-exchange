@@ -91,25 +91,10 @@ public class DepositServiceImpl implements DepositService {
     }
 
     @Override
-    public void readyInitNotice() {
-        TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-        queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_UNTREATED);
-        queryTransactionBusiness.setType(TransactionBusiness.TYPE_DEPOSIT);
-        PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
-        paginationCondition.setCondition(queryTransactionBusiness);
-        paginationCondition.setQueryCount(false);
-        paginationCondition.setCurrentPage(1);
-        paginationCondition.setPageSize(20);
-
-        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessDAO.queryPagination(paginationCondition);
-        List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
-        if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
-            return;
-        }
-
-        for (TransactionBusiness transactionBusiness : transactionBusinessList) {
+    public void readyInitNotice(List<TransactionBusiness> transactionBusinessList) {
+        transactionBusinessList.forEach(transactionBusiness ->{
             readyInitDepositNotice(transactionBusiness);
-        }
+        });
     }
 
     @Override
@@ -195,26 +180,10 @@ public class DepositServiceImpl implements DepositService {
     }
 
     @Override
-    public void readyFinishNotice() {
-        TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-        queryTransactionBusiness.setStatus(TransactionBusiness.STATUS_INIT_NOTICED);
-        queryTransactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_FINISH);
-        queryTransactionBusiness.setType(TransactionBusiness.TYPE_DEPOSIT);
-        PaginationCondition<TransactionBusiness> paginationCondition = new PaginationCondition<TransactionBusiness>();
-        paginationCondition.setCondition(queryTransactionBusiness);
-        paginationCondition.setQueryCount(false);
-        paginationCondition.setCurrentPage(1);
-        paginationCondition.setPageSize(20);
-
-        PaginationRepertory<TransactionBusiness> transactionBusinessPaginationRepertory = transactionBusinessDAO.queryPagination(paginationCondition);
-        List<TransactionBusiness> transactionBusinessList = transactionBusinessPaginationRepertory.getPageItems();
-        if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
-            return;
-        }
-
-        for (TransactionBusiness transactionBusiness : transactionBusinessList) {
+    public void readyFinishNotice(List<TransactionBusiness> transactionBusinessList) {
+        transactionBusinessList.forEach(transactionBusiness -> {
             readyFinishNotice(transactionBusiness);
-        }
+        });
     }
 
     @Override
