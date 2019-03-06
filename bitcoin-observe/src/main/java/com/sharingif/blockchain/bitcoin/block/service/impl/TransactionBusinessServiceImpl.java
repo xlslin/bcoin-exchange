@@ -99,6 +99,14 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 	}
 
 	@Override
+	public List<TransactionBusiness> getSettleStatusReady() {
+		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
+		queryTransactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_READY);
+
+		return transactionBusinessDAO.queryList(queryTransactionBusiness);
+	}
+
+	@Override
 	public TransactionBusiness getTransactionBusiness(BigInteger blockNumber, String blockHash, String txHash, BigInteger vioIndex, String type) {
 		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
 		queryTransactionBusiness.setBlockNumber(blockNumber);
@@ -128,31 +136,21 @@ public class TransactionBusinessServiceImpl extends BaseServiceImpl<TransactionB
 		updateSettleStatusToSettling(transactionBusiness.getId());
 	}
 
-	protected void settle(TransactionBusiness transactionBusiness) {
-		if(TransactionBusiness.TYPE_DEPOSIT.equals(transactionBusiness.getType())) {
-			depositSettle(transactionBusiness);
-			return;
-		}
-
-		if(TransactionBusiness.TYPE_WITHDRAWAL.equals(transactionBusiness.getType())) {
-			withdrawalSettle(transactionBusiness);
-			return;
-		}
-	}
-
 	@Override
-	public void settle() {
-		TransactionBusiness queryTransactionBusiness = new TransactionBusiness();
-		queryTransactionBusiness.setSettleStatus(TransactionBusiness.SETTLE_STATUS_READY);
-		List<TransactionBusiness> transactionBusinessList = transactionBusinessDAO.queryList(queryTransactionBusiness);
+	public void settle(List<TransactionBusiness> transactionBusinessList) {
+		transactionBusinessList.forEach(transactionBusiness -> {
 
-		if(transactionBusinessList == null || transactionBusinessList.isEmpty()) {
-			return;
-		}
+			if(TransactionBusiness.TYPE_DEPOSIT.equals(transactionBusiness.getType())) {
+				depositSettle(transactionBusiness);
+				return;
+			}
 
-		for (TransactionBusiness transactionBusiness : transactionBusinessList) {
-			settle(transactionBusiness);
-		}
+			if(TransactionBusiness.TYPE_WITHDRAWAL.equals(transactionBusiness.getType())) {
+				withdrawalSettle(transactionBusiness);
+				return;
+			}
+
+		});
 	}
 
 }
