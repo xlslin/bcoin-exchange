@@ -30,6 +30,10 @@ public class BlockChainSyncScheduled {
     public void setBlockChainSyncService(BlockChainSyncService blockChainSyncService) {
         this.blockChainSyncService = blockChainSyncService;
     }
+    @Resource
+    public void setEthereumBlockService(EthereumBlockService ethereumBlockService) {
+        this.ethereumBlockService = ethereumBlockService;
+    }
 
     @Scheduled(fixedRate = 1000*1)
     public synchronized void sync() {
