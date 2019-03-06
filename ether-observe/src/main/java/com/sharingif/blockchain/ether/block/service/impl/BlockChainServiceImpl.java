@@ -29,7 +29,6 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	private BlockChainDAO blockChainDAO;
 	private TransactionService transactionService;
 	private EthereumBlockService ethereumBlockService;
-	private String ethValidBlockNumber;
 	private JobConfig blockChainSynchingDataJobConfig;
 	private JobConfig blockChainValidateBolckJobConfig;
 	private JobService jobService;
@@ -50,10 +49,6 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	@Resource
 	public void setEthereumBlockService(EthereumBlockService ethereumBlockService) {
 		this.ethereumBlockService = ethereumBlockService;
-	}
-	@Value("${eth.valid.block.number}")
-	public void setEthValidBlockNumber(String ethValidBlockNumber) {
-		this.ethValidBlockNumber = ethValidBlockNumber;
 	}
 	@Resource
 	public void setBlockChainSynchingDataJobConfig(JobConfig blockChainSynchingDataJobConfig) {
@@ -126,6 +121,16 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 		blockChainDAO.updateById(updateBlockChain);
 	}
 
+	@Override
+	public PaginationRepertory<BlockChain> getPaginationListOrderByBlockNumberAsc(PaginationCondition<BlockChain> paginationCondition) {
+		return blockChainDAO.queryPaginationListOrderByBlockNumberAsc(paginationCondition);
+	}
+
+	@Override
+	public PaginationRepertory<BlockChain> getPaginationListByBlockNumberStatus(PaginationCondition<BlockChain> paginationCondition) {
+		return blockChainDAO.queryPaginationListByBlockNumberStatus(paginationCondition);
+	}
+
 	@Transactional
 	protected void readySyncData(BlockChain blockChain) {
 		updateBlockSynching(blockChain.getId());
@@ -138,26 +143,10 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	}
 
 	@Override
-	public void readySyncData() {
-
-		BlockChain queryBlockChain = new BlockChain();
-		queryBlockChain.setStatus(BlockChain.STATUS_UNTREATED);
-		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
-		blockChainPaginationCondition.setCondition(queryBlockChain);
-		blockChainPaginationCondition.setQueryCount(false);
-		blockChainPaginationCondition.setCurrentPage(1);
-		blockChainPaginationCondition.setPageSize(20);
-
-		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListOrderByBlockNumberAsc(blockChainPaginationCondition);
-		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
-		if(blockChainList == null || blockChainList.isEmpty()) {
-			return;
-		}
-
-		for(BlockChain blockChain : blockChainList) {
+	public void readySyncData(List<BlockChain> blockChainList) {
+		blockChainList.forEach(blockChain ->{
 			readySyncData(blockChain);
-		}
-
+		});
 	}
 
 	@Override
@@ -204,28 +193,10 @@ public class BlockChainServiceImpl extends BaseServiceImpl<BlockChain, java.lang
 	}
 
 	@Override
-	public void readyValidateBolck() {
-		BigInteger currentBlockNumber = ethereumBlockService.getBlockNumber();
-
-		BlockChain queryBlockChain = new BlockChain();
-		queryBlockChain.setBlockNumber(currentBlockNumber.subtract(new BigInteger(ethValidBlockNumber)));
-		queryBlockChain.setStatus(BlockChain.STATUS_UNVERIFIED);
-		PaginationCondition<BlockChain> blockChainPaginationCondition = new PaginationCondition<BlockChain>();
-		blockChainPaginationCondition.setCondition(queryBlockChain);
-		blockChainPaginationCondition.setQueryCount(false);
-		blockChainPaginationCondition.setCurrentPage(1);
-		blockChainPaginationCondition.setPageSize(20);
-
-		PaginationRepertory<BlockChain> paginationRepertory = blockChainDAO.queryPaginationListByBlockNumberStatus(blockChainPaginationCondition);
-		List<BlockChain> blockChainList = paginationRepertory.getPageItems();
-
-		if(blockChainList == null || blockChainList.isEmpty()) {
-			return;
-		}
-
-		for(BlockChain unverifiedBlockChain : blockChainList) {
+	public void readyValidateBolck(List<BlockChain> blockChainList) {
+		blockChainList.forEach(unverifiedBlockChain ->{
 			readyValidateBolck(unverifiedBlockChain);
-		}
+		});
 	}
 
 	@Transactional

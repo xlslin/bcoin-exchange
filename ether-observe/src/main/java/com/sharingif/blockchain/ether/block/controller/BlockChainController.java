@@ -1,6 +1,7 @@
 package com.sharingif.blockchain.ether.block.controller;
 
 
+import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
 import com.sharingif.blockchain.ether.block.service.BlockChainService;
 import com.sharingif.cube.batch.core.request.JobRequest;
 import com.sharingif.cube.core.handler.bind.annotation.RequestMapping;
@@ -8,6 +9,7 @@ import com.sharingif.cube.core.handler.bind.annotation.RequestMethod;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 @Controller
@@ -25,8 +27,8 @@ public class BlockChainController {
 	}
 
 	@RequestMapping(value="readySyncData", method= RequestMethod.POST)
-	public void readySyncData() {
-		blockChainService.readySyncData();
+	public void readySyncData(JobRequest<List<BlockChain>> jobRequest) {
+		blockChainService.readySyncData(jobRequest.getData());
 	}
 
 	@RequestMapping(value="synchingData", method= RequestMethod.POST)
@@ -35,8 +37,8 @@ public class BlockChainController {
 	}
 
 	@RequestMapping(value="readyValidateBolck", method= RequestMethod.POST)
-	public void readyValidateBolck() {
-		blockChainService.readyValidateBolck();
+	public void readyValidateBolck(JobRequest<List<BlockChain>> jobRequest) {
+		blockChainService.readyValidateBolck(jobRequest.getData());
 	}
 
 	@RequestMapping(value="validateBolck", method= RequestMethod.POST)

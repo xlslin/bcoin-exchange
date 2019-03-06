@@ -2,9 +2,12 @@ package com.sharingif.blockchain.ether.block.service;
 
 
 import com.sharingif.blockchain.ether.block.model.entity.BlockChain;
+import com.sharingif.cube.persistence.database.pagination.PaginationCondition;
+import com.sharingif.cube.persistence.database.pagination.PaginationRepertory;
 import com.sharingif.cube.support.service.base.IBaseService;
 
 import java.math.BigInteger;
+import java.util.List;
 
 
 public interface BlockChainService extends IBaseService<BlockChain, java.lang.String> {
@@ -50,9 +53,24 @@ public interface BlockChainService extends IBaseService<BlockChain, java.lang.St
     void updateStatusToVerifyInvalid(String id, BigInteger verifyBlockNumber);
 
     /**
-     * 准备块数据同步
+     * 根据条件块正序排序查询
+     * @param paginationCondition
+     * @return
      */
-    void readySyncData();
+    PaginationRepertory<BlockChain> getPaginationListOrderByBlockNumberAsc(PaginationCondition<BlockChain> paginationCondition);
+
+    /**
+     * 根据小于等于块数、状态，块正序排序查询
+     * @param paginationCondition
+     * @return
+     */
+    PaginationRepertory<BlockChain> getPaginationListByBlockNumberStatus(PaginationCondition<BlockChain> paginationCondition);
+
+    /**
+     * 准备块数据同步
+     * @param blockChainList
+     */
+    void readySyncData(List<BlockChain> blockChainList);
 
     /**
      * 块数据同步中
@@ -62,8 +80,9 @@ public interface BlockChainService extends IBaseService<BlockChain, java.lang.St
 
     /**
      * 准备验证块是否有效
+     * @param blockChainList
      */
-    void readyValidateBolck();
+    void readyValidateBolck(List<BlockChain> blockChainList);
 
     /**
      * 验证块是否有效
