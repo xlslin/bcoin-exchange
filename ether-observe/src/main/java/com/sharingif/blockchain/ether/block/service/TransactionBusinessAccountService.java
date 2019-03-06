@@ -4,6 +4,8 @@ package com.sharingif.blockchain.ether.block.service;
 import com.sharingif.blockchain.ether.block.model.entity.TransactionBusinessAccount;
 import com.sharingif.cube.support.service.base.IBaseService;
 
+import java.util.List;
+
 
 public interface TransactionBusinessAccountService extends IBaseService<TransactionBusinessAccount, java.lang.String> {
 
@@ -18,7 +20,8 @@ public interface TransactionBusinessAccountService extends IBaseService<Transact
 
     /**
      * 清算账户
+     * @param transactionBusinessAccountList
      */
-    void settleAccounts();
+    void settleAccounts(List<TransactionBusinessAccount> transactionBusinessAccountList);
 
 }

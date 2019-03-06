@@ -66,13 +66,8 @@ public class TransactionBusinessAccountServiceImpl extends BaseServiceImpl<Trans
 	}
 
 	@Override
-	public void settleAccounts() {
-		List<TransactionBusinessAccount> transactionBusinessAccountList = transactionBusinessAccountDAO.queryAll();
-		if(transactionBusinessAccountList == null || transactionBusinessAccountList.isEmpty()) {
-			return;
-		}
-
-		for(TransactionBusinessAccount transactionBusinessAccount : transactionBusinessAccountList) {
+	public void settleAccounts(List<TransactionBusinessAccount> transactionBusinessAccountList) {
+		transactionBusinessAccountList.forEach(transactionBusinessAccount -> {
 			BigInteger blockNumber = ethereumBlockService.getBlockNumber();
 
 			BigInteger blockBalance = null;
@@ -87,7 +82,7 @@ public class TransactionBusinessAccountServiceImpl extends BaseServiceImpl<Trans
 			accountBalance = accountService.getBalance(transactionBusinessAccount.getAddress(),transactionBusinessAccount.getCoinType());
 
 			if(blockBalance.compareTo(accountBalance) != 0) {
-				continue;
+				return;
 			}
 
 			transactionBusinessService.updateSettleStatusToSettled(transactionBusinessAccount.getAddress(), transactionBusinessAccount.getCoinType(), blockNumber);
@@ -100,7 +95,6 @@ public class TransactionBusinessAccountServiceImpl extends BaseServiceImpl<Trans
 			if(deleteTransactionBusinessAccount) {
 				transactionBusinessAccountDAO.deleteById(transactionBusinessAccount.getId());
 			}
-		}
-
+		});
 	}
 }
