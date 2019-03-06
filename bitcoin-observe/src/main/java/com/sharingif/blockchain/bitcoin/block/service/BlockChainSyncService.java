@@ -4,6 +4,8 @@ package com.sharingif.blockchain.bitcoin.block.service;
 import com.sharingif.blockchain.bitcoin.block.model.entity.BlockChainSync;
 import com.sharingif.cube.support.service.base.IBaseService;
 
+import java.math.BigInteger;
+
 
 public interface BlockChainSyncService extends IBaseService<BlockChainSync, java.lang.String> {
 
@@ -14,8 +16,15 @@ public interface BlockChainSyncService extends IBaseService<BlockChainSync, java
     BlockChainSync getSyncType();
 
     /**
-     * 区块同步
+     * 添加块信息
+     * @param blockNumber
      */
-    void sync();
+    void add(BigInteger blockNumber);
+
+    /**
+     * 修改块信息
+     * @param blockNumber
+     */
+    void update(BigInteger blockNumber);
 
 }

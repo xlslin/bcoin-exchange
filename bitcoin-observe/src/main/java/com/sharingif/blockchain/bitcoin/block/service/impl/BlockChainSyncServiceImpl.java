@@ -78,34 +78,14 @@ public class BlockChainSyncServiceImpl extends BaseServiceImpl<BlockChainSync, j
 	}
 
 	@Override
-	public void sync() {
-		// 查询数据库区块同步信息
-		BlockChainSync blockChainSync = getSyncType();
+	public void add(BigInteger blockNumber) {
+		Block<List<String>> block = bitCoinBlockService.getBlock(blockNumber);
+		addBlockChainSyncBlockChain(blockNumber, block);
+	}
 
-		// 查询区块链当前区块号
-		BigInteger blockNumber = bitCoinBlockService.getBlockNumber();
-
-		// 如果数据库区块同步信息为空，插入当前区块链信息到BlockChainSync表、BlockChain表并返回
-		if(blockChainSync == null) {
-			Block<List<String>> block = bitCoinBlockService.getBlock(blockNumber);
-			addBlockChainSyncBlockChain(blockNumber, block);
-
-			return;
-		}
-
-		// 如果数据库区块同步信息不为空比较数据库区块号是否小于区块链当前区块号
-		// 如果数据库区块号不小于区块链当前区块号直接返回
-		BigInteger currentSyncBlockNumber = blockChainSync.getBlockNumber();
-		if(currentSyncBlockNumber.compareTo(blockNumber) >= 0) {
-			return;
-		}
-
-		// 如果数据库区块号小于区块链当前区块号，递增修改BlockChainSync，添加BlockChain表
-		while (currentSyncBlockNumber.compareTo(blockNumber)< 0) {
-			currentSyncBlockNumber = currentSyncBlockNumber.add(BigInteger.ONE);
-			Block<List<String>> block = bitCoinBlockService.getBlock(currentSyncBlockNumber);
-			updateBlockChainSyncBlockChain(currentSyncBlockNumber, block);
-		}
-
+	@Override
+	public void update(BigInteger blockNumber) {
+		Block<List<String>> block = bitCoinBlockService.getBlock(blockNumber);
+		updateBlockChainSyncBlockChain(blockNumber, block);
 	}
 }
