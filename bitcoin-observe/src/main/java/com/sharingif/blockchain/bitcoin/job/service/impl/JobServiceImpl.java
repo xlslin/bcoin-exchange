@@ -40,40 +40,12 @@ public class JobServiceImpl implements JobService, InitializingBean {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    /**
-     * 队列容量
-     */
-    private int queueSize;
-    /**
-     * 队列
-     */
-    private Queue<JobRequest> queue = new ConcurrentLinkedQueue<JobRequest>();
-
     private BatchJobService batchJobService;
-    private SimpleDispatcherHandler simpleDispatcherHandler;
-    private MultithreadDispatcherHandler jobMultithreadDispatcherHandler;
-    private DataSourceTransactionManager dataSourceTransactionManager;
     private Map<String, JobConfig> allJobConfig;
 
-    @Value("${job.queue.size}")
-    public void setQueueSize(int queueSize) {
-        this.queueSize = queueSize;
-    }
     @Resource
     public void setBatchJobService(BatchJobService batchJobService) {
         this.batchJobService = batchJobService;
-    }
-    @Resource
-    public void setSimpleDispatcherHandler(SimpleDispatcherHandler simpleDispatcherHandler) {
-        this.simpleDispatcherHandler = simpleDispatcherHandler;
-    }
-    @Resource
-    public void setJobMultithreadDispatcherHandler(MultithreadDispatcherHandler jobMultithreadDispatcherHandler) {
-        this.jobMultithreadDispatcherHandler = jobMultithreadDispatcherHandler;
-    }
-    @Resource
-    public void setDataSourceTransactionManager(DataSourceTransactionManager dataSourceTransactionManager) {
-        this.dataSourceTransactionManager = dataSourceTransactionManager;
     }
     @Resource
     public void setAllJobConfig(@Qualifier("allJobConfig") Map<String, JobConfig> allJobConfig) {
@@ -147,68 +119,6 @@ public class JobServiceImpl implements JobService, InitializingBean {
             batchJob.setStatus(BatchJob.STATUS_PENDING);
 
             batchJobService.add(batchJob);
-        }
-    }
-
-    @Override
-    public synchronized void putQueue() {
-
-        if(queue.size() >= queueSize) {
-            return;
-        }
-
-        List<BatchJob> suspendingJobRequestList = batchJobService.getSuspendingStatus();
-
-        if(suspendingJobRequestList == null || suspendingJobRequestList.size() == 0) {
-            return;
-        }
-
-        for(BatchJob batchJob : suspendingJobRequestList){
-            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-            TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
-
-            try {
-                batchJobService.updateStatusToInQueue(batchJob.getId());
-
-                queue.add(batchJob.convertJobRequest());
-
-                dataSourceTransactionManager.commit(status);
-            } catch (Exception e) {
-                logger.error("putQueue error", e);
-                dataSourceTransactionManager.rollback(status);
-            }
-        }
-
-    }
-
-    @Override
-    public synchronized void consume() {
-        while (true) {
-            JobRequest inQueueJobRequest = queue.peek();
-            if(null == inQueueJobRequest){
-                return;
-            }
-
-            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-            TransactionStatus status = dataSourceTransactionManager.getTransaction(def);
-
-            try {
-                // 修改job状态
-                batchJobService.updateStatusToHandling(inQueueJobRequest.getId());
-
-                // 从队列中删除job
-                queue.remove(inQueueJobRequest);
-
-                dataSourceTransactionManager.commit(status);
-            } catch (Exception e) {
-                logger.error("consume error", e);
-                dataSourceTransactionManager.rollback(status);
-            }
-
-            jobMultithreadDispatcherHandler.doDispatch(inQueueJobRequest);
-
         }
     }
 
